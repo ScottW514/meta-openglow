@@ -1,0 +1,6 @@
+OPENGLOW_STD BOARD
+M:	Scott Wiederhold <s.e.wiederhold@gmail.com>
+S:	Maintained
+F:	board/openglow/openglow_std/
+F:	include/configs/openglow_std.h
+F:	configs/openglow_std_n6x2q_1g_defconfig

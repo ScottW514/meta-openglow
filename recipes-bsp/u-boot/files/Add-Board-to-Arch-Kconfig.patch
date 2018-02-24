@@ -1,0 +1,30 @@
+u-boot: Add OpenGlow Standard Board to Arch Kconfig
+
+This adds the OpenGlow Standard board to the proper
+arch Kconfig.
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Scott Wiederhold <s.e.wiederhold@gmail.com>
+
+--- a/arch/arm/mach-imx/mx6/Kconfig
++++ b/arch/arm/mach-imx/mx6/Kconfig
+@@ -337,6 +337,9 @@
+        imply USB_ETHER_SMSC95XX
+        imply USB_ETHER_MCS7830
+ 
++config TARGET_OPENGLOW_STD
++       bool "openglow_std"
++
+ config TARGET_OPOS6ULDEV
+        bool "Armadeus OPOS6ULDev board"
+        select MX6UL_OPOS6UL
+@@ -481,6 +484,7 @@
+ source "board/liebherr/display5/Kconfig"
+ source "board/liebherr/mccmon6/Kconfig"
+ source "board/logicpd/imx6/Kconfig"
++source "board/openglow/openglow_std/Kconfig"
+ source "board/seco/Kconfig"
+ source "board/solidrun/mx6cuboxi/Kconfig"
+ source "board/technexion/pico-imx6ul/Kconfig"
+ 

@@ -1,0 +1,44 @@
+setenv stdout serial
+echo "Checking U-Boot" ;
+setenv offset 0x400
+if fatload mmc 0:1 12000000 u-boot.imx ; then
+      echo "Read $filesize bytes from SD card." ;
+      if sf probe || sf probe || \
+	 sf probe 1 27000000 || sf probe 1 27000000 ; then
+	   echo "Serial Flash Probed." ;
+	   if sf read 0x12400000 $offset $filesize ; then
+	       if cmp.b 0x12000000 0x12400000 $filesize ; then
+		   echo "U-Boot versions match. No upgrade required." ;
+	       else
+		   echo "U-Boot upgrade required." ;
+		   echo "Programming in 5 seconds" ;
+		   for n in 5 4 3 2 1 ; do
+			echo $n ;
+			sleep 1 ;
+		   done
+		   echo "Erasing Serial Flash..." ;
+		   sf erase 0 0xC0000 ;
+		   echo "Programming Serial Flash..." ;
+		   sf write 0x12000000 $offset $filesize ;
+		   echo "Verifying..." ;
+		   if sf read 0x12400000 $offset $filesize ; then
+		       if cmp.b 0x12000000 0x12400000 $filesize ; then
+			   while echo "U-Boot upgraded! Reset device to complete." ; do
+				sleep 120
+			   done
+		       else
+			   echo "Read verification error!" ;
+		       fi
+		   else
+			echo "Error re-reading Serial Flash!" ;
+		   fi
+	       fi
+	   else
+	       echo "Error reading boot loader from Serial Flash!" ;
+	   fi
+      else
+	   echo "Error initializing Serial Flash!" ;
+      fi ;
+else
+     echo "U-Boot upgrade image not found on SD card." ;
+fi

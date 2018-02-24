@@ -1,0 +1,12 @@
+if TARGET_OPENGLOW_STD
+
+config SYS_BOARD
+	default "openglow_std"
+
+config SYS_VENDOR
+	default "openglow"
+
+config SYS_CONFIG_NAME
+	default "openglow_std"
+
+endif
