@@ -27,12 +27,12 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
 
-	iomuxc_imx6q_nitrogen6_som2: iomuxc-imx6q-nitrogen6-som2grp {
+	iomuxc_openglow_std: iomuxc-openglow-stdgrp {
 		status = "okay";
 	};
 };
 
-&iomuxc_imx6q_nitrogen6_som2 {
+&iomuxc_openglow_std {
 	pinctrl_bt_rfkill: bt-rfkillgrp {
 		fsl,pins = <
 #define GP_BT_RFKILL_RESET	<&gpio6 16 GPIO_ACTIVE_LOW>
@@ -40,6 +40,7 @@
 		>;
 	};
 
+	/* SOM on-board Serial Flash */
 	pinctrl_ecspi1: ecspi1grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D17__ECSPI1_MISO		0x100b1
@@ -50,17 +51,19 @@
 		>;
 	};
 
+	/* Stepper Drivers SPI Bus */
 	pinctrl_ecspi2: ecspi2grp {
 		fsl,pins = <
 			MX6QDL_PAD_CSI0_DAT10__ECSPI2_MISO	0x100b1
 			MX6QDL_PAD_CSI0_DAT9__ECSPI2_MOSI	0x100b1
 			MX6QDL_PAD_CSI0_DAT8__ECSPI2_SCLK	0x000b1
-			MX6QDL_PAD_EIM_RW__ECSPI2_SS0	0x0b0b1
-			MX6QDL_PAD_EIM_D24__ECSPI2_SS2	0x0b0b1
-			MX6QDL_PAD_EIM_D25__ECSPI2_SS3	0x0b0b1
+			MX6QDL_PAD_EIM_RW__ECSPI2_SS0	0x0b0b1 /* X-Stepper */
+			MX6QDL_PAD_EIM_D24__ECSPI2_SS2	0x0b0b1 /* Y1-Stepper */
+			MX6QDL_PAD_EIM_D25__ECSPI2_SS3	0x0b0b1 /* Y2-Stepper */
 		>;
 	};
 
+	/* Not sure what this if for, of if it is even needed */
 	pinctrl_hog: hoggrp {
 		fsl,pins = <
 #define GP_HOG_NC	<&gpio7 1 GPIO_ACTIVE_LOW>
@@ -68,6 +71,7 @@
 		>;
 	};
 
+	/* PIC I2C Bus */
 	pinctrl_i2c1: i2c1grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D21__I2C1_SCL		0x4001b8b1
@@ -75,15 +79,7 @@
 		>;
 	};
 
-	pinctrl_i2c1_1: i2c1_1grp {
-		fsl,pins = <
-#define GP_I2C1_SCL	<&gpio3 21 GPIO_ACTIVE_HIGH>
-			MX6QDL_PAD_EIM_D21__GPIO3_IO21		0x4001b8b1
-#define GP_I2C1_SDA	<&gpio3 28 GPIO_ACTIVE_HIGH>
-			MX6QDL_PAD_EIM_D28__GPIO3_IO28		0x4001b8b1
-		>;
-	};
-
+	/* Interconnect PCB Bus */
 	pinctrl_i2c2: i2c2grp {
 		fsl,pins = <
 			MX6QDL_PAD_KEY_COL3__I2C2_SCL		0x4001b8b1
@@ -91,15 +87,7 @@
 		>;
 	};
 
-	pinctrl_i2c2_1: i2c2_1grp {
-		fsl,pins = <
-#define GP_I2C2_SCL	<&gpio4 12 GPIO_ACTIVE_HIGH>
-			MX6QDL_PAD_KEY_COL3__GPIO4_IO12		0x4001b8b1
-#define GP_I2C2_SDA	<&gpio4 13 GPIO_ACTIVE_HIGH>
-			MX6QDL_PAD_KEY_ROW3__GPIO4_IO13		0x4001b8b1
-		>;
-	};
-
+	/* Lid PCB Bus */
 	pinctrl_i2c3: i2c3grp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_5__I2C3_SCL		0x4001b8b1
@@ -107,43 +95,28 @@
 		>;
 	};
 
-	pinctrl_i2c3_1: i2c3_1grp {
-		fsl,pins = <
-#define GP_I2C3_SCL	<&gpio1 5 GPIO_ACTIVE_HIGH>
-			MX6QDL_PAD_GPIO_5__GPIO1_IO05		0x4001b8b1
-#define GP_I2C3_SDA	<&gpio7 11 GPIO_ACTIVE_HIGH>
-			MX6QDL_PAD_GPIO_16__GPIO7_IO11		0x4001b8b1
-		>;
-	};
-
+	/* EXH_FAN_PWM */
 	pinctrl_pwm1: pwm1grp {
-		/* EXHAUST FAN PWM */
 		fsl,pins = <
 			MX6QDL_PAD_SD1_DAT3__PWM1_OUT		0x030b1
 		>;
 	};
 
+	/* HV_PWM */
 	pinctrl_pwm3: pwm3grp {
-		/* HV PWM */
 		fsl,pins = <
 			MX6QDL_PAD_SD1_DAT1__PWM3_OUT		0x030b1
 		>;
 	};
 
+	/* INTK_FAN_PWM */
 	pinctrl_pwm4: pwm4grp {
-		/* INTAKE FAN PWM */
 		fsl,pins = <
 			MX6QDL_PAD_SD1_CMD__PWM4_OUT		0x030b1
 		>;
 	};
 
-	pinctrl_reg_usbotg_vbus: reg-usbotg-vbusgrp {
-		fsl,pins = <
-#define GP_REG_USBOTG	<&gpio3 22 GPIO_ACTIVE_HIGH>
-			MX6QDL_PAD_EIM_D22__GPIO3_IO22		0x030b0
-		>;
-	};
-
+	/* WL_EN */
 	pinctrl_reg_wlan_en: reg-wlan-engrp {
 		fsl,pins = <
 #define GP_REG_WLAN_EN	<&gpio6 15 GPIO_ACTIVE_HIGH>
@@ -151,6 +124,7 @@
 		>;
 	};
 
+	/* USB Console TTYMXC0 */
 	pinctrl_uart1: uart1grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD3_DAT7__UART1_TX_DATA	0x1b0b1
@@ -158,20 +132,33 @@
 		>;
 	};
 
-	pinctrl_usbh1: usbh1grp {
+	/* USB HOST 1 */
+	pinctrl_usbhst1: usbhst1grp {
 		fsl,pins = <
-#define GP_USBH1_HUB_RESET	<&gpio7 12 GPIO_ACTIVE_LOW>
-			MX6QDL_PAD_GPIO_17__GPIO7_IO12		0x030b0
+			MX6QDL_PAD_EIM_D30__USB_H1_OC		0x1b0b0 /* USB_HOST_OC */
 		>;
 	};
-
+	pinctrl_reg_usbhst1_vbus: reg-usbhst1-vbusgrp {
+		fsl,pins = <
+#define GP_REG_USBHST1	<MX6QDL_PAD_GPIO_0__USB_H1_PWR GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_GPIO_0__USB_H1_PWR		0x030b0
+		>;
+	};
+	/* USB OTG */
 	pinctrl_usbotg: usbotggrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_1__USB_OTG_ID		0x17059
 			MX6QDL_PAD_KEY_COL4__USB_OTG_OC		0x1b0b0
 		>;
 	};
+	pinctrl_reg_usbotg_vbus: reg-usbotg-vbusgrp {
+		fsl,pins = <
+#define GP_REG_USBOTG	<MX6QDL_PAD_EIM_D22__USB_OTG_PWR GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_EIM_D22__USB_OTG_PWR		0x030b0
+		>;
+	};
 
+	/* Wireless module */
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD2_CLK__SD2_CLK		0x10071
@@ -208,6 +195,7 @@
 		>;
 	};
 
+	/* /dev/mmcblk0 - SD Card Slot */
 	pinctrl_usdhc3: usdhc3grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD3_CLK__SD3_CLK		0x10071
@@ -220,7 +208,8 @@
 			MX6QDL_PAD_SD3_DAT5__GPIO7_IO00		0x1b0b0
 		>;
 	};
-
+	
+	/* /dev/mmcblk1 - SOM on-board MMC */
 	pinctrl_usdhc4: usdhc4grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD4_CLK__SD4_CLK		0x10059
@@ -237,6 +226,25 @@
 			MX6QDL_PAD_NANDF_D0__GPIO2_IO00		0x1b0b0
 		>;
 	};
+	
+	/* GPIO - Power */
+	pinctrl_gpio_power: gpio-powergrp {
+		fsl,pins = <
+#define GP_PWR_12V_EN		<&gpio2 6 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_NANDF_D6__GPIO2_IO06		0x030b0 /* 12VDC_EN */
+#define GP_PWR_12V_OK		<&gpio1 9 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_GPIO_9__GPIO1_IO09		0x030b0 /* 12VDC_OK */
+#define GP_PWR_40V_EN		<&gpio2 3 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_NANDF_D3__GPIO2_IO03		0x030b0 /* 40VDC_EN */
+#define GP_PWR_40V_OK		<&gpio1 2 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_GPIO_2__GPIO1_IO02		0x030b0 /* 40VDC_OK */
+#define GP_PWR_HV_PFC_STOP	<&gpio2 1 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_NANDF_D1__GPIO2_IO01		0x030b0 /* HV_PFC_STOP - Unknown Function */
+#define GP_PWR_HV_LINE		<&gpio2 4 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_NANDF_D4__GPIO2_IO04		0x030b0 /* HV_LINE_??? - Unknown Function */
+		>;
+	};
+
 };
 
 / {
@@ -311,28 +319,36 @@
 			regulator-always-on;
 		};
 
-		reg_usbotg_vbus: regulator@3 {
+		reg_wlan_en: regulator@3 {
 			compatible = "regulator-fixed";
 			reg = <3>;
-			pinctrl-names = "default";
-			pinctrl-0 = <&pinctrl_reg_usbotg_vbus>;
-			regulator-name = "usb_otg_vbus";
-			regulator-min-microvolt = <5000000>;
-			regulator-max-microvolt = <5000000>;
-			gpio = GP_REG_USBOTG;
-			enable-active-high;
-		};
-
-		reg_wlan_en: regulator@4 {
-			compatible = "regulator-fixed";
-			reg = <4>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_reg_wlan_en>;
 			regulator-name = "wlan-en";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
-			gpio = GP_REG_WLAN_EN;
-			startup-delay-us = <70000>;
+			regulator-always-on;
+		};
+		
+		reg_usbhst1_vbus: regulator@4 {
+			compatible = "regulator-fixed";
+			reg = <4>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&pinctrl_reg_usbhst1_vbus>;
+			regulator-name = "usb_host_vbus";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			enable-active-high;
+		};
+		
+		reg_usbotg_vbus: regulator@5 {
+			compatible = "regulator-fixed";
+			reg = <5>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&pinctrl_reg_usbotg_vbus>;
+			regulator-name = "usb_otg_vbus";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
 			enable-active-high;
 		};
 	};
@@ -413,36 +429,22 @@
 
 &i2c1 {
 	clock-frequency = <100000>;
-	pinctrl-names = "default", "gpio";
+	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
-	pinctrl-1 = <&pinctrl_i2c1_1>;
-	scl-gpios = GP_I2C1_SCL;
-	sda-gpios = GP_I2C1_SDA;
 	status = "okay";
 };
 
 &i2c2 {
 	clock-frequency = <100000>;
-	pinctrl-names = "default", "gpio";
+	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
-	pinctrl-1 = <&pinctrl_i2c2_1>;
-	scl-gpios = GP_I2C2_SCL;
-	sda-gpios = GP_I2C2_SDA;
 	status = "okay";
-
-	hdmi: edid@50 {
-		compatible = "fsl,imx6-hdmi-i2c";
-		reg = <0x50>;
-	};
 };
 
 &i2c3 {
 	clock-frequency = <100000>;
-	pinctrl-names = "default", "gpio";
+	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c3>;
-	pinctrl-1 = <&pinctrl_i2c3_1>;
-	scl-gpios = GP_I2C3_SCL;
-	sda-gpios = GP_I2C3_SDA;
 	status = "okay";
 };
 
@@ -481,10 +483,9 @@
 };
 
 &usbh1 {
+	vbus-supply = <&reg_usbhst1_vbus>;
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_usbh1>;
-	disable-over-current;
-	reset-gpios = GP_USBH1_HUB_RESET;
+	pinctrl-0 = <&pinctrl_usbhst1>;
 	status = "okay";
 };
 
@@ -492,7 +493,6 @@
 	vbus-supply = <&reg_usbotg_vbus>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usbotg>;
-	disable-over-current;
 	status = "okay";
 };
 
