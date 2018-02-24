@@ -227,6 +227,42 @@
 		>;
 	};
 	
+	/* GPIO - Control */
+	pinctrl_gpio_control: gpio-controlgrp {
+		fsl,pins = <
+#define GP_CTRL_BEAM_SENS	<&gpio3 3 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_EIM_DA3__GPIO3_IO03		0x030b0 /* BEAM_SENS */
+#define GP_CTRL_HEAD		<&gpio3 1 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_EIM_DA1__GPIO3_IO01		0x030b0 /* HEAD_??? */
+#define GP_CTRL_LASER_EN	<&gpio3 29 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_EIM_D29__GPIO3_IO29		0x030b0 /* LASER_EN */
+#define GP_CTRL_BTN			<&gpio3 31 GPIO_ACTIVE_LOW>
+			MX6QDL_PAD_EIM_D31__GPIO3_IO31		0x1b0b0 /* nBUTTON */
+#define GP_CTRL_DOORS		<&gpio3 10 GPIO_ACTIVE_LOW>
+			MX6QDL_PAD_EIM_DA10__GPIO3_IO10		0x1b0b0 /* nDOORS_OK */
+#define GP_CTRL_ILOCK		<&gpio3 11 GPIO_ACTIVE_LOW>
+			MX6QDL_PAD_EIM_DA11__GPIO3_IO11		0x1b0b0 /* nINTLOCK_OK */
+#define GP_CTRL_LID1		<&gpio3 9 GPIO_ACTIVE_LOW>
+			MX6QDL_PAD_EIM_DA9__GPIO3_IO09		0x1b0b0 /* nLID_SW1 */
+#define GP_CTRL_LID2		<&gpio2 7 GPIO_ACTIVE_LOW>
+			MX6QDL_PAD_NANDF_D7__GPIO2_IO07		0x1b0b0 /* nLID_SW2 */
+#define GP_CTRL_SAFE_FIRE	<&gpio3 0 GPIO_ACTIVE_LOW>
+			MX6QDL_PAD_EIM_DA0__GPIO3_IO00		0x1b0b0 /* nSAFE_TO_FIRE */
+#define GP_CTRL_RUN_PRGM	<&gpio3 4 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_EIM_DA4__GPIO3_IO04		0x030b0 /* RUN_PRGM */
+		>;
+	};
+
+	/* GPIO - Misc */
+	pinctrl_gpio_misc: gpio-miscgrp {
+		fsl,pins = <
+#define GP_MISC_TP90		<&gpio5 19 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_CSI0_MCLK__GPIO5_IO19		0x030b0 /* TP90 */
+#define GP_MISC_TP91		<&gpio5 20 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20		0x030b0 /* TP91 */
+		>;
+	};
+
 	/* GPIO - Power */
 	pinctrl_gpio_power: gpio-powergrp {
 		fsl,pins = <
@@ -242,6 +278,48 @@
 			MX6QDL_PAD_NANDF_D1__GPIO2_IO01		0x030b0 /* HV_PFC_STOP - Unknown Function */
 #define GP_PWR_HV_LINE		<&gpio2 4 GPIO_ACTIVE_HIGH>
 			MX6QDL_PAD_NANDF_D4__GPIO2_IO04		0x030b0 /* HV_LINE_??? - Unknown Function */
+		>;
+	};
+	
+	/* GPIO - STEP/DIR */
+	pinctrl_gpio_stepdir: gpio-stepdirgrp {
+		fsl,pins = <
+#define GP_STPD_XY_EN		<&gpio5 31 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_CSI0_DAT13__GPIO5_IO31	0x030b0 /* XY_STEP_EN */
+#define GP_STPD_X_DIR		<&gpio5 22 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_CSI0_DAT4__GPIO5_IO22	0x030b0 /* X_DIR */
+#define GP_STPD_X_STEP		<&gpio5 30 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30	0x030b0 /* X_STEP */
+#define GP_STPD_Y1_DIR		<&gpio5 18 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_CSI0_PIXCLK__GPIO5_IO18	0x030b0 /* Y1_DIR */
+#define GP_STPD_Y1_STEP		<&gpio5 21 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21	0x030b0 /* Y1_STEP */
+#define GP_STPD_Y2_DIR		<&gpio7 12 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_GPIO_17__GPIO7_IO12		0x030b0 /* Y2_DIR */
+#define GP_STPD_Y2_STEP		<&gpio5 23 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_CSI0_DAT5__GPIO5_IO23	0x030b0 /* Y2_STEP */
+#define GP_STPD_Z_DIR		<&gpio1 3 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_GPIO_3__GPIO1_IO03		0x030b0 /* Z_DIR */
+#define GP_STPD_Z_STEP		<&gpio7 13 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_GPIO_18__GPIO7_IO13		0x030b0 /* Z_STEP */
+		>;
+	};
+
+	/* GPIO - Thermal */
+	pinctrl_gpio_thermal: gpio-thermalgrp {
+		fsl,pins = <
+#define GP_THRM_EXH_FAN1		<&gpio3 20 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_EIM_D20__GPIO3_IO20		0x030b0 /* EXH_FAN_SENS */
+#define GP_THRM_INTK_FAN1		<&gpio6 11 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_NANDF_CS0__GPIO6_IO11	0x030b0 /* INTK_FAN1_SENS */
+#define GP_THRM_INTK_FAN2		<&gpio2 2 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_NANDF_D2__GPIO2_IO02		0x030b0 /* INTK_FAN2_SENS */
+#define GP_THRM_TEC_EN			<&gpio3 5 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_EIM_DA5__GPIO3_IO05		0x030b0 /* TEC_EN */
+#define GP_THRM_WTR_PMP_EN		<&gpio2 23 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_EIM_CS0__GPIO2_IO23		0x030b0 /* WTR_PMP_EN */
+#define GP_THRM_WTR_SENS_PWR	<&gpio2 25 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_EIM_OE__GPIO2_IO25		0x030b0 /* WTR_SENS_PWR */
 		>;
 	};
 
@@ -351,6 +429,8 @@
 			regulator-max-microvolt = <5000000>;
 			enable-active-high;
 		};
+
+
 	};
 
 	v4l2_cap_0 {
