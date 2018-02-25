@@ -415,7 +415,9 @@
 			regulator-name = "wlan-en";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
-			regulator-always-on;
+			gpio = GP_REG_WLAN_EN;
+			startup-delay-us = <70000>;
+			enable-active-high;
 		};
 		
 		reg_usbhst1_vbus: regulator@4 {
