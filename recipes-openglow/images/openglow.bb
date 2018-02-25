@@ -11,6 +11,9 @@ IMAGE_INSTALL = " \
 	i2c-tools \
 	u-boot-fw-utils \
 	nano \
+	python \
+	python3 \
+	python3-spidev \
 	wpa-supplicant \
 "
 
