@@ -150,8 +150,8 @@
 	};
 	pinctrl_reg_usbhst1_vbus: reg-usbhst1-vbusgrp {
 		fsl,pins = <
-#define GP_REG_USBHST1	<MX6QDL_PAD_GPIO_0__USB_H1_PWR GPIO_ACTIVE_HIGH>
-			MX6QDL_PAD_GPIO_0__USB_H1_PWR		0x030b0
+#define GP_REG_USBHST1	<&gpio1 0 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_GPIO_0__GPIO1_IO00		0x030b0
 		>;
 	};
 	/* USB OTG */
@@ -163,8 +163,8 @@
 	};
 	pinctrl_reg_usbotg_vbus: reg-usbotg-vbusgrp {
 		fsl,pins = <
-#define GP_REG_USBOTG	<MX6QDL_PAD_EIM_D22__USB_OTG_PWR GPIO_ACTIVE_HIGH>
-			MX6QDL_PAD_EIM_D22__USB_OTG_PWR		0x030b0
+#define GP_REG_USBOTG	<&gpio3 22 GPIO_ACTIVE_HIGH>
+			MX6QDL_PAD_EIM_D22__GPIO3_IO22		0x030b0
 		>;
 	};
 
@@ -428,6 +428,7 @@
 			regulator-name = "usb_host_vbus";
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
+			gpio = GP_REG_USBHST1;
 			enable-active-high;
 		};
 		
@@ -439,6 +440,7 @@
 			regulator-name = "usb_otg_vbus";
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
+			gpio = GP_REG_USBOTG;
 			enable-active-high;
 		};
 
