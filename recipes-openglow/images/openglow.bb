@@ -17,5 +17,4 @@ IMAGE_INSTALL = " \
 	wpa-supplicant \
 "
 
-IMAGE_FEATURES += ""
-
+IMAGE_FEATURES += " ssh-server-dropbear "
