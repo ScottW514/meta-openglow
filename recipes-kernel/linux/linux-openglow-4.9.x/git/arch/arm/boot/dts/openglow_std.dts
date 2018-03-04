@@ -57,9 +57,6 @@
 			MX6QDL_PAD_CSI0_DAT10__ECSPI2_MISO	0x100b1
 			MX6QDL_PAD_CSI0_DAT9__ECSPI2_MOSI	0x100b1
 			MX6QDL_PAD_CSI0_DAT8__ECSPI2_SCLK	0x000b1
-			MX6QDL_PAD_EIM_RW__ECSPI2_SS0		0x0b0b1 /* X-Stepper */
-			MX6QDL_PAD_EIM_D24__ECSPI2_SS2		0x0b0b1 /* Y1-Stepper */
-			MX6QDL_PAD_EIM_D25__ECSPI2_SS3		0x0b0b1 /* Y2-Stepper */
 		>;
 	};
 	pinctrl_ecspi2_cs0: ecspi2_cs0grp {
@@ -236,7 +233,7 @@
 			MX6QDL_PAD_SD3_DAT5__GPIO7_IO00		0x1b0b0
 		>;
 	};
-	
+
 	/* uSDHC4 - /dev/mmcblk1 - SOM on-board MMC */
 	pinctrl_usdhc4: usdhc4grp {
 		fsl,pins = <
@@ -254,7 +251,7 @@
 			MX6QDL_PAD_NANDF_D0__GPIO2_IO00		0x1b0b0
 		>;
 	};
-	
+
 	/* GPIO - Control */
 	pinctrl_gpio_control: gpio-controlgrp {
 		fsl,pins = <
@@ -308,7 +305,7 @@
 			MX6QDL_PAD_NANDF_D4__GPIO2_IO04		0x030b0 /* HV_LINE_??? - Unknown Function */
 		>;
 	};
-	
+
 	/* GPIO - STEP/DIR */
 	pinctrl_gpio_stepdir: gpio-stepdirgrp {
 		fsl,pins = <
@@ -394,14 +391,6 @@
 		reg = <0x10000000 0xeffffc00>;
 	};
 
-	mipi_mclk: mipi_mclk {
-		compatible = "pwm-clock";
-		#clock-cells = <0>;
-		clock-frequency = <22000000>;
-		clock-output-names = "mipi_mclk";
-		pwms = <&pwm3 0 45>; /* 1 / 45 ns = 22 MHz */
-	};
-
 	regulators {
 		compatible = "simple-bus";
 		#address-cells = <1>;
@@ -437,7 +426,7 @@
 			startup-delay-us = <70000>;
 			enable-active-high;
 		};
-		
+
 		reg_usbhst1_vbus: regulator@4 {
 			compatible = "regulator-fixed";
 			reg = <4>;
@@ -449,7 +438,7 @@
 			gpio = GP_REG_USBHST1;
 			enable-active-high;
 		};
-		
+
 		reg_usbotg_vbus: regulator@5 {
 			compatible = "regulator-fixed";
 			reg = <5>;
