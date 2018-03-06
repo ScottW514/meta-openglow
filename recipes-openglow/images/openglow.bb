@@ -14,6 +14,7 @@ IMAGE_INSTALL = " \
 	python \
 	python3 \
 	python3-spidev \
+	stress-ng \
 	wpa-supplicant \
 "
 
