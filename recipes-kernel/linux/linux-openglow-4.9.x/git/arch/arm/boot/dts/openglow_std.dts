@@ -314,8 +314,6 @@ pinctrl_ecspi2: ecspi2grp {
   };
 
 	/* USB HOST 1 */
-  /* When this is removed, system freezes immediately after boot.
-     Need to track down why.  We are not using over-current detection. */
 	pinctrl_usbhst1: usbhst1grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D30__USB_H1_OC		0x1b0b0 /* USB_HOST_OC */
@@ -331,6 +329,7 @@ pinctrl_ecspi2: ecspi2grp {
 	pinctrl_usbotg: usbotggrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_1__USB_OTG_ID		0x17059
+			MX6QDL_PAD_KEY_COL4__USB_OTG_OC		0x1b0b0
 		>;
 	};
 	pinctrl_reg_usbotg_vbus: reg-usbotg-vbusgrp {
