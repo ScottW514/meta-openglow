@@ -67,7 +67,7 @@
 
 &iomuxc {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_hog>;
+	pinctrl-0 = <&iomuxc_openglow_std>;
 
 	iomuxc_openglow_std: iomuxc-openglow-stdgrp {
 		status = "okay";
@@ -242,14 +242,6 @@ pinctrl_ecspi2: ecspi2grp {
       >;
   };
 
-  /* Not sure what this if for, or if it is even needed */
-  pinctrl_hog: hoggrp {
-      fsl,pins = <
-#define GP_HOG_NC   <&gpio7 1 GPIO_ACTIVE_LOW>
-          MX6QDL_PAD_SD3_DAT4__GPIO7_IO01     (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
-      >;
-  };
-
   /* PIC I2C Bus */
   pinctrl_i2c1: i2c1grp {
       fsl,pins = <
@@ -322,6 +314,8 @@ pinctrl_ecspi2: ecspi2grp {
   };
 
 	/* USB HOST 1 */
+  /* When this is removed, system freezes immediately after boot.
+     Need to track down why.  We are not using over-current detection. */
 	pinctrl_usbhst1: usbhst1grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D30__USB_H1_OC		0x1b0b0 /* USB_HOST_OC */
@@ -337,7 +331,6 @@ pinctrl_ecspi2: ecspi2grp {
 	pinctrl_usbotg: usbotggrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_1__USB_OTG_ID		0x17059
-			MX6QDL_PAD_KEY_COL4__USB_OTG_OC		0x1b0b0
 		>;
 	};
 	pinctrl_reg_usbotg_vbus: reg-usbotg-vbusgrp {
@@ -419,11 +412,9 @@ pinctrl_ecspi2: ecspi2grp {
 
 / {
 	aliases {
-		fb_hdmi = &fb_hdmi;
 		mmc0 = &usdhc3;
 		mmc1 = &usdhc4;
 		mmc2 = &usdhc2;
-		mxcfb3 = &fb_hdmi;
 	};
 
 	bt_rfkill {
@@ -441,17 +432,6 @@ pinctrl_ecspi2: ecspi2grp {
 			#clock-cells = <0>;
 			clock-frequency = <24000000>;
 		};
-	};
-
-	fb_hdmi: fb@3 {
-		compatible = "fsl,mxc_sdc_fb";
-		disp_dev = "hdmi";
-		interface_pix_fmt = "RGB24";
-		mode_str ="1280x720M@60";
-		default_bpp = <32>;
-		int_clk = <0>;
-		late_init = <0>;
-		status = "disabled";
 	};
 
   gpio-aux {
@@ -673,18 +653,6 @@ pinctrl_ecspi2: ecspi2grp {
 		spi-max-frequency = <2000000>;
 		reg = <2>;
 	};
-};
-
-&hdmi_core {
-	ipu_id = <1>;
-	disp_id = <0>;
-	status = "okay";
-};
-
-&hdmi_video {
-	fsl,phy_reg_vlev = <0x0294>;
-	fsl,phy_reg_cksymtx = <0x800d>;
-	status = "okay";
 };
 
 &i2c1 {
