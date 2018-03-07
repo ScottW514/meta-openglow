@@ -11,6 +11,7 @@ IMAGE_INSTALL = " \
 	i2c-tools \
 	u-boot-fw-utils \
 	nano \
+	openglow-os-tweaks \
 	python \
 	python3 \
 	python3-spidev \
