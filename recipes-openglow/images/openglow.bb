@@ -14,6 +14,7 @@ IMAGE_INSTALL = " \
 	openglow-os-tweaks \
 	python \
 	python3 \
+	python3-smbus \
 	python3-spidev \
 	stress-ng \
 	wpa-supplicant \
