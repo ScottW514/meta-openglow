@@ -12,6 +12,9 @@ IMAGE_INSTALL = " \
 	u-boot-fw-utils \
 	nano \
 	openglow-os-tweaks \
+	openssh \
+	openssh-sftp \
+	openssh-sftp-server \
 	python \
 	python3 \
 	python3-smbus \
@@ -20,4 +23,4 @@ IMAGE_INSTALL = " \
 	wpa-supplicant \
 "
 
-IMAGE_FEATURES += " ssh-server-dropbear "
+IMAGE_FEATURES += " ssh-server-openssh "

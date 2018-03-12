@@ -14,7 +14,7 @@
  /* PAD Control Definitions
   *
   * Be sure to check IMX6 DQ Reference Manual to verify each
-  * PAD's actual capability (i.e. GPIO00 - See Ch 36.4.376).
+  * PADs actual capability (i.e. GPIO00 - See Ch 36.4.376).
   * PAD Operating frequency is dependent on many factors (See Ch 28.4.2.3)
   *
   * For a better explanation, see Freescale AN5078
