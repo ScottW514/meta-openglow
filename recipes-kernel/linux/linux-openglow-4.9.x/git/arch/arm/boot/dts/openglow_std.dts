@@ -228,17 +228,17 @@ pinctrl_ecspi2: ecspi2grp {
   pinctrl_gpio_thermal: gpio-thermalgrp {
       fsl,pins = <
 #define GP_THRM_EXH_FAN1        <&gpio3 20 GPIO_ACTIVE_HIGH> /* EXH_FAN_SENS - IN */
-          MX6QDL_PAD_EIM_D20__GPIO3_IO20     (PUE | PKE)
+          MX6QDL_PAD_EIM_D20__GPIO3_IO20     (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_LOW)
 #define GP_THRM_INTK_FAN1       <&gpio6 11 GPIO_ACTIVE_HIGH> /* INTK_FAN1_SENS - IN */
-          MX6QDL_PAD_NANDF_CS0__GPIO6_IO11   (PUE | PKE)
+          MX6QDL_PAD_NANDF_CS0__GPIO6_IO11   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_LOW)
 #define GP_THRM_INTK_FAN2       <&gpio2 2 GPIO_ACTIVE_HIGH> /* INTK_FAN2_SENS - IN */
-          MX6QDL_PAD_NANDF_D2__GPIO2_IO02    (PUE | PKE)
+          MX6QDL_PAD_NANDF_D2__GPIO2_IO02    (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_LOW)
 #define GP_THRM_TEC_EN          <&gpio3 5 GPIO_ACTIVE_HIGH> /* TEC_EN - OUT */
-          MX6QDL_PAD_EIM_DA5__GPIO3_IO05     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+          MX6QDL_PAD_EIM_DA5__GPIO3_IO05     (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_THRM_WTR_PMP_EN      <&gpio2 23 GPIO_ACTIVE_HIGH> /* WTR_PMP_EN - OUT */
-          MX6QDL_PAD_EIM_CS0__GPIO2_IO23     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+          MX6QDL_PAD_EIM_CS0__GPIO2_IO23     (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_THRM_WTR_SENS_PWR    <&gpio2 25 GPIO_ACTIVE_HIGH> /* WTR_SENS_PWR - OUT */
-          MX6QDL_PAD_EIM_OE__GPIO2_IO25      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+          MX6QDL_PAD_EIM_OE__GPIO2_IO25      (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
       >;
   };
 
@@ -433,7 +433,11 @@ pinctrl_ecspi2: ecspi2grp {
 		};
 	};
 
-  gpio-aux {
+	memory {
+		reg = <0x10000000 0xeffffc00>;
+	};
+
+  openglow-aux {
     compatible = "openglow,aux";
     pinctrl-names = "default";
     pinctrl-0 = <&pinctrl_gpio_aux>;
@@ -455,7 +459,7 @@ pinctrl_ecspi2: ecspi2grp {
     aux16-gpio = GP_AUX_IO_16;
   };
 
-  gpio-control {
+  openglow-control {
 		compatible = "openglow,control";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_control>;
@@ -471,7 +475,7 @@ pinctrl_ecspi2: ecspi2grp {
     ctrl-run-prgm-gpio = GP_CTRL_RUN_PRGM;
 	};
 
-	gpio-misc {
+	openglow-misc {
 		compatible = "openglow,misc";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_misc>;
@@ -479,7 +483,7 @@ pinctrl_ecspi2: ecspi2grp {
     misc-tp91-gpio = GP_MISC_TP91;
   };
 
-	gpio-power {
+	openglow-power {
 		compatible = "openglow,power";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_power>;
@@ -491,7 +495,7 @@ pinctrl_ecspi2: ecspi2grp {
     power-hw-line-gpio = GP_PWR_HV_LINE;
   };
 
-	gpio-stepdir {
+	openglow-stepdir {
 		compatible = "openglow,stepdir";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_stepdir>;
@@ -506,23 +510,21 @@ pinctrl_ecspi2: ecspi2grp {
     stepdir-z-step-gpio = GP_STPD_Z_STEP;
   };
 
-	gpio-thermal {
+  openglow-thermal {
 		compatible = "openglow,thermal";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_gpio_thermal>;
-    thermal-exh-fan-gpio = GP_THRM_EXH_FAN1;
-    thermal-intk-fan1-gpio = GP_THRM_INTK_FAN1;
-    thermal-intk-fan2-gpio = GP_THRM_INTK_FAN2;
-    thermal-tec-en-gpio = GP_THRM_TEC_EN;
-    thermal-wtr-pmp-en-gpio = GP_THRM_WTR_PMP_EN;
-    thermal-wtr-sens-pwr-gpio = GP_THRM_WTR_SENS_PWR;
+		pinctrl-names     = "default";
+		pinctrl-0         = <&pinctrl_gpio_thermal>;
+    exhaust-tach-gpio = GP_THRM_EXH_FAN1;
+    intake1-tach-gpio = GP_THRM_INTK_FAN1;
+    intake2-tach-gpio = GP_THRM_INTK_FAN2;
+    tec-gpio          = GP_THRM_TEC_EN;
+    water-pump-gpio   = GP_THRM_WTR_PMP_EN;
+    water-heater-gpio = GP_THRM_WTR_SENS_PWR;
+    intake-pwm        = <2>;
+    exhaust-pwm       = <0>;
   };
 
-	memory {
-		reg = <0x10000000 0xeffffc00>;
-	};
-
-	regulators {
+  regulators {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <0>;
