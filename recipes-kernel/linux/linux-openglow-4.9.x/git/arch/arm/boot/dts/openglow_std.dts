@@ -661,6 +661,11 @@ pinctrl_ecspi2: ecspi2grp {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
+
+  openglow_pic@8 {
+		reg = <8>;
+		compatible = "openglow,pic";
+	};
 };
 
 &i2c2 {

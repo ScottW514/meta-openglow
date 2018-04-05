@@ -4,7 +4,7 @@
  * I/O port and PWM configuration.
  *
  * Copyright (C) 2018 Scott Wiederhold <s.e.wiederhold@gmail.com>
- * Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
+ * Portions Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

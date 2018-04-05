@@ -8,11 +8,17 @@ SRC_URI = "file://src/uapi/openglow.h \
            file://src/device_attr.h \
            file://src/io.c \
            file://src/io.h \
+           file://src/ledtrig_smooth.c \
            file://src/notifiers.h \
            file://src/openglow.c \
-           file://src/thermal_private.h \
+           file://src/pic.c \
+           file://src/pic.h \
+           file://src/pic_api.c \
+           file://src/pic_leds.c \
+           file://src/pic_private.h \
            file://src/thermal.c \
            file://src/thermal.h \
+           file://src/thermal_private.h \
            file://Makefile \
            file://LICENSE \
 "

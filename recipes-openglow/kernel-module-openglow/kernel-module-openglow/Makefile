@@ -4,7 +4,7 @@ SRC_DIR = ./src
 
 KERNEL_SRC ?= /usr/src/kernel
 
-SRC = io.c thermal.c openglow.c
+SRC = io.c ledtrig_smooth.c openglow.c pic.c pic_api.c pic_leds.c thermal.c 
 
 ccflags-y += -I$(PWD) -Wno-unknown-pragmas
 
