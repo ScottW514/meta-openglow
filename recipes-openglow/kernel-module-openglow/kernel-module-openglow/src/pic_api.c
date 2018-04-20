@@ -23,7 +23,7 @@
 
 #include "pic_private.h"
 #include "device_attr.h"
-#include "uapi/openglow.h"
+#include "openglow.h"
 
 static ssize_t pic_read_register_ascii(struct device *dev, enum pic_register reg, char *buf)
 {

@@ -21,7 +21,7 @@
 #include "thermal_private.h"
 #include "device_attr.h"
 #include "io.h"
-#include "uapi/openglow.h"
+#include "openglow.h"
 #include <linux/interrupt.h>
 
 /** Interval between fan speed measurements */

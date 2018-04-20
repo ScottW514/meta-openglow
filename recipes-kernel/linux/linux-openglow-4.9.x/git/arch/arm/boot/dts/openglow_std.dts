@@ -117,12 +117,12 @@ pinctrl_ecspi2: ecspi2grp {
           MX6QDL_PAD_KEY_ROW2__GPIO4_IO11    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_03        <&gpio3 12 GPIO_ACTIVE_HIGH> /* AUX_IO03 */
           MX6QDL_PAD_EIM_DA12__GPIO3_IO12    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
-#define GP_AUX_IO_04        <&gpio5 24 GPIO_ACTIVE_HIGH> /* AUX_IO04 */
-          MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
-#define GP_AUX_IO_05        <&gpio5 25 GPIO_ACTIVE_HIGH> /* AUX_IO05 */
-          MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
-#define GP_AUX_IO_06        <&gpio5 29 GPIO_ACTIVE_HIGH> /* AUX_IO06 */
-          MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+#define GP_AUX_IO_04        <&gpio7 12 GPIO_ACTIVE_HIGH> /* AUX_IO04 */
+          MX6QDL_PAD_GPIO_17__GPIO7_IO12   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+#define GP_AUX_IO_05        <&gpio3 3 GPIO_ACTIVE_HIGH> /* AUX_IO05 */
+          MX6QDL_PAD_EIM_DA3__GPIO3_IO03   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+#define GP_AUX_IO_06        <&gpio3 29 GPIO_ACTIVE_HIGH> /* AUX_IO06 */
+          MX6QDL_PAD_EIM_D29__GPIO3_IO29  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_07        <&gpio6 2 GPIO_ACTIVE_HIGH>  /* AUX_IO07 */
           MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_08        <&gpio6 3 GPIO_ACTIVE_HIGH>  /* AUX_IO08 */
@@ -144,17 +144,43 @@ pinctrl_ecspi2: ecspi2grp {
 #define GP_AUX_IO_16        <&gpio3 2 GPIO_ACTIVE_HIGH>  /* AUX_IO16 */
           MX6QDL_PAD_EIM_DA2__GPIO3_IO02     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
       >;
+ };
+
+  /* OPENGLOW - CNC */
+  pinctrl_cnc: gpio-cncgrp {
+      fsl,pins = <
+#define CNC_LASER_EN    <&gpio5 29 GPIO_ACTIVE_HIGH> /* LASER_EN - OUT */
+          MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define CNC_LASER_ON_HEAD   <&gpio5 25 GPIO_ACTIVE_HIGH> /* LASER ON HEAD NOTIFICATION - OUT */
+          MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define CNC_CHARGE_PUMP <&gpio2 4 GPIO_ACTIVE_HIGH> /* LASER CHARGE PUMP */
+          MX6QDL_PAD_NANDF_D4__GPIO2_IO04   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define CNC_XY_EN       <&gpio5 31 GPIO_ACTIVE_LOW> /* XY_STEP_EN - OUT */
+          MX6QDL_PAD_CSI0_DAT13__GPIO5_IO31  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+#define CNC_X_DIR       <&gpio5 22 GPIO_ACTIVE_HIGH> /* X_DIR - OUT */
+          MX6QDL_PAD_CSI0_DAT4__GPIO5_IO22   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define CNC_X_STEP      <&gpio5 30 GPIO_ACTIVE_HIGH> /* X_STEP - OUT */
+          MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define CNC_Y1_DIR      <&gpio5 18 GPIO_ACTIVE_HIGH> /* Y1_DIR - OUT */
+          MX6QDL_PAD_CSI0_PIXCLK__GPIO5_IO18 (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define CNC_Y1_STEP     <&gpio5 21 GPIO_ACTIVE_HIGH> /* Y1_STEP - OUT */
+          MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define CNC_Y2_DIR      <&gpio5 24 GPIO_ACTIVE_HIGH> /* Y2_DIR - OUT */
+          MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define CNC_Y2_STEP     <&gpio5 23 GPIO_ACTIVE_HIGH> /* Y2_STEP - OUT */
+          MX6QDL_PAD_CSI0_DAT5__GPIO5_IO23   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define CNC_Z_DIR       <&gpio5 19 GPIO_ACTIVE_HIGH> /* Z_DIR - OUT */
+          MX6QDL_PAD_CSI0_MCLK__GPIO5_IO19      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define CNC_Z_STEP      <&gpio5 20 GPIO_ACTIVE_HIGH> /* Z_STEP - OUT */
+          MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+      >;
   };
 
   /* GPIO - Control */
   pinctrl_gpio_control: gpio-controlgrp {
       fsl,pins = <
-#define GP_CTRL_BEAM_SENS   <&gpio3 3 GPIO_ACTIVE_HIGH> /* BEAM_SENS - IN */
-          MX6QDL_PAD_EIM_DA3__GPIO3_IO03    (HYS | PUE | PKE)
-#define GP_CTRL_HEAD        <&gpio3 1 GPIO_ACTIVE_HIGH> /* HEAD_??? - IN */
-          MX6QDL_PAD_EIM_DA1__GPIO3_IO01    (HYS | PUE | PKE)
-#define GP_CTRL_LASER_EN    <&gpio3 29 GPIO_ACTIVE_HIGH> /* LASER_EN - OUT */
-          MX6QDL_PAD_EIM_D29__GPIO3_IO29    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define GP_CTRL_HEAD <&gpio3 1 GPIO_ACTIVE_HIGH> /* LASER ON HEAD - OUT */
+          MX6QDL_PAD_EIM_DA1__GPIO3_IO01    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define GP_CTRL_BTN         <&gpio3 31 GPIO_ACTIVE_LOW> /* nBUTTON - IN */
           MX6QDL_PAD_EIM_D31__GPIO3_IO31    (HYS | PUE | PKE)
 #define GP_CTRL_DOORS       <&gpio3 10 GPIO_ACTIVE_LOW> /* nDOORS_OK - IN */
@@ -175,10 +201,10 @@ pinctrl_ecspi2: ecspi2grp {
   /* GPIO - Misc */
   pinctrl_gpio_misc: gpio-miscgrp {
       fsl,pins = <
-#define GP_MISC_TP90        <&gpio5 19 GPIO_ACTIVE_HIGH> /* TP90 */
-          MX6QDL_PAD_CSI0_MCLK__GPIO5_IO19    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
-#define GP_MISC_TP91        <&gpio5 20 GPIO_ACTIVE_HIGH> /* TP91 */
-          MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20 (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+#define GP_MISC_TP90        <&gpio1 3 GPIO_ACTIVE_HIGH> /* TP90 */
+          MX6QDL_PAD_GPIO_3__GPIO1_IO03    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+#define GP_MISC_TP91        <&gpio7 13 GPIO_ACTIVE_HIGH> /* TP91 */
+          MX6QDL_PAD_GPIO_18__GPIO7_IO13 (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
       >;
   };
 
@@ -189,38 +215,18 @@ pinctrl_ecspi2: ecspi2grp {
           MX6QDL_PAD_NANDF_D6__GPIO2_IO06    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_PWR_12V_OK       <&gpio1 9 GPIO_ACTIVE_HIGH> /* 12VDC_OK - IN */
           MX6QDL_PAD_GPIO_9__GPIO1_IO09      (HYS | PUE | PKE)
+#define GP_PWR_HV_PFC_STOP  <&gpio2 1 GPIO_ACTIVE_HIGH> /* HV_PFC_STOP - Unknown Function - OUT?/IN? */
+          MX6QDL_PAD_NANDF_D1__GPIO2_IO01    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+      >;
+  };
+
+  /* GPIO - Power 40 V */
+  pinctrl_gpio_power_40v: gpio-power40vgrp {
+      fsl,pins = <
 #define GP_PWR_40V_EN       <&gpio2 3 GPIO_ACTIVE_HIGH> /* 40VDC_EN - OUT */
           MX6QDL_PAD_NANDF_D3__GPIO2_IO03    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_PWR_40V_OK       <&gpio1 2 GPIO_ACTIVE_HIGH> /* 40VDC_OK - IN */
           MX6QDL_PAD_GPIO_2__GPIO1_IO02      (HYS | PUE | PKE)
-#define GP_PWR_HV_PFC_STOP  <&gpio2 1 GPIO_ACTIVE_HIGH> /* HV_PFC_STOP - Unknown Function - OUT?/IN? */
-          MX6QDL_PAD_NANDF_D1__GPIO2_IO01    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
-#define GP_PWR_HV_LINE      <&gpio2 4 GPIO_ACTIVE_HIGH> /* HV_LINE_??? - Unknown Function - OUT?/IN? */
-          MX6QDL_PAD_NANDF_D4__GPIO2_IO04    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
-      >;
-  };
-
-  /* GPIO - STEP/DIR */
-  pinctrl_gpio_stepdir: gpio-stepdirgrp {
-      fsl,pins = <
-#define GP_STPD_XY_EN       <&gpio5 31 GPIO_ACTIVE_HIGH> /* XY_STEP_EN - OUT */
-          MX6QDL_PAD_CSI0_DAT13__GPIO5_IO31  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
-#define GP_STPD_X_DIR       <&gpio5 22 GPIO_ACTIVE_HIGH> /* X_DIR - OUT */
-          MX6QDL_PAD_CSI0_DAT4__GPIO5_IO22   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-#define GP_STPD_X_STEP      <&gpio5 30 GPIO_ACTIVE_HIGH> /* X_STEP - OUT */
-          MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-#define GP_STPD_Y1_DIR      <&gpio5 18 GPIO_ACTIVE_HIGH> /* Y1_DIR - OUT */
-          MX6QDL_PAD_CSI0_PIXCLK__GPIO5_IO18 (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-#define GP_STPD_Y1_STEP     <&gpio5 21 GPIO_ACTIVE_HIGH> /* Y1_STEP - OUT */
-          MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-#define GP_STPD_Y2_DIR      <&gpio7 12 GPIO_ACTIVE_HIGH> /* Y2_DIR - OUT */
-          MX6QDL_PAD_GPIO_17__GPIO7_IO12     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-#define GP_STPD_Y2_STEP     <&gpio5 23 GPIO_ACTIVE_HIGH> /* Y2_STEP - OUT */
-          MX6QDL_PAD_CSI0_DAT5__GPIO5_IO23   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-#define GP_STPD_Z_DIR       <&gpio1 3 GPIO_ACTIVE_HIGH> /* Z_DIR - OUT */
-          MX6QDL_PAD_GPIO_3__GPIO1_IO03      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-#define GP_STPD_Z_STEP      <&gpio7 13 GPIO_ACTIVE_HIGH> /* Z_STEP - OUT */
-          MX6QDL_PAD_GPIO_18__GPIO7_IO13     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
       >;
   };
 
@@ -459,69 +465,71 @@ pinctrl_ecspi2: ecspi2grp {
     aux16-gpio = GP_AUX_IO_16;
   };
 
-  openglow-control {
-		compatible = "openglow,control";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_gpio_control>;
-    ctrl-beam-sens-gpio = GP_CTRL_BEAM_SENS;
-    ctrl-head-gpio = GP_CTRL_HEAD;
-    ctrl-laser-en-gpio = GP_CTRL_LASER_EN;
-    ctrl-btn-gpio = GP_CTRL_BTN;
-    ctrl-doors-gpio = GP_CTRL_DOORS;
-    ctrl-ilock-gpio = GP_CTRL_ILOCK;
-    ctrl-lid1-gpio = GP_CTRL_LID1;
-    ctrl-lid2-gpio = GP_CTRL_LID2;
-    ctrl-safe-fire-gpio = GP_CTRL_SAFE_FIRE;
-    ctrl-run-prgm-gpio = GP_CTRL_RUN_PRGM;
-	};
+  openglow-cnc {
+        compatible = "openglow,cnc";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_cnc>;
+        xy-enable-gpio     = CNC_XY_EN;
+        x-step-gpio        = CNC_X_STEP;
+        x-dir-gpio         = CNC_X_DIR;
+        y1-step-gpio       = CNC_Y1_STEP;
+        y1-dir-gpio        = CNC_Y1_DIR;
+        y2-step-gpio       = CNC_Y2_STEP;
+        y2-dir-gpio        = CNC_Y2_DIR;
+        z-step-gpio        = CNC_Z_STEP;
+        z-dir-gpio         = CNC_Z_DIR;
+        laser-enable-gpio  = CNC_LASER_EN;
+        laser-on-head-gpio = CNC_LASER_ON_HEAD;
+        charge-pump-gpio   = CNC_CHARGE_PUMP;
+        laser-pwm          = <1>;
+        timer              = <&epit1>;
+        sdma-params        = <26 0xe00>; /* SDMA Channel, Script Offset */
+        };
+
+    openglow-control {
+        compatible = "openglow,control";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_gpio_control>;
+        ctrl-btn-gpio = GP_CTRL_BTN;
+        ctrl-doors-gpio = GP_CTRL_DOORS;
+        ctrl-ilock-gpio = GP_CTRL_ILOCK;
+        ctrl-lid1-gpio = GP_CTRL_LID1;
+        ctrl-lid2-gpio = GP_CTRL_LID2;
+        ctrl-safe-fire-gpio = GP_CTRL_SAFE_FIRE;
+        ctrl-run-prgm-gpio = GP_CTRL_RUN_PRGM;
+        };
 
 	openglow-misc {
 		compatible = "openglow,misc";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_misc>;
-    misc-tp90-gpio = GP_MISC_TP90;
-    misc-tp91-gpio = GP_MISC_TP91;
+        misc-tp90-gpio = GP_MISC_TP90;
+        misc-tp91-gpio = GP_MISC_TP91;
   };
 
 	openglow-power {
 		compatible = "openglow,power";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_power>;
-    power-12v-en-gpio = GP_PWR_12V_EN;
-    power-12v-ok-gpio = GP_PWR_12V_OK;
-    power-40v-en-gpio = GP_PWR_40V_EN;
-    power-40v-ok-gpio = GP_PWR_40V_OK;
-    power-hv-pfc-stop-gpio = GP_PWR_HV_PFC_STOP;
-    power-hw-line-gpio = GP_PWR_HV_LINE;
-  };
-
-	openglow-stepdir {
-		compatible = "openglow,stepdir";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_gpio_stepdir>;
-    stepdir-xy-en-gpio = GP_STPD_XY_EN;
-    stepdir-x-dir-gpio = GP_STPD_X_DIR;
-    stepdir-x-step-gpio = GP_STPD_X_STEP;
-    stepdir-y1-dir-gpio = GP_STPD_Y1_DIR;
-    stepdir-y1-step-gpio = GP_STPD_Y1_STEP;
-    stepdir-y2-dir-gpio = GP_STPD_Y2_DIR;
-    stepdir-y2-step-gpio = GP_STPD_Y2_STEP;
-    stepdir-z-dir-gpio = GP_STPD_Z_DIR;
-    stepdir-z-step-gpio = GP_STPD_Z_STEP;
+        power-12v-en-gpio = GP_PWR_12V_EN;
+        power-12v-ok-gpio = GP_PWR_12V_OK;
+        power-40v-en-gpio = GP_PWR_40V_EN;
+        power-40v-ok-gpio = GP_PWR_40V_OK;
+        power-hv-pfc-stop-gpio = GP_PWR_HV_PFC_STOP;
   };
 
   openglow-thermal {
-		compatible = "openglow,thermal";
-		pinctrl-names     = "default";
-		pinctrl-0         = <&pinctrl_gpio_thermal>;
-    exhaust-tach-gpio = GP_THRM_EXH_FAN1;
-    intake1-tach-gpio = GP_THRM_INTK_FAN1;
-    intake2-tach-gpio = GP_THRM_INTK_FAN2;
-    tec-gpio          = GP_THRM_TEC_EN;
-    water-pump-gpio   = GP_THRM_WTR_PMP_EN;
-    water-heater-gpio = GP_THRM_WTR_SENS_PWR;
-    intake-pwm        = <2>;
-    exhaust-pwm       = <0>;
+        compatible = "openglow,thermal";
+        pinctrl-names     = "default";
+        pinctrl-0         = <&pinctrl_gpio_thermal>;
+        exhaust-tach-gpio = GP_THRM_EXH_FAN1;
+        intake1-tach-gpio = GP_THRM_INTK_FAN1;
+        intake2-tach-gpio = GP_THRM_INTK_FAN2;
+        tec-gpio          = GP_THRM_TEC_EN;
+        water-pump-gpio   = GP_THRM_WTR_PMP_EN;
+        water-heater-gpio = GP_THRM_WTR_SENS_PWR;
+        intake-pwm        = <2>;
+        exhaust-pwm       = <0>;
   };
 
   regulators {
@@ -547,9 +555,21 @@ pinctrl_ecspi2: ecspi2grp {
 			regulator-always-on;
 		};
 
+        reg_40v: 40v {
+            compatible = "regulator-fixed";
+            reg = <3>;
+            pinctrl-names = "default";
+            pinctrl-0 = <&pinctrl_gpio_power_40v>;
+            gpio = GP_PWR_40V_EN;
+            regulator-name = "40v";
+            regulator-min-microvolt = <40000000>;
+            regulator-max-microvolt = <40000000>;
+            enable-active-high;
+		};
+
 		reg_wlan_en: regulator@3 {
 			compatible = "regulator-fixed";
-			reg = <3>;
+			reg = <4>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_reg_wlan_en>;
 			regulator-name = "wlan-en";
@@ -562,7 +582,7 @@ pinctrl_ecspi2: ecspi2grp {
 
 		reg_usbhst1_vbus: regulator@4 {
 			compatible = "regulator-fixed";
-			reg = <4>;
+			reg = <5>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_reg_usbhst1_vbus>;
 			regulator-name = "usb_host_vbus";
@@ -574,7 +594,7 @@ pinctrl_ecspi2: ecspi2grp {
 
 		reg_usbotg_vbus: regulator@5 {
 			compatible = "regulator-fixed";
-			reg = <5>;
+			reg = <6>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_reg_usbotg_vbus>;
 			regulator-name = "usb_otg_vbus";
@@ -656,18 +676,28 @@ pinctrl_ecspi2: ecspi2grp {
 	};
 };
 
+&epit1 {
+  compatible = "fsl,imx6qdl-epit";
+  id = <0>;
+  clocks = <&clks IMX6QDL_CLK_EPIT1>;
+  clock-names = "epit1";
+  sdma-event = <16>;
+};
+
+/* LID PIC */
 &i2c1 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
 
-  openglow_pic@8 {
-		reg = <8>;
-		compatible = "openglow,pic";
-	};
+    openglow_pic@8 {
+        reg = <8>;
+        compatible = "openglow,pic";
+    };
 };
 
+/* HEAD I2C */
 &i2c2 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
@@ -675,8 +705,9 @@ pinctrl_ecspi2: ecspi2grp {
 	status = "okay";
 };
 
+/* LID I2C */
 &i2c3 {
-	clock-frequency = <100000>;
+	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";

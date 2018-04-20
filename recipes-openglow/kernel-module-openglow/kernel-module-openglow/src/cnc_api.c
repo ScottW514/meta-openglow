@@ -3,7 +3,8 @@
  *
  * Stepper driver userspace API handlers.
  *
- * Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
+ * Copyright (C) 2018 Scott Wiederhold <s.e.wiederhold@gmail.com>
+ * Portions Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,34 +24,6 @@
 #include "cnc_private.h"
 #include "device_attr.h"
 #include "notifiers.h"
-
-/**
- * Returns true if the given buffer matches the "magic" string required by
- * the writable sysfs attributes.
- */
-static inline bool validate_sysfs_input(const char *buf, size_t count)
-{
-  return (count == 1 && buf[0] == '1');
-}
-
-
-/**
- * Helper function for handling writes to sysfs action attributes.
- */
-static ssize_t perform_sysfs_action(struct cnc *self, const char *buf, size_t count, int (*action)(struct cnc *))
-{
-  ssize_t ret;
-  if (!validate_sysfs_input(buf, count)) {
-    return -EINVAL;
-  }
-  ret = action(self);
-  if (ret) {
-    return ret;
-  }
-  return count;
-}
-
-
 
 #pragma mark - Character device fops
 
@@ -93,7 +66,7 @@ static int pulsedev_close(struct inode *inode, struct file *filp)
 
 
 
-/** Currently, no data is returned when /dev/glowforge is read. */
+/** Currently, no data is returned when /dev/openglow is read. */
 static ssize_t pulsedev_read(struct file *filp, char __user *data, size_t count, loff_t *offp)
 {
   return 0;
@@ -238,32 +211,14 @@ void cnc_notify_state_changed(struct cnc *self)
 
 #define _DEFINE_COMMAND_ATTR(name) \
   static ssize_t name##_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count) { \
-    struct cnc *self = dev_get_drvdata(dev); \
-    return perform_sysfs_action(self, buf, count, cnc_##name); } \
+    struct cnc *self = dev_get_drvdata(dev); char ch; int ret; \
+    if (count < 1) { return -EINVAL; } \
+    ch = *buf; if (ch != '1') { return -EINVAL; } \
+    ret = cnc_##name(self); \
+    return (ret == 0) ? count : ret; \
+  } \
   static DEVICE_ATTR(name, S_IWUSR, NULL, name##_store)
 #define DEFINE_COMMAND_ATTR(name) _DEFINE_COMMAND_ATTR(name)
-
-#define DEFINE_MODE_ATTR(name, axis) \
-  static ssize_t name##_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count) { \
-    struct cnc *self = dev_get_drvdata(dev); \
-    int mode, ret; if (sscanf(buf, "%d", &mode) != 1) { return -EINVAL; } \
-    ret = cnc_set_microstep_mode(self, axis, mode); \
-    return (ret == 0) ? count : ret; } \
-  static ssize_t name##_show(struct device *dev, struct device_attribute *attr, char *buf) { \
-    struct cnc *self = dev_get_drvdata(dev); \
-    return scnprintf(buf, PAGE_SIZE, "%u\n", cnc_get_microstep_mode(self, axis)); } \
-  static DEVICE_ATTR(name, S_IRUSR|S_IWUSR, name##_show, name##_store)
-
-#define DEFINE_DECAY_ATTR(name, axis) \
-  static ssize_t name##_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count) { \
-    struct cnc *self = dev_get_drvdata(dev); \
-    int mode, ret; if (sscanf(buf, "%d", &mode) != 1) { return -EINVAL; } \
-    ret = cnc_set_decay_mode(self, axis, mode); \
-    return (ret == 0) ? count : ret; } \
-  static ssize_t name##_show(struct device *dev, struct device_attribute *attr, char *buf) { \
-    struct cnc *self = dev_get_drvdata(dev); \
-    return scnprintf(buf, PAGE_SIZE, "%u\n", cnc_get_decay_mode(self, axis)); } \
-  static DEVICE_ATTR(name, S_IRUSR|S_IWUSR, name##_show, name##_store)
 
 #define DEFINE_BOOL_ATTR(name, fn) \
   static ssize_t name##_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count) { \
@@ -309,10 +264,6 @@ DEFINE_DEVICE_ATTR(ATTR_STEP_FREQ, S_IRUSR|S_IWUSR, step_freq_show, step_freq_st
 DEFINE_DEVICE_ATTR(ATTR_POSITION, S_IRUSR, position_show, NULL);
 DEFINE_DEVICE_ATTR(ATTR_SDMA_CONTEXT, S_IRUSR, sdma_context_show, NULL);
 DEFINE_DEVICE_ATTR(ATTR_MOTOR_LOCK, S_IRUSR|S_IWUSR, motor_lock_show, motor_lock_store);
-DEFINE_MODE_ATTR(ATTR_X_MODE, AXIS_X);
-DEFINE_MODE_ATTR(ATTR_Y_MODE, AXIS_Y);
-DEFINE_DECAY_ATTR(ATTR_X_DECAY, AXIS_X);
-DEFINE_DECAY_ATTR(ATTR_Y_DECAY, AXIS_Y);
 DEFINE_BOOL_ATTR(ATTR_Z_STEP, cnc_single_z_step);
 DEFINE_BOOL_ATTR(ATTR_LASER_LATCH, cnc_set_laser_latch);
 
@@ -329,10 +280,6 @@ static struct attribute *cnc_attrs[] = {
   DEV_ATTR_PTR(ATTR_LASER_LATCH),
   DEV_ATTR_PTR(ATTR_POSITION),
   DEV_ATTR_PTR(ATTR_SDMA_CONTEXT),
-  DEV_ATTR_PTR(ATTR_X_MODE),
-  DEV_ATTR_PTR(ATTR_Y_MODE),
-  DEV_ATTR_PTR(ATTR_X_DECAY),
-  DEV_ATTR_PTR(ATTR_Y_DECAY),
   DEV_ATTR_PTR(ATTR_Z_STEP),
   DEV_ATTR_PTR(ATTR_MOTOR_LOCK),
   NULL

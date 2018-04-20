@@ -3,7 +3,8 @@
  *
  * Private header for the stepper driver.
  *
- * Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
+ * Copyright (C) 2018 Scott Wiederhold <s.e.wiederhold@gmail.com>
+ * Portions Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +26,7 @@
 
 #include "cnc.h"
 #include "cnc_pins.h"
-#include "uapi/glowforge.h"
+#include "openglow.h"
 
 #include <linux/dma-mapping.h>
 #include <linux/fs.h>
@@ -182,31 +183,9 @@ u32 cnc_get_step_frequency(struct cnc *self);
 int cnc_set_step_frequency(struct cnc *self, u32 freq);
 
 /**
- * Sets the microstepping mode for a given axis.
- */
-int cnc_set_microstep_mode(struct cnc *self, enum cnc_axis axis, enum cnc_microstep_mode mode);
-
-/**
- * Gets the microstepping mode for a given axis.
- * This value is determined directly from the state of the GPIOs.
- */
-enum cnc_microstep_mode cnc_get_microstep_mode(struct cnc *self, enum cnc_axis axis);
-
-/**
- * Sets the decay mode for a given axis.
- */
-int cnc_set_decay_mode(struct cnc *self, enum cnc_axis axis, enum cnc_decay_mode mode);
-
-/**
- * Sets the decay mode for a given axis.
- * This value is determined directly from the state of the GPIOs.
- */
-enum cnc_decay_mode cnc_get_decay_mode(struct cnc *self, enum cnc_axis axis);
-
-/**
  * Sets the motor lock mask, allowing motion on specific axes to be suppressed.
  * motor_lock_bits should be the bitwise OR of motor_lock_options enums.
- * (see uapi/glowforge.h). Set to 0 to unlock all motors. (default)
+ * (see openglow.h). Set to 0 to unlock all motors. (default)
  */
 int cnc_set_motor_lock(struct cnc *self, u32 motor_lock_bits);
 
@@ -318,11 +297,11 @@ struct cnc_status {
 struct cnc {
   /** Device that owns this data */
   struct device *dev;
-  /** /dev/glowforge; device for receiving pulse data from userspace. */
+  /** /dev/openglow; device for receiving pulse data from userspace. */
   struct miscdevice pulsedev;
   /** Pointer to dirent of "state" sysfs attribute */
   struct kernfs_node *state_attr_node;
-  /** Lock to ensure mutually exclusive access to /dev/glowforge. */
+  /** Lock to ensure mutually exclusive access to /dev/openglow. */
   struct mutex lock;
   /** Hardware timer. */
   struct epit *epit;
@@ -339,7 +318,7 @@ struct cnc {
   /** Step frequency (in Hz) for the current job. */
   u32 step_freq;
   /**
-   * If true, halt the driver if /dev/glowforge is closed while in the
+   * If true, halt the driver if /dev/openglow is closed while in the
    * running state.
    */
   bool deadman_switch_active;

@@ -26,7 +26,7 @@
 
 #include "pic.h"
 #include "notifiers.h"
-#include "uapi/openglow.h"
+#include "openglow.h"
 #include <linux/leds.h>
 
 struct pic_transaction {

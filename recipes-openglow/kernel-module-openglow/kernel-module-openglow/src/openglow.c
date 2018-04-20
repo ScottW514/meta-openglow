@@ -20,25 +20,22 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/notifier.h>
 
 #include "io.h"
+#include "cnc.h"
 #include "pic.h"
 #include "thermal.h"
-#include "uapi/openglow.h"
-
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Scott Wiederhold <s.e.wiederhold@gmail.com>");
-MODULE_DESCRIPTION("OpenGlow Driver");
-MODULE_VERSION("dev");
+#include "openglow.h"
 
 /** Module parameters */
+int cnc_enabled = 1;
 int pic_enabled = 1;
 int thermal_enabled = 1;
 
+module_param(cnc_enabled, int, 0);
 module_param(pic_enabled, int, 0);
 module_param(thermal_enabled, int, 0);
 
@@ -66,6 +63,22 @@ static struct i2c_driver pic_driver = {
     .owner =  THIS_MODULE,
     .of_match_table = of_match_ptr(pic_dt_ids),
   },
+};
+
+static struct of_device_id cnc_dt_ids[] = {
+  { .compatible = "openglow,cnc" },
+  {}
+};
+
+
+static struct platform_driver cnc = {
+  .probe  = cnc_probe,
+  .remove = cnc_remove,
+  .driver = {
+    .name = "openglow_cnc",
+    .owner = THIS_MODULE,
+    .of_match_table = of_match_ptr(cnc_dt_ids)
+  }
 };
 
 static struct of_device_id thermal_dt_ids[] = {
@@ -110,16 +123,23 @@ static int __init openglow_init(void)
     goto failed_thermal_init;
   }
 
+  /* Initialize the stepper driver */
+  status = platform_driver_register(&cnc);
+  if (status < 0) {
+   pr_err("failed to initialize CNC driver\n");
+   goto failed_cnc_init;
+  }
+
   pr_info("%s: done\n", __func__);
   return 0;
 
-//  failed_cnc_init:
-    platform_driver_unregister(&thermal);
-  failed_thermal_init:
-    i2c_del_driver(&pic_driver);
-  failed_pic_init:
-    kobject_put(openglow_kobj);
-    return status;
+failed_cnc_init:
+  platform_driver_unregister(&thermal);
+failed_thermal_init:
+  i2c_del_driver(&pic_driver);
+failed_pic_init:
+  kobject_put(openglow_kobj);
+  return status;
 }
 module_init(openglow_init);
 
@@ -127,6 +147,7 @@ module_init(openglow_init);
 static void __exit openglow_exit(void)
 {
   pr_info("%s: started\n", __func__);
+  platform_driver_unregister(&cnc);
   platform_driver_unregister(&thermal);
   i2c_del_driver(&pic_driver);
   kobject_put(openglow_kobj);
@@ -137,9 +158,15 @@ module_exit(openglow_exit);
 
 /** For autoloading */
 static struct of_device_id openglow_dt_ids[] = {
+  { .compatible = "openglow,cnc" },
   { .compatible = "openglow,pic" },
   { .compatible = "openglow,thermal" },
   {}
 };
 MODULE_DEVICE_TABLE(of, openglow_dt_ids);
 MODULE_DEVICE_TABLE(i2c, pic_idtable);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Scott Wiederhold <s.e.wiederhold@gmail.com>");
+MODULE_DESCRIPTION("OpenGlow Driver");
+MODULE_VERSION("dev");

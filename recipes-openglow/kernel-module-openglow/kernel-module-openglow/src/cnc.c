@@ -3,7 +3,8 @@
  *
  * Drives the stepper motors and laser.
  *
- * Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
+ * Copyright (C) 2018 Scott Wiederhold <s.e.wiederhold@gmail.com>
+ * Portions Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,9 +102,9 @@ static const struct pwm_channel_config laser_pwm_config = {
 #define NUM_STEPPER_FAULT_SIGNALS 3
 
 static const pin_id stepper_fault_gpios[NUM_STEPPER_FAULT_SIGNALS] = {
-  [FAULT_X]  = PIN_X_FAULT,
-  [FAULT_Y1] = PIN_Y1_FAULT,
-  [FAULT_Y2] = PIN_Y2_FAULT
+  [FAULT_X]  = 0,
+  [FAULT_Y1] = 0,
+  [FAULT_Y2] = 0
 };
 
 /**
@@ -122,21 +123,23 @@ static const u32 fatal_fault_conditions =
 #define SIGNAL_FROM_FAULT_DEV_ID(dev_id) ((u32)(dev_id) & 3U)
 
 static const u32 sdma_script[] = {
-  0x09010b00, 0x69c80400, 0x69c84e00, 0x7d6e50e7, 0x00bc52ef, 0x02bc00ca, 0x7d68009e, 0x68106209,
-  0x02677d67, 0x50f7007f, 0x7c02124a, 0x02240353, 0x02617c01, 0x0333033c, 0x03520263, 0x7c02035c,
-  0x03320331, 0x02667c01, 0x03516b2b, 0x080d7803, 0x01890189, 0x01890260, 0x7c010356, 0x02627c02,
-  0x0354035d, 0x02657c01, 0x0355033e, 0x033f0264, 0x7c02035e, 0x035f5097, 0x03b06b2b, 0x08327803,
-  0x01890189, 0x01890260, 0x7c0650c7, 0x02617c01, 0x20021801, 0x58c70262, 0x7c0650cf, 0x02637d01,
-  0x20021801, 0x58cf0265, 0x7c0650d7, 0x02667d01, 0x20021801, 0x58d70121, 0x03360334, 0x033d0335,
-  0x6b2b52f7, 0x50df009a, 0x58df50e7, 0x009a58e7, 0x50ff4800, 0x7d042001, 0x58ff7c01, 0x03000162,
-  0x01227d93, 0x04000160, 0x7d8f0300, 0x04000160, 0x7d870161, 0x7de650f7, 0x007f7d06, 0x60d06dd3,
-  0x3a7f6ac8, 0x68d30141, 0x01420160, 0x7dda0000
+// ORIGINIAL GF SCRIPT - MODIFIED TO HAVE CORRECT GPIOS
+// I have a rewritten version (a bit more efficient) that will replace this.
+    0x09010b00, 0x69c80400, 0x69c84e00, 0x7d6e50e7, 0x00bc52ef, 0x02bc00ca, 0x7d68009e, 0x68106209,
+    0x02677d67, 0x50f7007f, 0x7c02124a, 0x02240356, 0x02617c01, 0x03360338, 0x03520263, 0x7c020358,
+    0x03320333, 0x02667c01, 0x03536b2b, 0x080d7803, 0x01890189, 0x01890260, 0x7c01035e, 0x02627c02,
+    0x03550357, 0x02657c01, 0x03540339, 0x033d0264, 0x7c020359, 0x035d5097, 0x03b06b2b, 0x08327803,
+    0x01890189, 0x01890260, 0x7c0650c7, 0x02617c01, 0x20021801, 0x58c70262, 0x7c0650cf, 0x02637d01,
+    0x20021801, 0x58cf0265, 0x7c0650d7, 0x02667d01, 0x20021801, 0x58d70121, 0x033e0335, 0x03370334,
+    0x6b2b52f7, 0x50df009a, 0x58df50e7, 0x009a58e7, 0x50ff4800, 0x7d042001, 0x58ff7c01, 0x03000162,
+    0x01227d93, 0x04000160, 0x7d8f0300, 0x04000160, 0x7d870161, 0x7de650f7, 0x007f7d06, 0x60d06dd3,
+    0x3a7f6ac8, 0x68d30141, 0x01420160, 0x7dda0000,
 };
 
 static const ktime_t ramp_update_interval_ktime = { .tv64 = RAMP_UPDATE_INTERVAL_NS };
 static const ktime_t charge_pump_interval_ktime  = { .tv64 = CHARGE_PUMP_INTERVAL_NS };
 
-extern struct kobject *glowforge_kobj;
+extern struct kobject *openglow_kobj;
 
 static void _cnc_ramp_stop(struct cnc *self);
 static void beam_detect_latch_reset(struct cnc *self);
@@ -167,7 +170,7 @@ static int load_sdma_script(struct cnc *self)
   /* write the test script code to RAM */
   /* don't use sdma_load_script() because the assembler output */
   /* is already in the correct endianness */
-  dev_dbg(self->dev, "loading SDMA script (%d bytes)...", script_len);
+  pr_info("loading SDMA script (%d bytes)...", script_len);
   ret = sdma_write_datamem(self->sdma, (void *)script, script_len, self->sdma_script_origin);
   if (ret) {
     dev_err(self->dev, "failed to load script");
@@ -184,7 +187,7 @@ static int load_sdma_script(struct cnc *self)
     return ret;
   }
 
-  dev_dbg(self->dev, "script loaded");
+  pr_info("script loaded");
   return ret;
 }
 
@@ -282,7 +285,7 @@ static void stepper_power_off(struct cnc *self)
 /* Must be called with status_lock held */
 static void _driver_stop(struct cnc *self, enum cnc_state next_state)
 {
-  dev_dbg(self->dev, "stopping cut...");
+  pr_info("stopping cut...");
   epit_stop(self->epit);
   hrtimer_cancel(&self->charge_pump_timer);
   sdma_event_disable(self->sdmac, epit_sdma_event(self->epit));
@@ -297,7 +300,7 @@ static void _driver_stop(struct cnc *self, enum cnc_state next_state)
     io_change_pins(self->gpios, NUM_GPIO_PINS, cnc_stop_pin_changes);
   }
 
-  dev_dbg(self->dev, "stopped.");
+  pr_info("stopped.");
   self->status.state = next_state;
   cnc_notify_state_changed(self);
 }
@@ -342,7 +345,7 @@ static void _cnc_decel_start(struct cnc *self)
   if (self->status.decelerating) {
     return;
   }
-  dev_dbg(self->dev, "starting deceleration");
+  pr_info("starting deceleration");
   if (!self->status.accelerating) {
     /* Don't suddenly jump the step frequency if we're already accelerating */
     self->ramp_step_freq = self->step_freq;
@@ -362,7 +365,7 @@ static void _cnc_accel_start(struct cnc *self)
   if (self->status.accelerating) {
     return;
   }
-  dev_dbg(self->dev, "starting acceleration");
+  pr_info("starting acceleration");
   if (!self->status.decelerating) {
     /* Don't suddenly jump the step frequency if we're already decelerating */
     self->ramp_step_freq = RAMP_MIN_STEP_FREQUENCY;
@@ -392,7 +395,7 @@ static enum hrtimer_restart ramp_update_tasklet_fn(struct hrtimer *timer)
 
   if (self->status.decelerating) {
     if (self->ramp_step_freq <= RAMP_MIN_STEP_FREQUENCY) {
-      dev_dbg(self->dev, "stopping deceleration");
+      pr_info("stopping deceleration");
       _driver_stop(self, STATE_IDLE);
       return HRTIMER_NORESTART;
     }
@@ -401,7 +404,7 @@ static enum hrtimer_restart ramp_update_tasklet_fn(struct hrtimer *timer)
   else if (self->status.accelerating) {
     self->ramp_step_freq += self->ramp_step_freq_delta;
     if (self->ramp_step_freq >= self->step_freq) {
-      dev_dbg(self->dev, "stopping acceleration");
+      pr_info("stopping acceleration");
       epit_set_hz(self->epit, self->step_freq); /* restore full step freq */
       return HRTIMER_NORESTART;
     }
@@ -555,7 +558,7 @@ static int cnc_run_with_options(struct cnc *self, struct cnc_run_options opts)
 
       cnc_notify_state_changed(self);
 
-      dev_dbg(self->dev, "starting cut...");
+      pr_info("starting cut...");
       /* Ensure the steppers are powered up */
       stepper_power_on_unchecked(self);
       if (!opts.preserve_power) {
@@ -579,7 +582,7 @@ static int cnc_run_with_options(struct cnc *self, struct cnc_run_options opts)
 
       /* Set a nonzero priority to start the script */
       sdma_set_channel_priority(self->sdmac, 6);
-      dev_dbg(self->dev, "started.");
+      pr_info("started.");
     }
     spin_unlock_bh(&self->status_lock);
   }
@@ -799,13 +802,13 @@ int cnc_set_laser_latch(struct cnc *self, int value)
 {
   /* If value == 0, latch is unlocked and LASER_ON is an output. */
   /* Otherwise, latch is locked and LASER_ON is high impedance. */
-  gpio_set_value(self->gpios[PIN_LASER_LATCH_RESET], value);
-  if (value == 0) {
-    /* Allow LASER_ON to be driven by sdma. */
-    gpio_direction_output(self->gpios[PIN_LASER_ON], 0);
-  } else {
-    gpio_direction_input(self->gpios[PIN_LASER_ON]);
-  }
+  // gpio_set_value(self->gpios[PIN_LASER_LATCH_RESET], value);
+  // if (value == 0) {
+  //   /* Allow LASER_ON to be driven by sdma. */
+  //   gpio_direction_output(self->gpios[PIN_LASER_ON], 0);
+  // } else {
+  //   gpio_direction_input(self->gpios[PIN_LASER_ON]);
+  // }
   return 0;
 }
 
@@ -839,12 +842,13 @@ enum cnc_state cnc_state(struct cnc *self)
 }
 
 
-#undef X
-#define X(e,s) case e: return s;
 const char *cnc_string_for_state(enum cnc_state st)
 {
   switch (st) {
-    DRIVER_STATES
+    case STATE_IDLE: return "idle";
+    case STATE_RUNNING: return "running";
+    case STATE_DISABLED: return "disabled";
+    case STATE_FAULT: return "fault";
     default: return "unknown";
   }
 }
@@ -869,94 +873,6 @@ u32 cnc_triggered_faults(struct cnc *self)
 ssize_t cnc_print_sdma_context(struct cnc *self, char *buf)
 {
   return sdma_print_context(self->sdma, self->sdma_ch_num, buf);
-}
-
-
-int cnc_set_microstep_mode(struct cnc *self, enum cnc_axis axis, enum cnc_microstep_mode mode)
-{
-  int mode_binary, pin_mode0, pin_mode1, pin_mode2;
-  switch (mode) {
-    case MODE_FULL_STEP:     mode_binary = 0b000; break;
-    case MODE_MICROSTEPS_2:  mode_binary = 0b001; break;
-    case MODE_MICROSTEPS_4:  mode_binary = 0b010; break;
-    case MODE_MICROSTEPS_8:  mode_binary = 0b011; break;
-    case MODE_MICROSTEPS_16: mode_binary = 0b100; break;
-    case MODE_MICROSTEPS_32: mode_binary = 0b101; break;
-    default:                 return -EINVAL;
-  }
-  switch (axis) {
-    case AXIS_X: pin_mode0 = PIN_X_MODE0; pin_mode1 = PIN_X_MODE1; pin_mode2 = PIN_X_MODE2; break;
-    case AXIS_Y: pin_mode0 = PIN_Y_MODE0; pin_mode1 = PIN_Y_MODE1; pin_mode2 = PIN_Y_MODE2; break;
-    default:     return -EINVAL;
-  }
-  gpio_set_value(self->gpios[pin_mode0], mode_binary & 0b001);
-  gpio_set_value(self->gpios[pin_mode1], mode_binary & 0b010);
-  gpio_set_value(self->gpios[pin_mode2], mode_binary & 0b100);
-  return 0;
-}
-
-
-enum cnc_microstep_mode cnc_get_microstep_mode(struct cnc *self, enum cnc_axis axis)
-{
-  int mode_binary, pin_mode0, pin_mode1, pin_mode2;
-  switch (axis) {
-    case AXIS_X: pin_mode0 = PIN_X_MODE0; pin_mode1 = PIN_X_MODE1; pin_mode2 = PIN_X_MODE2; break;
-    case AXIS_Y: pin_mode0 = PIN_Y_MODE0; pin_mode1 = PIN_Y_MODE1; pin_mode2 = PIN_Y_MODE2; break;
-    default:     return -EINVAL;
-  }
-  mode_binary = (gpio_get_value(self->gpios[pin_mode0]) != 0) |
-                ((gpio_get_value(self->gpios[pin_mode1]) != 0) << 1) |
-                ((gpio_get_value(self->gpios[pin_mode2]) != 0) << 2);
-  switch ((mode_binary) & 0b111) {
-    case 0b000: return MODE_FULL_STEP;     break;
-    case 0b001: return MODE_MICROSTEPS_2;  break;
-    case 0b010: return MODE_MICROSTEPS_4;  break;
-    case 0b011: return MODE_MICROSTEPS_8;  break;
-    case 0b100: return MODE_MICROSTEPS_16; break;
-    default:    return MODE_MICROSTEPS_32; break;
-  }
-}
-
-
-
-int cnc_set_decay_mode(struct cnc *self, enum cnc_axis axis, enum cnc_decay_mode mode)
-{
-  int pin;
-  switch (axis) {
-    case AXIS_X: pin = PIN_X_DECAY; break;
-    case AXIS_Y: pin = PIN_Y_DECAY; break;
-    default:     return -EINVAL;
-  }
-  switch (mode) {
-    case MODE_DECAY_SLOW:  gpio_direction_output(self->gpios[pin], 0); break;
-    case MODE_DECAY_MIXED: gpio_direction_input(self->gpios[pin]); break;
-    case MODE_DECAY_FAST:  gpio_direction_output(self->gpios[pin], 1); break;
-    default:               return -EINVAL;
-  }
-  return 0;
-}
-
-
-enum cnc_decay_mode cnc_get_decay_mode(struct cnc *self, enum cnc_axis axis)
-{
-  int pin;
-  struct gpio_desc *desc;
-  switch (axis) {
-    case AXIS_X: pin = PIN_X_DECAY; break;
-    case AXIS_Y: pin = PIN_Y_DECAY; break;
-    default:     return -EINVAL;
-  }
-  /* adapted from gpio_direction_show(), drivers/gpio/gpiolib.c */
-  desc = gpio_to_desc(self->gpios[pin]);
-  if (!desc) {
-    return -EIO;
-  }
-  gpiod_get_direction(desc);
-  if (test_bit(FLAG_IS_OUT, &desc->flags) == 0) {
-    return MODE_DECAY_MIXED;
-  } else {
-    return (gpiod_get_value(desc)) ? MODE_DECAY_FAST : MODE_DECAY_SLOW;
-  }
 }
 
 
@@ -1036,74 +952,74 @@ static inline void cnc_assert_fault(struct cnc *self, int fault_num)
  */
 static irqreturn_t cnc_fault_irq_handler(int irq, void *dev_id)
 {
-  struct cnc *self = CNC_FROM_FAULT_DEV_ID(dev_id);
-  u32 fault_num = SIGNAL_FROM_FAULT_DEV_ID(dev_id);
-  int pin, gpio;
-
-  if (fault_num >= NUM_STEPPER_FAULT_SIGNALS) {
-    return IRQ_HANDLED;
-  }
-
-  /* De-glitch: only fault if the line is actually low */
-  pin = stepper_fault_gpios[fault_num];
-  gpio = self->gpios[pin];
-  if (gpio_get_value(gpio) != 0) {
-    return IRQ_HANDLED;
-  }
-
-  if ((self->ignored_faults & (1 << fault_num)) == 0) {
-    dev_err(self->dev, "driver fault detected! %d", fault_num);
-    cnc_assert_fault(self, fault_num);
-  }
+  // struct cnc *self = CNC_FROM_FAULT_DEV_ID(dev_id);
+  // u32 fault_num = SIGNAL_FROM_FAULT_DEV_ID(dev_id);
+  // int pin, gpio;
+  //
+  // if (fault_num >= NUM_STEPPER_FAULT_SIGNALS) {
+  //   return IRQ_HANDLED;
+  // }
+  //
+  // /* De-glitch: only fault if the line is actually low */
+  // pin = stepper_fault_gpios[fault_num];
+  // gpio = self->gpios[pin];
+  // if (gpio_get_value(gpio) != 0) {
+  //   return IRQ_HANDLED;
+  // }
+  //
+  // if ((self->ignored_faults & (1 << fault_num)) == 0) {
+  //   dev_err(self->dev, "driver fault detected! %d", fault_num);
+  //   cnc_assert_fault(self, fault_num);
+  // }
   return IRQ_HANDLED;
 }
 
 
 static int cnc_register_fault_irqs(struct cnc *self)
 {
-  int i;
-  int fault_irqs[NUM_STEPPER_FAULT_SIGNALS];
-  int initial_fault_state = 0;
-
-  /* Read the initial fault states and look up the irq numbers */
-  for (i = 0; i < NUM_STEPPER_FAULT_SIGNALS; i++) {
-    int pin_id = stepper_fault_gpios[i];
-    int gpio = self->gpios[pin_id];
-    int irq = gpio_to_irq(gpio);
-    if (irq < 0) {
-      dev_err(self->dev, "gpio %d has no irq", gpio);
-      return irq;
-    }
-    fault_irqs[i] = irq;
-    /* Fault signals are active low */
-    initial_fault_state |= ((gpio_get_value(self->gpios[pin_id]) == 0) << i);
-  }
-
-  /* Are we initially in a fault state? */
-  spin_lock_bh(&self->status_lock);
-  self->status.triggered_faults = initial_fault_state & (~self->ignored_faults);
-  if (initial_fault_state) {
-    self->status.state = STATE_FAULT;
-  }
-  spin_unlock_bh(&self->status_lock);
-
-  /* Register interrupt handlers */
-  for (i = 0; i < NUM_STEPPER_FAULT_SIGNALS; i++) {
-    int pin_id = stepper_fault_gpios[i];
-    int irq = fault_irqs[i];
-    /* Encode the fault signal number in the lower 2 bits of the dev_id. */
-    /* Only care about falling edges (fault conditions) for now. */
-    int ret = devm_request_irq(self->dev,
-      irq,
-      cnc_fault_irq_handler,
-      IRQF_TRIGGER_FALLING,
-      pin_configs[pin_id].name,
-      FAULT_DEV_ID_FROM_CNC_AND_SIGNAL(self, i));
-    if (ret) {
-      dev_err(self->dev, "devm_request_irq(%d) failed: %d", irq, ret);
-      return ret;
-    }
-  }
+  // int i;
+  // int fault_irqs[NUM_STEPPER_FAULT_SIGNALS];
+  // int initial_fault_state = 0;
+  //
+  // /* Read the initial fault states and look up the irq numbers */
+  // for (i = 0; i < NUM_STEPPER_FAULT_SIGNALS; i++) {
+  //   int pin_id = stepper_fault_gpios[i];
+  //   int gpio = self->gpios[pin_id];
+  //   int irq = gpio_to_irq(gpio);
+  //   if (irq < 0) {
+  //     dev_err(self->dev, "gpio %d has no irq", gpio);
+  //     return irq;
+  //   }
+  //   fault_irqs[i] = irq;
+  //   /* Fault signals are active low */
+  //   initial_fault_state |= ((gpio_get_value(self->gpios[pin_id]) == 0) << i);
+  // }
+  //
+  // /* Are we initially in a fault state? */
+  // spin_lock_bh(&self->status_lock);
+  // self->status.triggered_faults = initial_fault_state & (~self->ignored_faults);
+  // if (initial_fault_state) {
+  //   self->status.state = STATE_FAULT;
+  // }
+  // spin_unlock_bh(&self->status_lock);
+  //
+  // /* Register interrupt handlers */
+  // for (i = 0; i < NUM_STEPPER_FAULT_SIGNALS; i++) {
+  //   int pin_id = stepper_fault_gpios[i];
+  //   int irq = fault_irqs[i];
+  //   /* Encode the fault signal number in the lower 2 bits of the dev_id. */
+  //   /* Only care about falling edges (fault conditions) for now. */
+  //   int ret = devm_request_irq(self->dev,
+  //     irq,
+  //     cnc_fault_irq_handler,
+  //     IRQF_TRIGGER_FALLING,
+  //     pin_configs[pin_id].name,
+  //     FAULT_DEV_ID_FROM_CNC_AND_SIGNAL(self, i));
+  //   if (ret) {
+  //     dev_err(self->dev, "devm_request_irq(%d) failed: %d", irq, ret);
+  //     return ret;
+  //   }
+  // }
   return 0;
 }
 
@@ -1111,8 +1027,8 @@ static int cnc_register_fault_irqs(struct cnc *self)
 static void beam_detect_latch_reset(struct cnc *self)
 {
   /* Pulse BEAM_DET_LATCH_RST high then low. */
-  gpio_set_value(self->gpios[PIN_BEAM_LATCH_RESET], 1);
-  gpio_set_value(self->gpios[PIN_BEAM_LATCH_RESET], 0);
+  // gpio_set_value(self->gpios[PIN_BEAM_LATCH_RESET], 1);
+  // gpio_set_value(self->gpios[PIN_BEAM_LATCH_RESET], 0);
 }
 
 
@@ -1222,7 +1138,7 @@ int cnc_probe(struct platform_device *pdev)
 
   platform_set_drvdata(pdev, self);
 
-  /* Create /dev/glowforge */
+  /* Create /dev/openglow */
   self->pulsedev.minor = MISC_DYNAMIC_MINOR;
   self->pulsedev.name = PULSE_DEVICE_NAME;
   self->pulsedev.fops = &pulsedev_fops;
@@ -1258,8 +1174,8 @@ int cnc_probe(struct platform_device *pdev)
     goto failed_create_link;
   }
 
-  /* Add a link in /sys/glowforge */
-  ret = sysfs_create_link(glowforge_kobj, &pdev->dev.kobj, CNC_GROUP_NAME);
+  /* Add a link in /sys/openglow */
+  ret = sysfs_create_link(openglow_kobj, &pdev->dev.kobj, CNC_GROUP_NAME);
   if (ret) {
     goto failed_create_link;
   }

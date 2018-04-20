@@ -3,7 +3,8 @@
  *
  * Stepper driver GPIO pin mapping.
  *
- * Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
+ * Copyright (C) 2018 Scott Wiederhold <s.e.wiederhold@gmail.com>
+ * Portions Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,39 +27,18 @@
 #include "io.h"
 
 enum {
-  PIN_X_ENABLE,
+  PIN_XY_ENABLE,
   PIN_X_STEP,
   PIN_X_DIR,
-  PIN_X_HOME,
-  PIN_X_FAULT,
-  PIN_X_MODE0,
-  PIN_X_MODE1,
-  PIN_X_MODE2,
-  PIN_X_DECAY,
-  PIN_Y1_ENABLE,
   PIN_Y1_STEP,
   PIN_Y1_DIR,
-  PIN_Y1_HOME,
-  PIN_Y1_FAULT,
-  PIN_Y2_ENABLE,
   PIN_Y2_STEP,
   PIN_Y2_DIR,
-  PIN_Y2_HOME,
-  PIN_Y2_FAULT,
-  PIN_Y_MODE0,
-  PIN_Y_MODE1,
-  PIN_Y_MODE2,
-  PIN_Y_DECAY,
-  PIN_Z_ENABLE,
   PIN_Z_STEP,
   PIN_Z_DIR,
-  PIN_STEP_RESET,
-  PIN_STEP_SLEEP,
   PIN_LASER_ON,
   PIN_LASER_ON_HEAD,
   PIN_CHARGE_PUMP,
-  PIN_LASER_LATCH_RESET,
-  PIN_BEAM_LATCH_RESET,
   /* ---------- */
   NUM_GPIO_PINS
 };

@@ -7,9 +7,13 @@ SUMMARY = "Linux kernel for OpenGlow boards"
 
 SRC_URI = "git://github.com/boundarydevices/linux-imx6.git;branch=${SRCBRANCH} \
            file://git/arch/arm/boot/dts/openglow_std.dts \
+           file://git/arch/arm/mach-imx/epit_api.c \
+           file://git/drivers/dma/imx-sdma.c \
+           file://git/include/linux/platform_data/dma-imx-sdma.h \
+           file://git/include/linux/platform_data/epit-imx.h \
            file://defconfig \
-           file://config_1.cfg \
-           file://config_2.cfg \
+           file://Add-DT-Prescaler-to-PWM-Driver.patch \
+           file://Add-EPIT-API.patch \
 "
 
 LOCALVERSION = "-1.0.0-ga+openglow"

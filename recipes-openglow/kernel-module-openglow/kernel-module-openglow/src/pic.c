@@ -22,7 +22,7 @@
  */
 
 #include "pic_private.h"
-#include "uapi/openglow.h"
+#include "openglow.h"
 #include "notifiers.h"
 
 extern struct kobject *openglow_kobj;

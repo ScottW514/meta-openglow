@@ -4,9 +4,13 @@ SRC_DIR = ./src
 
 KERNEL_SRC ?= /usr/src/kernel
 
-SRC = io.c ledtrig_smooth.c openglow.c pic.c pic_api.c pic_leds.c thermal.c 
+SRC = ledtrig_smooth.c io.c \
+      pic.c pic_leds.c pic_api.c thermal.c \
+      cnc_buffer.c cnc.c cnc_api.c cnc_pins.c \
+      openglow.c
 
-ccflags-y += -I$(PWD) -Wno-unknown-pragmas
+
+ccflags-y += -I$(PWD)/include -Wno-unknown-pragmas
 
 obj-m += $(MODULE_NAME).o
 $(MODULE_NAME)-objs := $(foreach srcfile,$(SRC),$(SRC_DIR)/$(srcfile:.c=.o))
