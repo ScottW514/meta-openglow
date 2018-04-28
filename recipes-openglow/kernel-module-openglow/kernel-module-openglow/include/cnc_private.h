@@ -122,15 +122,11 @@ int cnc_enable(struct cnc *self);
 int cnc_single_z_step(struct cnc *self, bool direction);
 
 /**
- * Sets the laser latch reset control output low (if value == 0) or high (if
- * value != 0).
- * When low, a button press can enable the laser.
- * When high, a button press cannot enable the laser.
- * Should be high when idle.
+ * Switches laser_on between output and hiz
  *
  * @return 0 on success
  */
-int cnc_set_laser_latch(struct cnc *self, int value);
+int cnc_set_laser_output(struct cnc *self, int value);
 
 /**
  * Clears all pulse data.

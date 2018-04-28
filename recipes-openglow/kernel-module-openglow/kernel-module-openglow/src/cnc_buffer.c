@@ -38,22 +38,22 @@
 
 int cnc_buffer_init(struct cnc *self)
 {
-  self->pulsebuf_total_bytes = 0;
-  self->pulsebuf_size = CNC_BUFFER_SIZE;
-  self->pulsebuf_virt = dma_alloc_coherent(self->dev, self->pulsebuf_size, &self->pulsebuf_phys, GFP_DMA|GFP_KERNEL);
-  if (!self->pulsebuf_virt) {
-    dev_err(self->dev, "unable to allocate coherent buffer of size %u", self->pulsebuf_size);
-    return -ENOMEM;
-  }
-  return kfifo_init(&self->pulsebuf_fifo, self->pulsebuf_virt, self->pulsebuf_size);
+        self->pulsebuf_total_bytes = 0;
+        self->pulsebuf_size = CNC_BUFFER_SIZE;
+        self->pulsebuf_virt = dma_alloc_coherent(self->dev, self->pulsebuf_size, &self->pulsebuf_phys, GFP_DMA|GFP_KERNEL);
+        if (!self->pulsebuf_virt) {
+                dev_err(self->dev, "unable to allocate coherent buffer of size %u", self->pulsebuf_size);
+                return -ENOMEM;
+        }
+        return kfifo_init(&self->pulsebuf_fifo, self->pulsebuf_virt, self->pulsebuf_size);
 }
 
 
 void cnc_buffer_destroy(struct cnc *self)
 {
-  if (self->pulsebuf_virt && self->pulsebuf_phys && self->pulsebuf_size) {
-    dma_free_coherent(self->dev, self->pulsebuf_size, self->pulsebuf_virt, self->pulsebuf_phys);
-  }
+        if (self->pulsebuf_virt && self->pulsebuf_phys && self->pulsebuf_size) {
+                dma_free_coherent(self->dev, self->pulsebuf_size, self->pulsebuf_virt, self->pulsebuf_phys);
+        }
 }
 
 
@@ -67,41 +67,41 @@ void cnc_buffer_destroy(struct cnc *self)
  */
 static int cnc_buffer_sync_head(struct cnc *self)
 {
-  int ret = sdma_get_reg(self->sdmac, &self->pulsebuf_fifo.kfifo.out, scratch4);
-  if (ret) {
-    dev_err(self->dev, "context fetch failed: %d", ret);
-  }
-  return ret;
+        int ret = sdma_get_reg(self->sdmac, &self->pulsebuf_fifo.kfifo.out, scratch4);
+        if (ret) {
+                dev_err(self->dev, "context fetch failed: %d", ret);
+        }
+        return ret;
 }
 
 
 ssize_t cnc_buffer_add_user_data(struct cnc *self, const uint8_t __user *data, size_t count)
 {
-  unsigned int copied;
+        unsigned int copied;
 
-  /* read current head value from SDMA */
-  int ret = cnc_buffer_sync_head(self);
-  if (ret) { return ret; }
+        /* read current head value from SDMA */
+        int ret = cnc_buffer_sync_head(self);
+        if (ret) { return ret; }
 
-  /* bail if there's not enough room */
-  if (kfifo_avail(&self->pulsebuf_fifo) < count+CNC_BUFFER_GAP_SIZE) {
-    return -ENOMEM;
-  }
+        /* bail if there's not enough room */
+        if (kfifo_avail(&self->pulsebuf_fifo) < count+CNC_BUFFER_GAP_SIZE) {
+                return -ENOMEM;
+        }
 
-  /* copy userspace data into fifo; */
-  /* entire buffer must fit, don't allow partial copies */
-  ret = kfifo_from_user(&self->pulsebuf_fifo, data, count, &copied);
-  if (ret) { return ret; }
-  if (copied != count) { return -ENOMEM; }
+        /* copy userspace data into fifo; */
+        /* entire buffer must fit, don't allow partial copies */
+        ret = kfifo_from_user(&self->pulsebuf_fifo, data, count, &copied);
+        if (ret) { return ret; }
+        if (copied != count) { return -ENOMEM; }
 
-  self->pulsebuf_total_bytes += count;
-  /* inform SDMA of the new tail index; just change one register */
-  ret = sdma_set_reg(self->sdmac, &self->pulsebuf_fifo.kfifo.in, scratch5);
-  if (ret) {
-    dev_err(self->dev, "context load failed: %d", ret);
-    return ret;
-  }
-  return count;
+        self->pulsebuf_total_bytes += count;
+        /* inform SDMA of the new tail index; just change one register */
+        ret = sdma_set_reg(self->sdmac, &self->pulsebuf_fifo.kfifo.in, scratch5);
+        if (ret) {
+                dev_err(self->dev, "context load failed: %d", ret);
+                return ret;
+        }
+        return count;
 }
 
 
@@ -110,58 +110,58 @@ ssize_t cnc_buffer_add_user_data(struct cnc *self, const uint8_t __user *data, s
 /* alone. You should be able to call this while the SDMA engine is running. */
 int cnc_buffer_clear(struct cnc *self, unsigned int flags)
 {
-  bool clear_data = false;
-  uint32_t regs_to_clear = 0;
-  int first_reg, last_reg;
-  struct sdma_context_data cleared_context = {{0}};
+        bool clear_data = false;
+        uint32_t regs_to_clear = 0;
+        int first_reg, last_reg;
+        struct sdma_context_data cleared_context = {{0}};
 
-  /* Determine which registers we need to clear. */
-  /* (note: we can only clear a contiguous region) */
-  if (flags & CNC_BUFFER_CLEAR_DATA) {
-    clear_data = true;
-    regs_to_clear |= (1 << sdma_reg_number(scratch3))  /* byte count */
-                  |  (1 << sdma_reg_number(scratch4))  /* head */
-                  |  (1 << sdma_reg_number(scratch5)); /* tail */
-  }
-  if (flags & CNC_BUFFER_CLEAR_POSITION) {
-    regs_to_clear |= (1 << sdma_reg_number(scratch0))  /* X */
-                  |  (1 << sdma_reg_number(scratch1))  /* Y */
-                  |  (1 << sdma_reg_number(scratch2)); /* Z */
-  }
-  if (regs_to_clear == 0) { return -EINVAL; }
+        /* Determine which registers we need to clear. */
+        /* (note: we can only clear a contiguous region) */
+        if (flags & CNC_BUFFER_CLEAR_DATA) {
+                clear_data = true;
+                regs_to_clear |= (1 << sdma_reg_number(scratch3))  /* byte count */
+                                |  (1 << sdma_reg_number(scratch4))  /* head */
+                                |  (1 << sdma_reg_number(scratch5)); /* tail */
+        }
+        if (flags & CNC_BUFFER_CLEAR_POSITION) {
+                regs_to_clear |= (1 << sdma_reg_number(scratch0))  /* X */
+                                |  (1 << sdma_reg_number(scratch1))  /* Y */
+                                |  (1 << sdma_reg_number(scratch2)); /* Z */
+        }
+        if (regs_to_clear == 0) { return -EINVAL; }
 
-  /* Find the range of registers to clear */
-  /* (basically, take the union of the desired ranges) */
-  /* note: ffs()/fls() return values are 1-indexed */
-  first_reg = ffs(regs_to_clear)-1;
-  last_reg = fls(regs_to_clear)-1;
+        /* Find the range of registers to clear */
+        /* (basically, take the union of the desired ranges) */
+        /* note: ffs()/fls() return values are 1-indexed */
+        first_reg = ffs(regs_to_clear)-1;
+        last_reg = fls(regs_to_clear)-1;
 
-  if (clear_data) {
-    kfifo_reset(&self->pulsebuf_fifo);
-    /* script needs the new head/tail indexes (they might not be 0) */
-    cleared_context.scratch4 = self->pulsebuf_fifo.kfifo.out;
-    cleared_context.scratch5 = self->pulsebuf_fifo.kfifo.in;
-    self->pulsebuf_total_bytes = 0;
-  }
+        if (clear_data) {
+                kfifo_reset(&self->pulsebuf_fifo);
+                /* script needs the new head/tail indexes (they might not be 0) */
+                cleared_context.scratch4 = self->pulsebuf_fifo.kfifo.out;
+                cleared_context.scratch5 = self->pulsebuf_fifo.kfifo.in;
+                self->pulsebuf_total_bytes = 0;
+        }
 
-  /* convert register numbers (i.e. word offsets) to byte offsets */
-  return sdma_load_partial_context(self->sdmac,
-    (struct sdma_context_data *)(((uint32_t *)(&cleared_context))+first_reg), /* source byte pointer */
-    first_reg*sizeof(uint32_t), /* destination byte offset */
-    (last_reg-first_reg+1)*sizeof(uint32_t)); /* byte count */
+        /* convert register numbers (i.e. word offsets) to byte offsets */
+        return sdma_load_partial_context(self->sdmac,
+                (struct sdma_context_data *)(((uint32_t *)(&cleared_context))+first_reg), /* source byte pointer */
+                first_reg*sizeof(uint32_t), /* destination byte offset */
+                (last_reg-first_reg+1)*sizeof(uint32_t)); /* byte count */
 }
 
 /* may sleep */
 int cnc_buffer_is_empty(struct cnc *self)
 {
-  cnc_buffer_sync_head(self);
-  return kfifo_is_empty(&self->pulsebuf_fifo);
+        cnc_buffer_sync_head(self);
+        return kfifo_is_empty(&self->pulsebuf_fifo);
 }
 
 uint32_t cnc_buffer_max_backtrack_length(struct cnc *self)
 {
-  return min(self->pulsebuf_total_bytes,
-             kfifo_size(&self->pulsebuf_fifo)-CNC_BUFFER_GAP_SIZE);
+        return min(self->pulsebuf_total_bytes,
+                kfifo_size(&self->pulsebuf_fifo)-CNC_BUFFER_GAP_SIZE);
 }
 
 uint32_t cnc_buffer_fifo_bitmask(struct cnc *self)

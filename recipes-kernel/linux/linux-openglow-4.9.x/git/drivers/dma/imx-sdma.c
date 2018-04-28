@@ -216,7 +216,7 @@ struct sdma_channel {
 	struct sdma_engine		*sdma;
 	struct sdma_desc		*desc;
 	unsigned int			channel;
-	enum dma_transfer_direction		direction;
+	enum dma_transfer_direction	direction;
 	enum sdma_peripheral_type	peripheral_type;
 	unsigned int			event_id0;
 	unsigned int			event_id1;
@@ -239,7 +239,7 @@ struct sdma_channel {
 	bool				src_dualfifo;
 	bool				dst_dualfifo;
 	struct dma_pool			*bd_pool;
-	struct dma_async_tx_descriptor cb;
+	struct dma_async_tx_descriptor 	cb;
 	struct tasklet_struct		cb_task;
 };
 
@@ -733,19 +733,18 @@ int sdma_fetch_datamem(struct sdma_engine *sdma, void *buf, int size,
 EXPORT_SYMBOL(sdma_fetch_datamem);
 
 int sdma_fetch_partial_context(struct sdma_channel *sdmac, void *buf,
-    u32 byte_offset,
-    u32 num_bytes)
+	u32 byte_offset, u32 num_bytes)
 {
-  static const u32 csz = sizeof(struct sdma_context_data);
-  u32 addr;
-  if (num_bytes > csz || num_bytes == 0 ||
-      byte_offset >= csz || byte_offset+num_bytes > csz ||
-      num_bytes % sizeof(u32) || byte_offset % sizeof(u32)) {
-    dev_err(sdmac->sdma->dev, "%s: invalid offset/length", __func__);
-    return -EINVAL;
-  }
-  addr = sdma_channel_context_base(sdmac->channel) + byte_offset/sizeof(u32);
-  return sdma_fetch_datamem(sdmac->sdma, buf, num_bytes, addr);
+	static const u32 csz = sizeof(struct sdma_context_data);
+	u32 addr;
+	if (num_bytes > csz || num_bytes == 0 ||
+	byte_offset >= csz || byte_offset+num_bytes > csz ||
+	num_bytes % sizeof(u32) || byte_offset % sizeof(u32)) {
+		dev_err(sdmac->sdma->dev, "%s: invalid offset/length", __func__);
+		return -EINVAL;
+	}
+	addr = sdma_channel_context_base(sdmac->channel) + byte_offset/sizeof(u32);
+	return sdma_fetch_datamem(sdmac->sdma, buf, num_bytes, addr);
 }
 EXPORT_SYMBOL(sdma_fetch_partial_context);
 
@@ -1094,20 +1093,18 @@ static struct sdma_channel *to_sdma_chan(struct dma_chan *chan)
 }
 
 int sdma_load_partial_context(struct sdma_channel *sdmac,
-    struct sdma_context_data *context,
-    u32 byte_offset,
-    u32 num_bytes)
+	struct sdma_context_data *context, u32 byte_offset, u32 num_bytes)
 {
-  static const u32 csz = sizeof(*context);
-  u32 addr;
-  if (num_bytes > csz || num_bytes == 0 ||
-      byte_offset >= csz || byte_offset+num_bytes > csz ||
-      num_bytes % sizeof(u32) || byte_offset % sizeof(u32)) {
-    dev_err(sdmac->sdma->dev, "%s: invalid offset/length", __func__);
-    return -EINVAL;
-  }
-  addr = sdma_channel_context_base(sdmac->channel) + byte_offset/sizeof(u32);
-  return sdma_write_datamem(sdmac->sdma, context, num_bytes, addr);
+	static const u32 csz = sizeof(*context);
+	u32 addr;
+	if (num_bytes > csz || num_bytes == 0 ||
+	byte_offset >= csz || byte_offset+num_bytes > csz ||
+	num_bytes % sizeof(u32) || byte_offset % sizeof(u32)) {
+		dev_err(sdmac->sdma->dev, "%s: invalid offset/length", __func__);
+		return -EINVAL;
+	}
+	addr = sdma_channel_context_base(sdmac->channel) + byte_offset/sizeof(u32);
+	return sdma_write_datamem(sdmac->sdma, context, num_bytes, addr);
 }
 EXPORT_SYMBOL(sdma_load_partial_context);
 
@@ -2628,6 +2625,7 @@ ssize_t sdma_print_context(struct sdma_engine *sdma, int channel, char *buf)
 			((i % 6) == 5) ? '\n' : ' ');
 	}
 	outlen += scnprintf(buf+outlen, PAGE_SIZE-outlen, "\n");
+
 	kfree(context);
 	return outlen;
 }

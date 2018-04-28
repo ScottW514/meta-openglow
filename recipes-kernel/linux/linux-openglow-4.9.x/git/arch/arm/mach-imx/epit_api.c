@@ -1,6 +1,7 @@
 /**
  * Low-level i.MX6 EPIT API.
- * Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
+ * Copyright (C) 2018 Scott Wiederhold <s.e.wiederhold@gmail.com>
+ * Portions Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
  */
 
 #include <linux/platform_data/epit-imx.h>
@@ -89,7 +90,6 @@ static int epit_init(struct epit *epit, epit_cb callback,
 {
 	u32 val;
 	int ret = 0;
-
 	/* zero out control register */
 	__raw_writel(0, epit->base+EPITCR);
 	/* clear previous interrupt status */
@@ -100,7 +100,7 @@ static int epit_init(struct epit *epit, epit_cb callback,
 	__raw_writel(0, epit->base+EPITCMPR);
 	/* set mode and clock source; enable interrupt */
 	/* peripheral clock is 66MHz */
-	val = EPITCR_CLKSRC_PERIPHERAL|EPITCR_WAITEN|EPITCR_RLD|EPITCR_OCIEN
+	val = EPITCR_CLKSRC_REF_HIGH|EPITCR_WAITEN|EPITCR_RLD|EPITCR_OCIEN
 		|EPITCR_ENMOD;
 	__raw_writel(val, epit->base+EPITCR);
 	/* set up callback, register an IRQ handler if necessary */
@@ -213,6 +213,21 @@ struct epit *epit_get(struct device_node *np)
 }
 EXPORT_SYMBOL(epit_get);
 
+static ssize_t status_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct epit *epit = platform_get_drvdata(pdev);
+  	return scnprintf(buf, PAGE_SIZE,
+		"CR=%04x SR=%04x LR=%04x CMPR=%04x CNR=%04x\n",
+		__raw_readl(epit->base+EPITCR),
+		__raw_readl(epit->base+EPITSR),
+		__raw_readl(epit->base+EPITLR),
+		__raw_readl(epit->base+EPITCMPR),
+		__raw_readl(epit->base+EPITCNR)
+	);
+}
+static DEVICE_ATTR(status, S_IRUSR, status_show, NULL);
+
 static int epit_probe(struct platform_device *pdev)
 {
 	struct epit *epit;
@@ -279,6 +294,9 @@ static int epit_probe(struct platform_device *pdev)
 	dev_info(&pdev->dev, "irq=%d, rate=%ld, sdma_event=%d\n",
 		epit->irq, epit->rate, epit->sdma_event);
 
+	/* Create SYSFS entry for debugging purposes */
+	device_create_file(&pdev->dev, &dev_attr_status);
+
 	return 0;
 }
 
@@ -312,4 +330,4 @@ static struct platform_driver epit_driver = {
 module_platform_driver(epit_driver);
 
 MODULE_LICENSE("GPL v2");
-MODULE_AUTHOR("Glowforge, Inc. <opensource@glowforge.com>");
+MODULE_AUTHOR("Scott Wiederhold <s.e.wiederhold@gmail.com>");

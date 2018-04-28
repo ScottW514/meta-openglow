@@ -57,7 +57,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/interrupt-controller/irq.h>
 #include "imx6q.dtsi"
 
 / {
@@ -67,352 +66,347 @@
 
 &iomuxc {
 	pinctrl-names = "default";
-	pinctrl-0 = <&iomuxc_openglow_std>;
+	pinctrl-0 = <&pinctrl_hog>;
 
-	iomuxc_openglow_std: iomuxc-openglow-stdgrp {
-		status = "okay";
-	};
-};
+    openglow_std {
+        pinctrl_hog: hog {
+            fsl,pins = <
+#define GP_HOG_TP90        <&gpio1 3 GPIO_ACTIVE_HIGH> /* TP90 */
+                  MX6QDL_PAD_GPIO_3__GPIO1_IO03    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+#define GP_HOG_TP91        <&gpio7 13 GPIO_ACTIVE_HIGH> /* TP91 */
+                  MX6QDL_PAD_GPIO_18__GPIO7_IO13   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+            >;
+        };
 
-&iomuxc_openglow_std {
-pinctrl_bt_rfkill: bt-rfkillgrp {
-    fsl,pins = <
+        pinctrl_bt_rfkill: bt-rfkillgrp {
+            fsl,pins = <
 #define GP_BT_RFKILL_RESET  <&gpio6 16 GPIO_ACTIVE_LOW>
-        MX6QDL_PAD_NANDF_CS3__GPIO6_IO16    (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
-    >;
-};
+                MX6QDL_PAD_NANDF_CS3__GPIO6_IO16    (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+            >;
+        };
 
-/* SOM on-board Serial Flash */
-pinctrl_ecspi1: ecspi1grp {
-    fsl,pins = <
-        MX6QDL_PAD_EIM_D17__ECSPI1_MISO     (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-        MX6QDL_PAD_EIM_D18__ECSPI1_MOSI     (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-        MX6QDL_PAD_EIM_D16__ECSPI1_SCLK     (SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+        /* SOM on-board Serial Flash */
+        pinctrl_ecspi1: ecspi1grp {
+            fsl,pins = <
+                MX6QDL_PAD_EIM_D17__ECSPI1_MISO     (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_EIM_D18__ECSPI1_MOSI     (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_EIM_D16__ECSPI1_SCLK     (SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define GP_ECSPI1_NOR_CS    <&gpio3 19 GPIO_ACTIVE_LOW>
-        MX6QDL_PAD_EIM_D19__GPIO3_IO19      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-    >;
-};
+                MX6QDL_PAD_EIM_D19__GPIO3_IO19      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+            >;
+        };
 
-/* Stepper Drivers SPI Bus */
-pinctrl_ecspi2: ecspi2grp {
-    fsl,pins = <
-        MX6QDL_PAD_CSI0_DAT10__ECSPI2_MISO  (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-        MX6QDL_PAD_CSI0_DAT9__ECSPI2_MOSI   (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-        MX6QDL_PAD_CSI0_DAT8__ECSPI2_SCLK   (SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+        /* Stepper Drivers SPI Bus */
+        pinctrl_ecspi2: ecspi2grp {
+            fsl,pins = <
+                MX6QDL_PAD_CSI0_DAT10__ECSPI2_MISO  (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_CSI0_DAT9__ECSPI2_MOSI   (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_CSI0_DAT8__ECSPI2_SCLK   (SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define GP_SPI_CS0  <&gpio2 26 GPIO_ACTIVE_LOW> /* X-Stepper */
-        MX6QDL_PAD_EIM_RW__GPIO2_IO26       (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_EIM_RW__GPIO2_IO26       (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define GP_SPI_CS1  <&gpio3 24 GPIO_ACTIVE_LOW> /* Y1-Stepper */
-        MX6QDL_PAD_EIM_D24__GPIO3_IO24      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_EIM_D24__GPIO3_IO24      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define GP_SPI_CS2  <&gpio3 25 GPIO_ACTIVE_LOW> /* Y2-Stepper */
-        MX6QDL_PAD_EIM_D25__GPIO3_IO25      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-    >;
-};
+                MX6QDL_PAD_EIM_D25__GPIO3_IO25      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+            >;
+        };
 
-  /* GPIO - Aux I/O */
-  pinctrl_gpio_aux: gpio-auxgrp {
-      fsl,pins = <
+          /* GPIO - Aux I/O */
+          pinctrl_gpio_aux: gpio-auxgrp {
+              fsl,pins = <
 #define GP_AUX_IO_01        <&gpio4 10 GPIO_ACTIVE_HIGH> /* AUX_IO01 */
-          MX6QDL_PAD_KEY_COL2__GPIO4_IO10    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_KEY_COL2__GPIO4_IO10    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_02        <&gpio4 11 GPIO_ACTIVE_HIGH> /* AUX_IO02 */
-          MX6QDL_PAD_KEY_ROW2__GPIO4_IO11    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_KEY_ROW2__GPIO4_IO11    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_03        <&gpio3 12 GPIO_ACTIVE_HIGH> /* AUX_IO03 */
-          MX6QDL_PAD_EIM_DA12__GPIO3_IO12    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_EIM_DA12__GPIO3_IO12    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_04        <&gpio7 12 GPIO_ACTIVE_HIGH> /* AUX_IO04 */
-          MX6QDL_PAD_GPIO_17__GPIO7_IO12   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_GPIO_17__GPIO7_IO12   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_05        <&gpio3 3 GPIO_ACTIVE_HIGH> /* AUX_IO05 */
-          MX6QDL_PAD_EIM_DA3__GPIO3_IO03   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_EIM_DA3__GPIO3_IO03   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_06        <&gpio3 29 GPIO_ACTIVE_HIGH> /* AUX_IO06 */
-          MX6QDL_PAD_EIM_D29__GPIO3_IO29  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_EIM_D29__GPIO3_IO29  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_07        <&gpio6 2 GPIO_ACTIVE_HIGH>  /* AUX_IO07 */
-          MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_08        <&gpio6 3 GPIO_ACTIVE_HIGH>  /* AUX_IO08 */
-          MX6QDL_PAD_CSI0_DAT17__GPIO6_IO03  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_CSI0_DAT17__GPIO6_IO03  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_09        <&gpio4 5 GPIO_ACTIVE_HIGH>  /* AUX_IO09 */
-          MX6QDL_PAD_GPIO_19__GPIO4_IO05     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_GPIO_19__GPIO4_IO05     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_10        <&gpio1 24 GPIO_ACTIVE_HIGH> /* AUX_IO10 */
-          MX6QDL_PAD_ENET_RX_ER__GPIO1_IO24  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_ENET_RX_ER__GPIO1_IO24  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_11        <&gpio6 7 GPIO_ACTIVE_HIGH>  /* AUX_IO11 */
-          MX6QDL_PAD_NANDF_CLE__GPIO6_IO07   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_NANDF_CLE__GPIO6_IO07   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_12        <&gpio3 23 GPIO_ACTIVE_HIGH> /* AUX_IO12 */
-          MX6QDL_PAD_EIM_D23__GPIO3_IO23     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_EIM_D23__GPIO3_IO23     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_13        <&gpio6 9 GPIO_ACTIVE_HIGH>  /* AUX_IO13 */
-          MX6QDL_PAD_NANDF_WP_B__GPIO6_IO09  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_NANDF_WP_B__GPIO6_IO09  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_14        <&gpio3 7 GPIO_ACTIVE_HIGH>  /* AUX_IO14 */
-          MX6QDL_PAD_EIM_DA7__GPIO3_IO07     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_EIM_DA7__GPIO3_IO07     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_15        <&gpio3 8 GPIO_ACTIVE_HIGH>  /* AUX_IO15 */
-          MX6QDL_PAD_EIM_DA8__GPIO3_IO08     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_EIM_DA8__GPIO3_IO08     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_AUX_IO_16        <&gpio3 2 GPIO_ACTIVE_HIGH>  /* AUX_IO16 */
-          MX6QDL_PAD_EIM_DA2__GPIO3_IO02     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
-      >;
- };
+                  MX6QDL_PAD_EIM_DA2__GPIO3_IO02     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+              >;
+         };
 
-  /* OPENGLOW - CNC */
-  pinctrl_cnc: gpio-cncgrp {
-      fsl,pins = <
+          /* OPENGLOW - CNC */
+          pinctrl_cnc: gpio-cncgrp {
+              fsl,pins = <
 #define CNC_LASER_EN    <&gpio5 29 GPIO_ACTIVE_HIGH> /* LASER_EN - OUT */
-          MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define CNC_LASER_ON_HEAD   <&gpio5 25 GPIO_ACTIVE_HIGH> /* LASER ON HEAD NOTIFICATION - OUT */
-          MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define CNC_CHARGE_PUMP <&gpio2 4 GPIO_ACTIVE_HIGH> /* LASER CHARGE PUMP */
-          MX6QDL_PAD_NANDF_D4__GPIO2_IO04   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_NANDF_D4__GPIO2_IO04   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define CNC_XY_EN       <&gpio5 31 GPIO_ACTIVE_LOW> /* XY_STEP_EN - OUT */
-          MX6QDL_PAD_CSI0_DAT13__GPIO5_IO31  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_CSI0_DAT13__GPIO5_IO31  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define CNC_X_DIR       <&gpio5 22 GPIO_ACTIVE_HIGH> /* X_DIR - OUT */
-          MX6QDL_PAD_CSI0_DAT4__GPIO5_IO22   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_DAT4__GPIO5_IO22   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define CNC_X_STEP      <&gpio5 30 GPIO_ACTIVE_HIGH> /* X_STEP - OUT */
-          MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define CNC_Y1_DIR      <&gpio5 18 GPIO_ACTIVE_HIGH> /* Y1_DIR - OUT */
-          MX6QDL_PAD_CSI0_PIXCLK__GPIO5_IO18 (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_PIXCLK__GPIO5_IO18 (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define CNC_Y1_STEP     <&gpio5 21 GPIO_ACTIVE_HIGH> /* Y1_STEP - OUT */
-          MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21  (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define CNC_Y2_DIR      <&gpio5 24 GPIO_ACTIVE_HIGH> /* Y2_DIR - OUT */
-          MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define CNC_Y2_STEP     <&gpio5 23 GPIO_ACTIVE_HIGH> /* Y2_STEP - OUT */
-          MX6QDL_PAD_CSI0_DAT5__GPIO5_IO23   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_DAT5__GPIO5_IO23   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define CNC_Z_DIR       <&gpio5 19 GPIO_ACTIVE_HIGH> /* Z_DIR - OUT */
-          MX6QDL_PAD_CSI0_MCLK__GPIO5_IO19      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_MCLK__GPIO5_IO19      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define CNC_Z_STEP      <&gpio5 20 GPIO_ACTIVE_HIGH> /* Z_STEP - OUT */
-          MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-      >;
-  };
+                  MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+              >;
+          };
 
-  /* GPIO - Control */
-  pinctrl_gpio_control: gpio-controlgrp {
-      fsl,pins = <
+          /* GPIO - Control */
+          pinctrl_gpio_control: gpio-controlgrp {
+              fsl,pins = <
 #define GP_CTRL_HEAD <&gpio3 1 GPIO_ACTIVE_HIGH> /* LASER ON HEAD - OUT */
-          MX6QDL_PAD_EIM_DA1__GPIO3_IO01    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_EIM_DA1__GPIO3_IO01    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define GP_CTRL_BTN         <&gpio3 31 GPIO_ACTIVE_LOW> /* nBUTTON - IN */
-          MX6QDL_PAD_EIM_D31__GPIO3_IO31    (HYS | PUE | PKE)
+                  MX6QDL_PAD_EIM_D31__GPIO3_IO31    (HYS | PUE | PKE)
 #define GP_CTRL_DOORS       <&gpio3 10 GPIO_ACTIVE_LOW> /* nDOORS_OK - IN */
-          MX6QDL_PAD_EIM_DA10__GPIO3_IO10   (HYS | PUE | PKE)
+                  MX6QDL_PAD_EIM_DA10__GPIO3_IO10   (HYS | PUE | PKE)
 #define GP_CTRL_ILOCK       <&gpio3 11 GPIO_ACTIVE_LOW> /* nINTLOCK_OK - IN */
-          MX6QDL_PAD_EIM_DA11__GPIO3_IO11   (HYS | PUE | PKE)
+                  MX6QDL_PAD_EIM_DA11__GPIO3_IO11   (HYS | PUE | PKE)
 #define GP_CTRL_LID1        <&gpio3 9 GPIO_ACTIVE_LOW> /* nLID_SW1 - IN */
-          MX6QDL_PAD_EIM_DA9__GPIO3_IO09    (HYS | PUE | PKE)
+                  MX6QDL_PAD_EIM_DA9__GPIO3_IO09    (HYS | PUE | PKE)
 #define GP_CTRL_LID2        <&gpio2 7 GPIO_ACTIVE_LOW> /* nLID_SW2 - IN */
-          MX6QDL_PAD_NANDF_D7__GPIO2_IO07   (HYS | PUE | PKE)
+                  MX6QDL_PAD_NANDF_D7__GPIO2_IO07   (HYS | PUE | PKE)
 #define GP_CTRL_SAFE_FIRE   <&gpio3 0 GPIO_ACTIVE_LOW> /* nSAFE_TO_FIRE - IN */
-          MX6QDL_PAD_EIM_DA0__GPIO3_IO00    (HYS | PUE | PKE)
+                  MX6QDL_PAD_EIM_DA0__GPIO3_IO00    (HYS | PUE | PKE)
 #define GP_CTRL_RUN_PRGM    <&gpio3 4 GPIO_ACTIVE_HIGH> /* RUN_PRGM - IN */
-          MX6QDL_PAD_EIM_DA4__GPIO3_IO04    (HYS | PUE | PKE)
-      >;
-  };
+                  MX6QDL_PAD_EIM_DA4__GPIO3_IO04    (HYS | PUE | PKE)
+              >;
+          };
 
-  /* GPIO - Misc */
-  pinctrl_gpio_misc: gpio-miscgrp {
-      fsl,pins = <
-#define GP_MISC_TP90        <&gpio1 3 GPIO_ACTIVE_HIGH> /* TP90 */
-          MX6QDL_PAD_GPIO_3__GPIO1_IO03    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
-#define GP_MISC_TP91        <&gpio7 13 GPIO_ACTIVE_HIGH> /* TP91 */
-          MX6QDL_PAD_GPIO_18__GPIO7_IO13 (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
-      >;
-  };
-
-  /* GPIO - Power */
-  pinctrl_gpio_power: gpio-powergrp {
-      fsl,pins = <
+          /* GPIO - Power */
+          pinctrl_gpio_power: gpio-powergrp {
+              fsl,pins = <
 #define GP_PWR_12V_EN       <&gpio2 6 GPIO_ACTIVE_HIGH> /* 12VDC_EN - OUT */
-          MX6QDL_PAD_NANDF_D6__GPIO2_IO06    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_NANDF_D6__GPIO2_IO06    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_PWR_12V_OK       <&gpio1 9 GPIO_ACTIVE_HIGH> /* 12VDC_OK - IN */
-          MX6QDL_PAD_GPIO_9__GPIO1_IO09      (HYS | PUE | PKE)
+                  MX6QDL_PAD_GPIO_9__GPIO1_IO09      (HYS | PUE | PKE)
 #define GP_PWR_HV_PFC_STOP  <&gpio2 1 GPIO_ACTIVE_HIGH> /* HV_PFC_STOP - Unknown Function - OUT?/IN? */
-          MX6QDL_PAD_NANDF_D1__GPIO2_IO01    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
-      >;
-  };
+                  MX6QDL_PAD_NANDF_D1__GPIO2_IO01    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+              >;
+          };
 
-  /* GPIO - Power 40 V */
-  pinctrl_gpio_power_40v: gpio-power40vgrp {
-      fsl,pins = <
+          /* GPIO - Power 40 V */
+          pinctrl_gpio_power_40v: gpio-power40vgrp {
+              fsl,pins = <
 #define GP_PWR_40V_EN       <&gpio2 3 GPIO_ACTIVE_HIGH> /* 40VDC_EN - OUT */
-          MX6QDL_PAD_NANDF_D3__GPIO2_IO03    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_NANDF_D3__GPIO2_IO03    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_PWR_40V_OK       <&gpio1 2 GPIO_ACTIVE_HIGH> /* 40VDC_OK - IN */
-          MX6QDL_PAD_GPIO_2__GPIO1_IO02      (HYS | PUE | PKE)
-      >;
-  };
+                  MX6QDL_PAD_GPIO_2__GPIO1_IO02      (HYS | PUE | PKE)
+              >;
+          };
 
-  /* GPIO - Thermal */
-  pinctrl_gpio_thermal: gpio-thermalgrp {
-      fsl,pins = <
+          /* GPIO - Thermal */
+          pinctrl_gpio_thermal: gpio-thermalgrp {
+              fsl,pins = <
 #define GP_THRM_EXH_FAN1        <&gpio3 20 GPIO_ACTIVE_HIGH> /* EXH_FAN_SENS - IN */
-          MX6QDL_PAD_EIM_D20__GPIO3_IO20     (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_LOW)
+                  MX6QDL_PAD_EIM_D20__GPIO3_IO20     (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_LOW)
 #define GP_THRM_INTK_FAN1       <&gpio6 11 GPIO_ACTIVE_HIGH> /* INTK_FAN1_SENS - IN */
-          MX6QDL_PAD_NANDF_CS0__GPIO6_IO11   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_LOW)
+                  MX6QDL_PAD_NANDF_CS0__GPIO6_IO11   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_LOW)
 #define GP_THRM_INTK_FAN2       <&gpio2 2 GPIO_ACTIVE_HIGH> /* INTK_FAN2_SENS - IN */
-          MX6QDL_PAD_NANDF_D2__GPIO2_IO02    (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_LOW)
+                  MX6QDL_PAD_NANDF_D2__GPIO2_IO02    (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_LOW)
 #define GP_THRM_TEC_EN          <&gpio3 5 GPIO_ACTIVE_HIGH> /* TEC_EN - OUT */
-          MX6QDL_PAD_EIM_DA5__GPIO3_IO05     (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_EIM_DA5__GPIO3_IO05     (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_THRM_WTR_PMP_EN      <&gpio2 23 GPIO_ACTIVE_HIGH> /* WTR_PMP_EN - OUT */
-          MX6QDL_PAD_EIM_CS0__GPIO2_IO23     (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                  MX6QDL_PAD_EIM_CS0__GPIO2_IO23     (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_THRM_WTR_SENS_PWR    <&gpio2 25 GPIO_ACTIVE_HIGH> /* WTR_SENS_PWR - OUT */
-          MX6QDL_PAD_EIM_OE__GPIO2_IO25      (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
-      >;
-  };
+                  MX6QDL_PAD_EIM_OE__GPIO2_IO25      (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+              >;
+          };
 
-  /* PIC I2C Bus */
-  pinctrl_i2c1: i2c1grp {
-      fsl,pins = <
-          MX6QDL_PAD_EIM_D21__I2C1_SCL      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_EIM_D28__I2C1_SDA      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-      >;
-  };
+          /* PIC I2C Bus */
+          pinctrl_i2c1: i2c1grp {
+              fsl,pins = <
+                  MX6QDL_PAD_EIM_D21__I2C1_SCL      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_EIM_D28__I2C1_SDA      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+              >;
+          };
 
-  /* Interconnect PCB Bus */
-  pinctrl_i2c2: i2c2grp {
-      fsl,pins = <
-          MX6QDL_PAD_KEY_COL3__I2C2_SCL      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_KEY_ROW3__I2C2_SDA      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-      >;
-  };
+          /* Interconnect PCB Bus */
+          pinctrl_i2c2: i2c2grp {
+              fsl,pins = <
+                  MX6QDL_PAD_KEY_COL3__I2C2_SCL      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_KEY_ROW3__I2C2_SDA      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+              >;
+          };
 
-  /* Lid PCB Bus */
-  pinctrl_i2c3: i2c3grp {
-      fsl,pins = <
-          MX6QDL_PAD_GPIO_5__I2C3_SCL       (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_GPIO_16__I2C3_SDA      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-      >;
-  };
+          /* Lid PCB Bus */
+          pinctrl_i2c3: i2c3grp {
+              fsl,pins = <
+                  MX6QDL_PAD_GPIO_5__I2C3_SCL       (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_GPIO_16__I2C3_SDA      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+              >;
+          };
 
-  /* EXH_FAN_PWM */
-  pinctrl_pwm1: pwm1grp {
-      fsl,pins = <
-          MX6QDL_PAD_SD1_DAT3__PWM1_OUT     (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-      >;
-  };
+          /* EXH_FAN_PWM */
+          pinctrl_pwm1: pwm1grp {
+              fsl,pins = <
+                  MX6QDL_PAD_SD1_DAT3__PWM1_OUT     (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+              >;
+          };
 
-  /* HV_PWM */
-  pinctrl_pwm3: pwm3grp {
-      fsl,pins = <
-          MX6QDL_PAD_SD1_DAT1__PWM3_OUT   (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-      >;
-  };
+          /* HV_PWM */
+          pinctrl_pwm3: pwm3grp {
+              fsl,pins = <
+                  MX6QDL_PAD_SD1_DAT1__PWM3_OUT   (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+              >;
+          };
 
-  /* INTK_FAN_PWM */
-  pinctrl_pwm4: pwm4grp {
-      fsl,pins = <
-          MX6QDL_PAD_SD1_CMD__PWM4_OUT    (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-      >;
-  };
+          /* INTK_FAN_PWM */
+          pinctrl_pwm4: pwm4grp {
+              fsl,pins = <
+                  MX6QDL_PAD_SD1_CMD__PWM4_OUT    (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+              >;
+          };
 
-  /* WL_EN */
-  pinctrl_reg_wlan_en: reg-wlan-engrp {
-      fsl,pins = <
+          /* WL_EN */
+          pinctrl_reg_wlan_en: reg-wlan-engrp {
+              fsl,pins = <
 #define GP_REG_WLAN_EN  <&gpio6 15 GPIO_ACTIVE_HIGH>
-          MX6QDL_PAD_NANDF_CS2__GPIO6_IO15 (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
-      >;
-  };
+                  MX6QDL_PAD_NANDF_CS2__GPIO6_IO15 (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+              >;
+          };
 
-  /* UART1 - USB Console TTYMXC0 */
-  pinctrl_uart1: uart1grp {
-      fsl,pins = <
-          MX6QDL_PAD_SD3_DAT7__UART1_TX_DATA  (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD3_DAT6__UART1_RX_DATA  (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-      >;
-  };
+          /* UART1 - USB Console TTYMXC0 */
+          pinctrl_uart1: uart1grp {
+              fsl,pins = <
+                  MX6QDL_PAD_SD3_DAT7__UART1_TX_DATA  (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD3_DAT6__UART1_RX_DATA  (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+              >;
+          };
 
-  /* UART5 - Bluetooth */
-  pinctrl_uart5: uart5grp {
-      fsl,pins = <
-          MX6QDL_PAD_CSI0_DAT14__UART5_TX_DATA (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_CSI0_DAT15__UART5_RX_DATA (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_CSI0_DAT18__UART5_CTS_B   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_CSI0_DAT19__UART5_RTS_B   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-      >;
-  };
+          /* UART5 - Bluetooth */
+          pinctrl_uart5: uart5grp {
+              fsl,pins = <
+                  MX6QDL_PAD_CSI0_DAT14__UART5_TX_DATA (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_DAT15__UART5_RX_DATA (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_DAT18__UART5_CTS_B   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_DAT19__UART5_RTS_B   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+              >;
+          };
 
-	/* USB HOST 1 */
-	pinctrl_usbhst1: usbhst1grp {
-		fsl,pins = <
-			MX6QDL_PAD_EIM_D30__USB_H1_OC		0x1b0b0 /* USB_HOST_OC */
-		>;
-	};
-	pinctrl_reg_usbhst1_vbus: reg-usbhst1-vbusgrp {
-		fsl,pins = <
+        	/* USB HOST 1 */
+        	pinctrl_usbhst1: usbhst1grp {
+        		fsl,pins = <
+        			MX6QDL_PAD_EIM_D30__USB_H1_OC		0x1b0b0 /* USB_HOST_OC */
+        		>;
+        	};
+        	pinctrl_reg_usbhst1_vbus: reg-usbhst1-vbusgrp {
+        		fsl,pins = <
 #define GP_REG_USBHST1	<&gpio1 0 GPIO_ACTIVE_HIGH>
-			MX6QDL_PAD_GPIO_0__GPIO1_IO00		0x030b0
-		>;
-	};
-	/* USB OTG */
-	pinctrl_usbotg: usbotggrp {
-		fsl,pins = <
-			MX6QDL_PAD_GPIO_1__USB_OTG_ID		0x17059
-			MX6QDL_PAD_KEY_COL4__USB_OTG_OC		0x1b0b0
-		>;
-	};
-	pinctrl_reg_usbotg_vbus: reg-usbotg-vbusgrp {
-		fsl,pins = <
+        			MX6QDL_PAD_GPIO_0__GPIO1_IO00		0x030b0
+        		>;
+        	};
+        	/* USB OTG */
+        	pinctrl_usbotg: usbotggrp {
+        		fsl,pins = <
+        			MX6QDL_PAD_GPIO_1__USB_OTG_ID		0x17059
+        			MX6QDL_PAD_KEY_COL4__USB_OTG_OC		0x1b0b0
+        		>;
+        	};
+        	pinctrl_reg_usbotg_vbus: reg-usbotg-vbusgrp {
+        		fsl,pins = <
 #define GP_REG_USBOTG	<&gpio3 22 GPIO_ACTIVE_HIGH>
-			MX6QDL_PAD_EIM_D22__GPIO3_IO22		0x030b0
-		>;
-	};
+        			MX6QDL_PAD_EIM_D22__GPIO3_IO22		0x030b0
+        		>;
+        	};
 
-  /* uSDHC2 - Wireless module */
-  pinctrl_usdhc2: usdhc2grp {
-      fsl,pins = <
-          MX6QDL_PAD_SD2_CLK__SD2_CLK         (HYS | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_CMD__SD2_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT0__SD2_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT1__SD2_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT2__SD2_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT3__SD2_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD1_CLK__OSC32K_32K_OUT  (SPEED_MED_HIGH | DSE_40ohm)
+          /* uSDHC2 - Wireless module */
+          pinctrl_usdhc2: usdhc2grp {
+              fsl,pins = <
+                  MX6QDL_PAD_SD2_CLK__SD2_CLK         (HYS | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_CMD__SD2_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT0__SD2_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT1__SD2_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT2__SD2_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT3__SD2_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD1_CLK__OSC32K_32K_OUT  (SPEED_MED_HIGH | DSE_40ohm)
 #define GPIRQ_WL1271    <&gpio6 14 IRQ_TYPE_LEVEL_HIGH>
-          MX6QDL_PAD_NANDF_CS1__GPIO6_IO14    (HYS | SPEED_MED_HIGH | DSE_40ohm)
-      >;
-  };
+                  MX6QDL_PAD_NANDF_CS1__GPIO6_IO14    (HYS | SPEED_MED_HIGH | DSE_40ohm)
+              >;
+          };
 
-  pinctrl_usdhc2_100mhz: usdhc2grp-100mhz {
-      fsl,pins = <
-          MX6QDL_PAD_SD2_CMD__SD2_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_CLK__SD2_CLK         (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT0__SD2_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT1__SD2_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT2__SD2_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT3__SD2_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-      >;
-  };
+          pinctrl_usdhc2_100mhz: usdhc2grp-100mhz {
+              fsl,pins = <
+                  MX6QDL_PAD_SD2_CMD__SD2_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_CLK__SD2_CLK         (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT0__SD2_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT1__SD2_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT2__SD2_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT3__SD2_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+              >;
+          };
 
-  pinctrl_usdhc2_200mhz: usdhc2grp-200mhz {
-      fsl,pins = <
-          MX6QDL_PAD_SD2_CMD__SD2_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_CLK__SD2_CLK         (HYS | SPEED_HIGH | DSE_33ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT0__SD2_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT1__SD2_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT2__SD2_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
-          MX6QDL_PAD_SD2_DAT3__SD2_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
-      >;
-  };
+          pinctrl_usdhc2_200mhz: usdhc2grp-200mhz {
+              fsl,pins = <
+                  MX6QDL_PAD_SD2_CMD__SD2_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_CLK__SD2_CLK         (HYS | SPEED_HIGH | DSE_33ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT0__SD2_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT1__SD2_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT2__SD2_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
+                  MX6QDL_PAD_SD2_DAT3__SD2_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
+              >;
+          };
 
-  /* uSDHC3 - /dev/mmcblk0 - SD Card Slot */
-  pinctrl_usdhc3: usdhc3grp {
-      fsl,pins = <
-          MX6QDL_PAD_SD3_CLK__SD3_CLK         (HYS | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD3_CMD__SD3_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD3_DAT0__SD3_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD3_DAT1__SD3_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD3_DAT2__SD3_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-          MX6QDL_PAD_SD3_DAT3__SD3_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+          /* uSDHC3 - /dev/mmcblk0 - SD Card Slot */
+          pinctrl_usdhc3: usdhc3grp {
+              fsl,pins = <
+                  MX6QDL_PAD_SD3_CLK__SD3_CLK         (HYS | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD3_CMD__SD3_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD3_DAT0__SD3_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD3_DAT1__SD3_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD3_DAT2__SD3_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_SD3_DAT3__SD3_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
 #define GP_USDHC3_CD    <&gpio7 0 GPIO_ACTIVE_LOW>
-          MX6QDL_PAD_SD3_DAT5__GPIO7_IO00     (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
-      >;
-  };
+                  MX6QDL_PAD_SD3_DAT5__GPIO7_IO00     (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+              >;
+          };
 
-  /* uSDHC4 - /dev/mmcblk1 - SOM on-board MMC */
-  pinctrl_usdhc4: usdhc4grp {
-      fsl,pins = <
-          MX6QDL_PAD_SD4_CLK__SD4_CLK         (HYS | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-          MX6QDL_PAD_SD4_CMD__SD4_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-          MX6QDL_PAD_SD4_DAT0__SD4_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-          MX6QDL_PAD_SD4_DAT1__SD4_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-          MX6QDL_PAD_SD4_DAT2__SD4_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-          MX6QDL_PAD_SD4_DAT3__SD4_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-          MX6QDL_PAD_SD4_DAT4__SD4_DATA4      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-          MX6QDL_PAD_SD4_DAT5__SD4_DATA5      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-          MX6QDL_PAD_SD4_DAT6__SD4_DATA6      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-          MX6QDL_PAD_SD4_DAT7__SD4_DATA7      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
+          /* uSDHC4 - /dev/mmcblk1 - SOM on-board MMC */
+          pinctrl_usdhc4: usdhc4grp {
+              fsl,pins = <
+                  MX6QDL_PAD_SD4_CLK__SD4_CLK         (HYS | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
+                  MX6QDL_PAD_SD4_CMD__SD4_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
+                  MX6QDL_PAD_SD4_DAT0__SD4_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
+                  MX6QDL_PAD_SD4_DAT1__SD4_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
+                  MX6QDL_PAD_SD4_DAT2__SD4_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
+                  MX6QDL_PAD_SD4_DAT3__SD4_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
+                  MX6QDL_PAD_SD4_DAT4__SD4_DATA4      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
+                  MX6QDL_PAD_SD4_DAT5__SD4_DATA5      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
+                  MX6QDL_PAD_SD4_DAT6__SD4_DATA6      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
+                  MX6QDL_PAD_SD4_DAT7__SD4_DATA7      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
 #define GP_EMMC_RESET   <&gpio2 0 GPIO_ACTIVE_LOW>
-          MX6QDL_PAD_NANDF_D0__GPIO2_IO00     (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
-      >;
-  };
+                  MX6QDL_PAD_NANDF_D0__GPIO2_IO00     (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+              >;
+          };
+     };
 };
 
 / {
@@ -499,12 +493,12 @@ pinctrl_ecspi2: ecspi2grp {
         ctrl-run-prgm-gpio = GP_CTRL_RUN_PRGM;
         };
 
-	openglow-misc {
-		compatible = "openglow,misc";
+	openglow-hog {
+		compatible = "openglow,hog";
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_gpio_misc>;
-        misc-tp90-gpio = GP_MISC_TP90;
-        misc-tp91-gpio = GP_MISC_TP91;
+		pinctrl-0 = <&pinctrl_hog>;
+        misc-tp90-gpio = GP_HOG_TP90;
+        misc-tp91-gpio = GP_HOG_TP91;
   };
 
 	openglow-power {
@@ -623,7 +617,7 @@ pinctrl_ecspi2: ecspi2grp {
 	};
 };
 
-&ecspi1 {
+/* &ecspi1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi1>;
 	fsl,spi-num-chipselects = <1>;
@@ -650,7 +644,7 @@ pinctrl_ecspi2: ecspi2grp {
 			reg = <0xC2000 0x13e000>;
 		};
 	};
-};
+}; */
 
 &ecspi2 {
 	pinctrl-names = "default";
@@ -677,11 +671,11 @@ pinctrl_ecspi2: ecspi2grp {
 };
 
 &epit1 {
-  compatible = "fsl,imx6qdl-epit";
-  id = <0>;
-  clocks = <&clks IMX6QDL_CLK_EPIT1>;
-  clock-names = "epit1";
-  sdma-event = <16>;
+    compatible = "fsl,imx6qdl-epit";
+    id = <0>;
+    clocks = <&clks IMX6QDL_CLK_EPIT1>;
+    clock-names = "epit1";
+    sdma-event = <16>;
 };
 
 /* LID PIC */
