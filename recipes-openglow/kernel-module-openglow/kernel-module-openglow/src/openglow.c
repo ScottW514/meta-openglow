@@ -28,16 +28,19 @@
 #include "cnc.h"
 #include "pic.h"
 #include "thermal.h"
+#include "tmc2130.h"
 #include "openglow.h"
 
 /** Module parameters */
 int cnc_enabled = 1;
 int pic_enabled = 1;
 int thermal_enabled = 1;
+int tmc2130_enabled = 1;
 
 module_param(cnc_enabled, int, 0);
 module_param(pic_enabled, int, 0);
 module_param(thermal_enabled, int, 0);
+module_param(tmc2130_enabled, int, 0);
 
 /** kobject that provides /sys/openglow */
 struct kobject *openglow_kobj;
@@ -96,6 +99,21 @@ static struct platform_driver thermal = {
         }
 };
 
+static struct of_device_id tmc2130_dt_ids[] = {
+        { .compatible = "openglow,tmc2130" },
+        {},
+};
+
+static struct spi_driver tmc2130 = {
+        .probe  = tmc2130_probe,
+        .remove = tmc2130_remove,
+        .driver = {
+                .name = "openglow_tmc2130",
+                .owner = THIS_MODULE,
+                .of_match_table = of_match_ptr(tmc2130_dt_ids)
+        }
+};
+
 
 static int __init openglow_init(void)
 {
@@ -123,16 +141,25 @@ static int __init openglow_init(void)
                 goto failed_thermal_init;
         }
 
-        /* Initialize the stepper driver */
+        /* Initialize the cnc driver */
         status = platform_driver_register(&cnc);
         if (status < 0) {
                 pr_err("failed to initialize CNC driver\n");
                 goto failed_cnc_init;
         }
 
+        /* Initialize the stepper driver */
+        status = spi_register_driver(&tmc2130);
+        if (status < 0) {
+          pr_err("failed to initialize TMC2130 driver\n");
+          goto failed_tmc2130_init;
+        }
+
         pr_info("%s: done\n", __func__);
         return 0;
 
+failed_tmc2130_init:
+        platform_driver_unregister(&cnc);
 failed_cnc_init:
         platform_driver_unregister(&thermal);
 failed_thermal_init:
@@ -147,6 +174,7 @@ module_init(openglow_init);
 static void __exit openglow_exit(void)
 {
         pr_info("%s: started\n", __func__);
+        spi_unregister_driver(&tmc2130);
         platform_driver_unregister(&cnc);
         platform_driver_unregister(&thermal);
         i2c_del_driver(&pic_driver);
@@ -158,6 +186,7 @@ module_exit(openglow_exit);
 
 /** For autoloading */
 static struct of_device_id openglow_dt_ids[] = {
+        { .compatible = "openglow,tmc2130" },
         { .compatible = "openglow,cnc" },
         { .compatible = "openglow,pic" },
         { .compatible = "openglow,thermal" },
