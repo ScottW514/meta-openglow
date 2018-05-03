@@ -128,6 +128,7 @@
 #define ATTR_PWM_SCALE              pwm_scale
 #define ATTR_ENCM_CTRL              encm_ctrl
 #define ATTR_LOST_STEPS             lost_steps
+#define ATTR_STATUS                 status
 
 #define ATTR_GCONF_PATH             TMC2130_SYSFS_ATTR_DIR STR(ATTR_GCONF)
 #define ATTR_GSTAT_PATH             TMC2130_SYSFS_ATTR_DIR STR(ATTR_GSTAT)
@@ -160,6 +161,7 @@
 #define ATTR_PWM_SCALE_PATH         TMC2130_SYSFS_ATTR_DIR STR(ATTR_PWM_SCALE)
 #define ATTR_ENCM_CTRL_PATH         TMC2130_SYSFS_ATTR_DIR STR(ATTR_ENCM_CTRL)
 #define ATTR_LOST_STEPS_PATH        TMC2130_SYSFS_ATTR_DIR STR(ATTR_LOST_STEPS)
+#define ATTR_STATUS_PATH            TMC2130_SYSFS_ATTR_DIR STR(ATTR_STATUS)
 
 
 #define ATTR_PIC_ID                 id

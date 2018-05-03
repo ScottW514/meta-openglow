@@ -32,58 +32,143 @@ extern struct kobject *openglow_kobj;
 /** Module parameters */
 extern int tmc2130_enabled;
 
+static ssize_t tmc2130_spi_transfer(struct spi_device *spi, uint8_t cmd, uint32_t *value)
+{
+        struct tmc2130 *self = spi_get_drvdata(spi);
+        char str[11];
+        WORD32.allfields = ((value) ? *value : 0);
+        char tx[] = {cmd, WORD32.b0, WORD32.b1, WORD32.b2, WORD32.b3};
+        char rx[] = {0, 0, 0, 0, 0};
+        struct spi_transfer tfer[] = {{.tx_buf = tx, .rx_buf = rx, .len = ARRAY_SIZE(tx)}};
+
+        if (spi_sync_transfer(spi, tfer, ARRAY_SIZE(tfer))) { return -EINVAL; }
+        self->status = rx[0];
+
+        if (value) {
+                sprintf(str, "0x%02x%02x%02x%02x", rx[1], rx[2], rx[3], rx[4]);
+                sscanf(str, "%i", value);
+        }
+        return 0;
+}
+
+static ssize_t tmc2130_status_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+        struct spi_device *spi = to_spi_device(dev);
+        struct tmc2130 *self = spi_get_drvdata(spi);
+        ssize_t outlen = 0;
+        uint32_t value, tstep, mscnt, pwm_scale, lost_steps;
+
+        mutex_lock(&self->lock);
+        /* Send DRV_STATUS Command */
+        if (tmc2130_spi_transfer(spi, TMC2130_REG_DRV_STATUS, &value)) { return -EINVAL; }
+        SPI_STATUS.allfields = self->status;
+        /* Send GSTAT Command, Retrieve DRV_STATUS */
+        if (tmc2130_spi_transfer(spi, TMC2130_REG_GSTAT, &value)) { return -EINVAL; }
+        DRV_STATUS.allfields = value;
+        // /* Send IOIN Command, Retrieve GSTAT */
+        if (tmc2130_spi_transfer(spi, TMC2130_REG_IOIN, &value)) { return -EINVAL; }
+        GSTAT.allfields = value;
+        // /* Send TSTEP Command, Retrieve IOIN */
+        if (tmc2130_spi_transfer(spi, TMC2130_REG_TSTEP, &value)) { return -EINVAL; }
+        IOIN.allfields = value;
+        // /* Send MSCNT Command, Retrieve TSTEP */
+        if (tmc2130_spi_transfer(spi, TMC2130_REG_MSCNT, &tstep)) { return -EINVAL; }
+        // /* Send MSCURACT Command, Retrieve MSCNT */
+        if (tmc2130_spi_transfer(spi, TMC2130_REG_MSCURACT, &mscnt)) { return -EINVAL; }
+        // /* Send PWM_SCALE Command, Retrieve MSCURACT */
+        if (tmc2130_spi_transfer(spi, TMC2130_REG_PWM_SCALE, &value)) { return -EINVAL; }
+        MSCURACT.allfields = value;
+        // /* Send LOST_STEPS Command, Retrieve PWM_SCALE */
+        if (tmc2130_spi_transfer(spi, TMC2130_REG_LOST_STEPS, &pwm_scale)) { return -EINVAL; }
+        // /* Send LOST_STEPS Command, Retrieve LOST_STEPS */
+        if (tmc2130_spi_transfer(spi, TMC2130_REG_LOST_STEPS, &lost_steps)) { return -EINVAL; }
+        mutex_unlock(&self->lock);
+
+        outlen = scnprintf(buf+outlen, PAGE_SIZE-outlen,
+		"HW VERSION:%x\n",
+                IOIN.VERSION
+	);
+        outlen += scnprintf(buf+outlen, PAGE_SIZE-outlen,
+		"SPI_STATUS: standstill:%u  sg2:%u  driver_error:%u  reset_flag:%u\n",
+                SPI_STATUS.standstill,
+                SPI_STATUS.sg2,
+                SPI_STATUS.driver_error,
+                SPI_STATUS.reset_flag
+	);
+        outlen += scnprintf(buf+outlen, PAGE_SIZE-outlen,
+		"GSTAT: reset:%u  drv_err:%u  uv_cp:%u\n",
+                GSTAT.reset,
+                GSTAT.drv_err,
+                GSTAT.uv_cp
+	);
+        outlen += scnprintf(buf+outlen, PAGE_SIZE-outlen,
+                "DRV_STATUS: stst:%u ola:%u olb:%u s2ga:%u s2gb:%u\n",
+                DRV_STATUS.stst,
+                DRV_STATUS.ola,
+                DRV_STATUS.olb,
+                DRV_STATUS.s2ga,
+                DRV_STATUS.s2gb
+        );
+        outlen += scnprintf(buf+outlen, PAGE_SIZE-outlen,
+                "            otpw:%u ot:%u CSACTUAL:%u fsactive:%u\n",
+                DRV_STATUS.otpw,
+                DRV_STATUS.ot,
+                DRV_STATUS.CSACTUAL,
+                DRV_STATUS.fsactive
+        );
+        outlen += scnprintf(buf+outlen, PAGE_SIZE-outlen,
+                "            stallGuard:%u SG_RESULT:%u\n",
+                DRV_STATUS.stallGuard,
+                DRV_STATUS.SG_RESULT
+        );
+        outlen += scnprintf(buf+outlen, PAGE_SIZE-outlen,
+		"IOIN: DCO:%u  DRV_ENN:%u  DCIN:%u DCEN:%u DIR:%u STEP:%u\n",
+                IOIN.DCO,
+                IOIN.DRV_ENN_CFG6,
+                IOIN.DCIN_CFG5,
+                IOIN.DCEN_CFG4,
+                IOIN.DIR,
+                IOIN.STEP
+        );
+        outlen += scnprintf(buf+outlen, PAGE_SIZE-outlen,
+		"TSTEP:%07u MSCNT:%04u  PWM_SCALE:%03u  LOST_STEPS:%04u\n",
+                tstep, mscnt, pwm_scale, lost_steps
+        );
+        outlen += scnprintf(buf+outlen, PAGE_SIZE-outlen,
+		"MSCURACT A:%03d  B:%03d\n",
+                MSCURACT.cur_a,
+                MSCURACT.cur_b
+        );
+        return outlen;
+}
+static DEVICE_ATTR(status, S_IRUSR, tmc2130_status_show, NULL);
 
 static ssize_t tmc2130_read_register_ascii(struct device *dev, enum tmc2130_register reg, char *buf)
 {
         struct spi_device *spi = to_spi_device(dev);
         struct tmc2130 *self = spi_get_drvdata(spi);
-        const char tx[] = {reg, 0x00, 0x00, 0x00, 0x00};
-        char rx[5];
-        struct spi_transfer tfer[] = {
-                {.tx_buf = tx, .len = sizeof(tx),.rx_buf = rx, .len = sizeof(tx)},
-        };
+        uint32_t value;
 
         mutex_lock(&self->lock);
-        spi_sync_transfer(spi, tfer, ARRAY_SIZE(tfer));
-        spi_sync_transfer(spi, tfer, ARRAY_SIZE(tfer));
+        if (tmc2130_spi_transfer(spi, reg, NULL)) { return -EINVAL; }
+        if (tmc2130_spi_transfer(spi, reg, &value)) { return -EINVAL; }
         mutex_unlock(&self->lock);
-        self->status = rx[0];
-        return scnprintf(buf, PAGE_SIZE,
-                "status: 0x%02x\nvalue : 0x%02x%02x%02x%02x\n",
-                rx[0], rx[1], rx[2], rx[3], rx[4]);
+        return scnprintf(buf, PAGE_SIZE, "0x%08x\n", value);
 }
-
 
 static ssize_t tmc2130_write_register_ascii(struct device *dev, enum tmc2130_register reg, const char *buf, size_t count)
 {
         struct spi_device *spi = to_spi_device(dev);
         struct tmc2130 *self = spi_get_drvdata(spi);
-        unsigned long new_value = 0;
+        uint32_t value = 0;
 
         if (count >= PAGE_SIZE) { return -E2BIG; }
-
-        if (sscanf(buf, "%hi", &new_value) != 1) { return -EINVAL; }
-
-        if (new_value < 0 || new_value > 0xFFFFFFFF) { return -EINVAL; }
-
-        char tx[] = {
-                reg | 0x80,
-                (int)((new_value & 0xFF000000) >> 24),
-                (int)((new_value & 0x00FF0000) >> 16),
-                (int)((new_value & 0x0000FF00) >> 8),
-                (int)(new_value  & 0x000000FF)
-        };
-
-        char rx[5];
-        struct spi_transfer tfer[] = {
-                {.tx_buf = tx, .len = sizeof(tx),.rx_buf = rx, .len = sizeof(tx)}
-        };
+        if (sscanf(buf, "%i", &value) != 1) { return -EINVAL; }
+        if (value < 0 || value > 0xFFFFFFFF) { return -EINVAL; }
 
         mutex_lock(&self->lock);
-        spi_sync_transfer(spi, tfer, ARRAY_SIZE(tfer));
+        if (tmc2130_spi_transfer(spi, reg | 0x80, &value)) { return -EINVAL; }
         mutex_unlock(&self->lock);
-
-        self->status = rx[0];
         return count;
 }
 
@@ -172,6 +257,7 @@ static struct attribute *tmc2130_attrs[] = {
         DEV_ATTR_PTR(ATTR_PWM_SCALE),
         DEV_ATTR_PTR(ATTR_ENCM_CTRL),
         DEV_ATTR_PTR(ATTR_LOST_STEPS),
+        DEV_ATTR_PTR(ATTR_STATUS),
         NULL
 };
 
