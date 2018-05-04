@@ -289,16 +289,15 @@ int tmc2130_probe(struct spi_device *spi)
         /* Create sysfs attributes */
         ret = sysfs_create_group(&spi->dev.kobj, &tmc2130_attr_group);
         if (ret < 0) {
-          dev_err(&spi->dev, "failed to register attribute group");
-          goto failed_create_group;
+                dev_err(&spi->dev, "failed to register attribute group");
+                goto failed_create_group;
         }
 
         /* Add a link in /sys/openglow */
         struct device_node *np = self->dev->of_node;
         ret = sysfs_create_link(openglow_kobj, &spi->dev.kobj, np->name);
-        if (ret) {
-          goto failed_create_link;
-        }
+        if (ret)
+                goto failed_create_link;
 
         dev_info(&spi->dev, "%s: done", __func__);
         return 0;
