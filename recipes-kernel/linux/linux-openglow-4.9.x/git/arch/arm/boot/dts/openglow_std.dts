@@ -684,7 +684,7 @@
     sdma-event = <16>;
 };
 
-/* LID PIC */
+/* PIC */
 &i2c1 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
@@ -697,12 +697,18 @@
     };
 };
 
-/* HEAD I2C */
+/* HEAD / INTERCONNECT I2C */
 &i2c2 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
+
+    /* INTERCONNECT TEMP SENSOR */
+    lm75b@48 {
+        reg = <0x48>;
+        compatible = "national,lm75b";
+    };
 };
 
 /* LID I2C */
