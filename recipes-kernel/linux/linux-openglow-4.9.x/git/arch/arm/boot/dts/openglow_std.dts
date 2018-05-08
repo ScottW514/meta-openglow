@@ -709,6 +709,12 @@
         reg = <0x48>;
         compatible = "national,lm75b";
     };
+
+    /* HEAD ACCELEROMETER */
+    head-accel@1e {
+        reg = <0x1e>;
+        compatible = "st,lis2hh12";
+    };
 };
 
 /* LID I2C */
@@ -717,6 +723,12 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
+
+    /* LID ACCELEROMETER */
+    head-accel@1e {
+        reg = <0x1e>;
+        compatible = "st,lis2hh12";
+    };
 };
 
 &mipi_csi {
