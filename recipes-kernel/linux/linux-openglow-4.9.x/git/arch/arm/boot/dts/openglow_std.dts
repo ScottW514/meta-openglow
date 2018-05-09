@@ -262,6 +262,8 @@
               fsl,pins = <
                   MX6QDL_PAD_GPIO_5__I2C3_SCL       (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
                   MX6QDL_PAD_GPIO_16__I2C3_SDA      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+#define GP_CAM_SEL    <&gpio1 16 GPIO_ACTIVE_HIGH> /* CAM_SEL */
+                  MX6QDL_PAD_SD1_DAT0__GPIO1_IO16   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
               >;
           };
 
@@ -715,6 +717,19 @@
         reg = <0x1e>;
         compatible = "st,lis2hh12";
     };
+
+    /* HEAD CAMERA */
+    ov5648_mipi_slave@36 {
+		compatible = "ovti,ov5648_mipi_slave";
+		reg = <0x36>;
+		clocks = <&clks 0>;
+		clock-names = "csi_mclk";
+		ipu_id = <0>;
+		csi_id = <1>;
+		mclk = <25000000>;
+		mclk_source = <0>;
+		extended-buffer;
+	};
 };
 
 /* LID I2C */
@@ -729,11 +744,31 @@
         reg = <0x1e>;
         compatible = "st,lis2hh12";
     };
+
+    /* LID CAMERA */
+    ov5648_mipi@36 {
+		compatible = "ovti,ov5648_mipi";
+		reg = <0x36>;
+		clocks = <&clks 0>;
+		clock-names = "csi_mclk";
+		sel-gpios = GP_CAM_SEL;
+		default-state = "off"; /* off=camera A, on=camera B */
+		ipu_id = <0>;
+		csi_id = <1>;
+		mclk = <25000000>;
+		mclk_source = <0>;
+		pinctrl-names = "default";
+		extended-buffer;
+	};
 };
 
 &mipi_csi {
-	lanes = <2>;
-	status = "okay";
+    ipu_id = <0>;
+    csi_id = <1>;
+    v_channel = <0>;
+    lanes = <2>;
+    mipi_dphy_clk = <0x28>;
+    status = "okay";
 };
 
 &pwm1 {

@@ -1,0 +1,45 @@
+linux-openglow: Add OV5648 Module
+
+Modifications to add OV5648 driver 4.9.xx kernel.
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Scott Wiederhold <s.e.wiederhold@gmail.com>
+
+diff -u a/drivers/media/platform/mxc/capture/Kconfig b/drivers/media/platform/mxc/capture/Kconfig
+--- a/drivers/media/platform/mxc/capture/Kconfig
++++ b/drivers/media/platform/mxc/capture/Kconfig
+@@ -27,6 +27,18 @@
+ 	---help---
+ 	  If you plan to use the ov5640 Camera with mipi interface in your MXC system, say Y here.
+
++config MXC_CAMERA_OV5648_MIPI
++        tristate "OmniVision ov5648 camera support using mipi"
++        depends on !VIDEO_MXC_EMMA_CAMERA && I2C
++        ---help---
++          If you plan to use the ov5648 Camera with mipi interface in your MXC system, say Y here.
++
++config MXC_CAMERA_SLAVE_OV5648_MIPI
++        tristate "OmniVision ov5648 slave dual camera support using mipi"
++        depends on !VIDEO_MXC_EMMA_CAMERA && I2C && MXC_CAMERA_OV5648_MIPI
++        ---help---
++          If you plan to use the second ov5648 Camera with mipi interface in your MXC system, say Y here.
++
+ config MXC_VIDEO_GS2971
+ 	tristate "Gennum GS2971 SDI receiver"
+ 	depends on VIDEO_V4L2 && SPI
+diff -u a/drivers/media/platform/mxc/capture/Makefile b/drivers/media/platform/mxc/capture/Makefile
+--- a/drivers/media/platform/mxc/capture/Makefile
++++ b/drivers/media/platform/mxc/capture/Makefile
+@@ -15,6 +15,12 @@
+ ov5640_camera_mipi_int-objs := ov5640_mipi.o
+ obj-$(CONFIG_MXC_CAMERA_OV5640_MIPI) += ov5640_camera_mipi_int.o
+
++ov5648_camera_mipi-objs := ov5648_mipi.o
++obj-$(CONFIG_MXC_CAMERA_OV5648_MIPI) += ov5648_camera_mipi.o
++
++ov5648_camera_slave_mipi-objs := ov5648_slave_mipi.o
++obj-$(CONFIG_MXC_CAMERA_SLAVE_OV5648_MIPI) += ov5648_camera_slave_mipi.o
++
+ tc358743_h2c_bridge-objs := tc358743_h2c.o
+ obj-$(CONFIG_MXC_HDMI_CSI2_TC358743) += tc358743_h2c_bridge.o
