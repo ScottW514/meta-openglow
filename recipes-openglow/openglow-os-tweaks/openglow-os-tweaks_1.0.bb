@@ -3,8 +3,8 @@ HOMEPAGE = "https://www.openglow.org/"
 
 AUTHOR = "Scott Wiederhold"
 SECTION = "base"
-LICENSE = "GPLv3"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=047e11245628658f30df9a91729a1a6b"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=7116033ecf2072d9f5f263e09ec7d3e9"
 
 SRC_URI = " \
     file://openglow-profile.sh \

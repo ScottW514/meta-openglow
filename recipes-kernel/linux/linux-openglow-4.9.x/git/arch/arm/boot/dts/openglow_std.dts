@@ -483,17 +483,66 @@
         };
 
     openglow-control {
-        compatible = "openglow,control";
+        compatible = "gpio-keys";
         pinctrl-names = "default";
         pinctrl-0 = <&pinctrl_gpio_control>;
-        ctrl-btn-gpio = GP_CTRL_BTN;
-        ctrl-doors-gpio = GP_CTRL_DOORS;
-        ctrl-ilock-gpio = GP_CTRL_ILOCK;
-        ctrl-lid1-gpio = GP_CTRL_LID1;
-        ctrl-lid2-gpio = GP_CTRL_LID2;
-        ctrl-safe-fire-gpio = GP_CTRL_SAFE_FIRE;
-        ctrl-run-prgm-gpio = GP_CTRL_RUN_PRGM;
-        };
+        door1 {
+			label = "door1";
+			gpios = GP_CTRL_LID1;
+			debounce-interval = <5>;
+			linux,code = <0>;
+			linux,input-type = <EV_SW>;
+		};
+        door2 {
+			label = "door2";
+			gpios = GP_CTRL_LID2;
+			debounce-interval = <5>;
+			linux,code = <1>;
+			linux,input-type = <EV_SW>;
+		};
+        button {
+			label = "button";
+			gpios = GP_CTRL_BTN;
+			debounce-interval = <20>;
+			linux,code = <2>;
+			linux,input-type = <EV_SW>;
+		};
+        doors {
+			label = "doors";
+			gpios = GP_CTRL_DOORS;
+			debounce-interval = <5>;
+			linux,code = <3>;
+			linux,input-type = <EV_SW>;
+		};
+        ilock {
+			label = "ilock";
+			gpios = GP_CTRL_ILOCK;
+			debounce-interval = <5>;
+			linux,code = <4>;
+			linux,input-type = <EV_SW>;
+		};
+        ready {
+			label = "ready";
+			gpios = GP_CTRL_SAFE_FIRE;
+			debounce-interval = <5>;
+			linux,code = <5>;
+			linux,input-type = <EV_SW>;
+		};
+        run_prgm {
+			label = "run_prgm";
+			gpios = GP_CTRL_RUN_PRGM;
+			debounce-interval = <5>;
+			linux,code = <6>;
+			linux,input-type = <EV_SW>;
+		};
+        laser_detect {
+			label = "laser_detect";
+			gpios = GP_CTRL_HEAD;
+			debounce-interval = <60>;
+			linux,code = <7>;
+			linux,input-type = <EV_SW>;
+		};
+  };
 
 	openglow-hog {
 		compatible = "openglow,hog";

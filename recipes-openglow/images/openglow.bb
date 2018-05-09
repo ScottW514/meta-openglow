@@ -1,6 +1,6 @@
 DESCRIPTION = "OpenGlow Platform"
 
-LICENSE = "GPLv3"
+LICENSE = "GPLv2"
 
 inherit core-image
 
