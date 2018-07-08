@@ -8,7 +8,13 @@ IMAGE_INSTALL = " \
 	packagegroup-base \
 	packagegroup-core-boot \
 	${CORE_IMAGE_EXTRA_INSTALL} \
+	cairo \
 	glibc-utils \
+	gstreamer1.0 \
+	gstreamer1.0-plugins-bad \
+	gstreamer1.0-plugins-base \
+	gstreamer1.0-plugins-good \
+	gstreamer1.0-plugins-imx \
 	i2c-tools \
 	localedef \
 	nano \
@@ -17,6 +23,7 @@ IMAGE_INSTALL = " \
 	openssh \
 	openssh-sftp \
 	openssh-sftp-server \
+	pango \
 	python \
 	python-six \
 	python-typing \

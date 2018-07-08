@@ -1,0 +1,201 @@
+--- a/src/v4l2video/v4l2src.c
++++ b/src/v4l2video/v4l2src.c
+@@ -32,6 +32,7 @@
+ #include "v4l2_buffer_pool.h"
+
+ #define DEFAULT_CAPTURE_MODE 0
++#define DEFAULT_CAPTURE_FORMAT 0
+ #define DEFAULT_FRAMERATE_NUM 30
+ #define DEFAULT_FRAMERATE_DEN 1
+ #define DEFAULT_INPUT 1
+@@ -47,6 +48,7 @@
+ {
+ 	IMX_V4L2SRC_0,
+ 	IMX_V4L2SRC_CAPTURE_MODE,
++	IMX_V4L2SRC_CAPTURE_FORMAT,
+ 	IMX_V4L2SRC_FRAMERATE_NUM,
+ 	IMX_V4L2SRC_FRAMERATE,
+ 	IMX_V4L2SRC_INPUT,
+@@ -189,13 +191,6 @@
+
+ 	v4l2src->is_tvin = gst_imx_v4l2src_is_tvin(v4l2src, fd_v4l);
+
+-	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+-	if (ioctl(fd_v4l, VIDIOC_G_FMT, &fmt) < 0)
+-	{
+-		GST_ERROR_OBJECT(v4l2src, "VIDIOC_G_FMT failed: %s", strerror(errno));
+-		goto fail;
+-	}
+-
+ 	if (!fmt.fmt.pix.pixelformat)
+ 	{
+ 		fmtdesc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+@@ -213,7 +208,11 @@
+ 		fmt.fmt.pix.pixelformat, fmt.fmt.pix.field);
+
+ 	fszenum.index = v4l2src->capture_mode;
+-	fszenum.pixel_format = fmt.fmt.pix.pixelformat;
++	fszenum.pixel_format =
++		(v4l2src->capture_format == DEFAULT_CAPTURE_FORMAT ?
++			V4L2_PIX_FMT_YUV420 : V4L2_PIX_FMT_SBGGR8);
++
++
+ 	if (ioctl(fd_v4l, VIDIOC_ENUM_FRAMESIZES, &fszenum) < 0)
+ 	{
+ 		GST_ERROR_OBJECT(v4l2src, "VIDIOC_ENUM_FRAMESIZES failed: %s", strerror(errno));
+@@ -301,6 +300,9 @@
+ 	}
+
+ 	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
++	fmt.fmt.pix.pixelformat =
++		(v4l2src->capture_format == DEFAULT_CAPTURE_FORMAT ?
++			V4L2_PIX_FMT_YUV420 : V4L2_PIX_FMT_SBGGR8);
+ 	fmt.fmt.pix.bytesperline = 0;
+ 	fmt.fmt.pix.priv = 0;
+ 	fmt.fmt.pix.sizeimage = 0;
+@@ -592,11 +594,17 @@
+ 		case V4L2_PIX_FMT_NV24:
+ 			gst_fmt = GST_VIDEO_FORMAT_NV24;
+ 			break;
++		case V4L2_PIX_FMT_SBGGR8: /* Special Case for handling SBGGR8 */
++			gst_fmt = 514;
++			break;
+ 		default:
+ 			gst_fmt = gst_video_format_from_fourcc(fmt.fmt.pix.pixelformat);
+ 	}
+-
+-	pixel_format = gst_video_format_to_string(gst_fmt);
++	if (gst_fmt ==514) {
++		pixel_format = "bggr";
++	} else {
++		pixel_format = gst_video_format_to_string(gst_fmt);
++	}
+
+ 	if (v4l2src->is_tvin && !fmt.fmt.pix.field)
+ 	{
+@@ -616,7 +624,8 @@
+ 			interlace_mode = "progressive";
+ 	}
+
+-	return gst_caps_new_simple("video/x-raw",
++	if (v4l2src->capture_format == DEFAULT_CAPTURE_FORMAT) {
++		return gst_caps_new_simple("video/x-raw",
+ 			"format", G_TYPE_STRING, pixel_format,
+ 			"width", G_TYPE_INT, v4l2src->capture_width,
+ 			"height", G_TYPE_INT, v4l2src->capture_height,
+@@ -624,6 +633,17 @@
+ 			"framerate", GST_TYPE_FRACTION, v4l2src->fps_n, v4l2src->fps_d,
+ 			"pixel-aspect-ratio", GST_TYPE_FRACTION, 1, 1,
+ 			NULL);
++	} else {
++		return gst_caps_new_simple("video/x-bayer",
++				"format", G_TYPE_STRING, pixel_format,
++				"width", G_TYPE_INT, v4l2src->capture_width,
++				"height", G_TYPE_INT, v4l2src->capture_height,
++                		"interlace-mode", G_TYPE_STRING, interlace_mode,
++				"framerate", GST_TYPE_FRACTION, v4l2src->fps_n, v4l2src->fps_d,
++				"pixel-aspect-ratio", GST_TYPE_FRACTION, 1, 1,
++				NULL);
++	}
++
+ }
+
+ static gboolean gst_imx_v4l2src_negotiate(GstBaseSrc *src)
+@@ -646,19 +666,32 @@
+ {
+ 	GstImxV4l2VideoSrc *v4l2src = GST_IMX_V4L2SRC(src);
+ 	GstCaps *caps;
++	const gchar *pixel_format = "I420";
++	const gchar *interlace_mode = "progressive";
+
+ 	GST_INFO_OBJECT(v4l2src, "get caps filter %" GST_PTR_FORMAT, (gpointer)filter);
+
+-	caps = gst_caps_from_string(
+-		"video/x-raw"
+-		", format = (string) { UYVY, I420 }"
+-		", width = (gint) [ 16, MAX ]"
+-		", height = (gint) [ 16, MAX ]"
+-		", interlace-mode = (string) { progressive, interleaved }"
+-		", framerate = (fraction) [ 0/1, 100/1 ]"
+-		", pixel-aspect-ratio = (fraction) [ 0/1, 100/1 ]"
+-		";"
+-	);
++	if (v4l2src->capture_format == DEFAULT_CAPTURE_FORMAT) {
++		caps = gst_caps_from_string(
++			"video/x-raw"
++			", format = (string) { UYVY, I420 }"
++			", width = (gint) [ 16, MAX ]"
++			", height = (gint) [ 16, MAX ]"
++			", interlace-mode = (string) { progressive, interleaved }"
++			", framerate = (fraction) [ 0/1, 100/1 ]"
++			", pixel-aspect-ratio = (fraction) [ 0/1, 100/1 ]"
++			";"
++		);
++	} else {
++		caps = gst_caps_new_simple("video/x-bayer",
++			"format", G_TYPE_STRING, "bggr",
++			"width", GST_TYPE_INT_RANGE, 16, G_MAXINT,
++			"height", GST_TYPE_INT_RANGE, 16, G_MAXINT,
++                	"interlace-mode", G_TYPE_STRING, interlace_mode,
++			"framerate", GST_TYPE_FRACTION_RANGE, 0, 1, 100, 1,
++			"pixel-aspect-ratio", GST_TYPE_FRACTION_RANGE, 0, 1, 100, 1,
++			NULL);
++	}
+
+ 	GST_INFO_OBJECT(v4l2src, "get caps %" GST_PTR_FORMAT, (gpointer)caps);
+
+@@ -689,6 +722,10 @@
+ 			v4l2src->fps_n = g_value_get_int(value);
+ 			break;
+
++		case IMX_V4L2SRC_CAPTURE_FORMAT:
++			v4l2src->capture_format = g_value_get_int(value);
++			break;
++
+ 		case IMX_V4L2SRC_FRAMERATE:
+ 			v4l2src->fps_n = gst_value_get_fraction_numerator(value);
+ 			v4l2src->fps_d = gst_value_get_fraction_denominator(value);
+@@ -772,6 +809,10 @@
+ 			g_value_set_int(value, v4l2src->capture_mode);
+ 			break;
+
++		case IMX_V4L2SRC_CAPTURE_FORMAT:
++			g_value_set_int(value, v4l2src->capture_format);
++			break;
++
+ 		case IMX_V4L2SRC_FRAMERATE_NUM:
+ 			g_value_set_int(value, v4l2src->fps_n);
+ 			break;
+@@ -909,6 +950,7 @@
+ static void gst_imx_v4l2src_init(GstImxV4l2VideoSrc *v4l2src)
+ {
+ 	v4l2src->capture_mode = DEFAULT_CAPTURE_MODE;
++	v4l2src->capture_format = DEFAULT_CAPTURE_FORMAT;
+ 	v4l2src->fps_n = DEFAULT_FRAMERATE_NUM;
+ 	v4l2src->fps_d = DEFAULT_FRAMERATE_DEN;
+ 	v4l2src->input = DEFAULT_INPUT;
+@@ -968,6 +1010,14 @@
+ 				0, G_MAXINT, DEFAULT_CAPTURE_MODE,
+ 				G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+
++	g_object_class_install_property(gobject_class, IMX_V4L2SRC_CAPTURE_FORMAT,
++			g_param_spec_int("capture-format", "Capture format",
++				"Capture format of camera,\n"
++				"\t\t\t\tI420 = 0,\n"
++				"\t\t\t\tBAYER_BGGR8 = 1,\n",
++				0, 1, DEFAULT_CAPTURE_FORMAT,
++				G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
++
+ 	g_object_class_install_property(gobject_class, IMX_V4L2SRC_FRAMERATE_NUM,
+ 			g_param_spec_int("fps-n", "FPS numerator",
+ 				"(Obsolete; use fps property instead) "
+--- a/src/v4l2video/v4l2src.h
++++ b/src/v4l2video/v4l2src.h
+@@ -66,6 +66,7 @@
+
+ 	/* properties */
+ 	gint capture_mode;
++	gint capture_format;
+ 	gint fps_n;
+ 	gint fps_d;
+ 	gint input;
