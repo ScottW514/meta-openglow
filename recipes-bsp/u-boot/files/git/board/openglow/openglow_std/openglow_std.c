@@ -70,13 +70,17 @@ static iomux_v3_cfg_t const usdhc3_pads[] = {
 };
 
 static iomux_v3_cfg_t const usdhc4_pads[] = {
-	MX6_PAD_SD4_CLK__SD4_CLK   | MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_SD4_CMD__SD4_CMD   | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD4_CLK__SD4_CLK | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD4_CMD__SD4_CMD | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD4_DAT0__SD4_DATA0 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD4_DAT1__SD4_DATA1 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD4_DAT2__SD4_DATA2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD4_DAT3__SD4_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_NANDF_D6__GPIO2_IO06    | MUX_PAD_CTRL(NO_PAD_CTRL), /* CD */
+	MX6_PAD_SD4_DAT4__SD4_DATA4 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD4_DAT5__SD4_DATA5 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD4_DAT6__SD4_DATA6 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_SD4_DAT7__SD4_DATA7 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	MX6_PAD_NANDF_D0__GPIO2_IO00 | MUX_PAD_CTRL(WEAK_PULLUP), /* RESET */
 };
 
 static void setup_iomux_uart(void)
@@ -93,11 +97,13 @@ static struct fsl_esdhc_cfg usdhc_cfg[2] = {
 int board_mmc_getcd(struct mmc *mmc)
 {
 	struct fsl_esdhc_cfg *cfg = (struct fsl_esdhc_cfg *)mmc->priv;
-	int gp_cd = (cfg->esdhc_base == USDHC3_BASE_ADDR) ? IMX_GPIO_NR(7, 0) :
-			IMX_GPIO_NR(2, 6);
-
-	gpio_direction_input(gp_cd);
-	return !gpio_get_value(gp_cd);
+	if (cfg->esdhc_base == USDHC3_BASE_ADDR) {
+		int gp_cd = IMX_GPIO_NR(3, 6);
+		gpio_direction_input(gp_cd);
+		return !gpio_get_value(gp_cd);
+	} else {
+		return 1;
+	}
 }
 
 int board_mmc_init(bd_t *bis)
@@ -109,7 +115,7 @@ int board_mmc_init(bd_t *bis)
 	usdhc_cfg[1].sdhc_clk = mxc_get_clock(MXC_ESDHC4_CLK);
 
 	usdhc_cfg[0].max_bus_width = 4;
-	usdhc_cfg[1].max_bus_width = 4;
+	usdhc_cfg[1].max_bus_width = 8;
 
 	for (index = 0; index < CONFIG_SYS_FSL_USDHC_NUM; ++index) {
 		switch (index) {
