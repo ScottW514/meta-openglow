@@ -66,7 +66,7 @@ static iomux_v3_cfg_t const usdhc3_pads[] = {
 	MX6_PAD_SD3_DAT1__SD3_DATA1 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD3_DAT2__SD3_DATA2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD3_DAT3__SD3_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_SD3_DAT5__GPIO7_IO00    | MUX_PAD_CTRL(NO_PAD_CTRL), /* CD */
+	MX6_PAD_EIM_DA6__GPIO3_IO06    | MUX_PAD_CTRL(NO_PAD_CTRL), /* CD */
 };
 
 static iomux_v3_cfg_t const usdhc4_pads[] = {
@@ -160,15 +160,18 @@ static void setup_spi(void)
 
 
 static unsigned gpios_out_low[] = {
-	IMX_GPIO_NR(3, 29),	/* disable HIGH VOLTAGE */
-	IMX_GPIO_NR(2, 3),	/* disable 40VDC */
-	IMX_GPIO_NR(6, 15),	/* disable wireless */
-	IMX_GPIO_NR(6, 16),	/* disable bluetooth */
-	IMX_GPIO_NR(3, 22),	/* disable USB otg power */
+	IMX_GPIO_NR(3, 0),	/* disable HIGH VOLTAGE Watch Dog*/
+	IMX_GPIO_NR(7, 12),	/* disable HIGH VOLTAGE FIRE*/
+	IMX_GPIO_NR(3, 2),	/* disable 40VDC */
+	IMX_GPIO_NR(1, 0),	/* disable USB otg power */
+	IMX_GPIO_NR(1, 2),	/* disable wireless */
+	IMX_GPIO_NR(5, 19),	/* disable bluetooth */
+	IMX_GPIO_NR(1, 17),	/* disable Water Sensor Heater */
 };
 
 static unsigned gpios_out_high[] = {
-	IMX_GPIO_NR(2, 6),	/* enable 12VDC */
+	IMX_GPIO_NR(2, 2),	/* enable 12VDC */
+	IMX_GPIO_NR(3, 23),	/* enable Water Pump */
 };
 
 static void set_gpios(unsigned *p, int cnt, int val)
@@ -218,7 +221,7 @@ int board_init(void)
 
 int checkboard(void)
 {
-	puts("Board: OpenGlow STD Prototype 1\n");
+	puts("Board: OpenGlow STD Prototype 2\n");
 	return 0;
 }
 
