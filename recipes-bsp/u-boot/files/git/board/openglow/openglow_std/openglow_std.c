@@ -45,14 +45,13 @@ DECLARE_GLOBAL_DATA_PTR;
 	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm |			\
 	PAD_CTL_HYS | PAD_CTL_SRE_SLOW)
 
-#define OUTPUT_40OHM (PAD_CTL_SPEED_MED|PAD_CTL_DSE_40ohm)
-
 int dram_init(void)
 {
 	gd->ram_size = ((ulong)CONFIG_DDR_MB * 1024 * 1024);
 
 	return 0;
 }
+
 
 static iomux_v3_cfg_t const uart1_pads[] = {
 	MX6_PAD_SD3_DAT6__UART1_RX_DATA | MUX_PAD_CTRL(UART_PAD_CTRL),
