@@ -31,7 +31,7 @@ const struct pin_config pin_configs[NUM_GPIO_PINS] = {
         [PIN_Y1_DIR]              = {"y1-dir-gpio",        GPIOF_OUT_INIT_LOW},
         [PIN_Y2_STEP]             = {"y2-step-gpio",       GPIOF_OUT_INIT_LOW},
         [PIN_Y2_DIR]              = {"y2-dir-gpio",        GPIOF_OUT_INIT_LOW},
-        [PIN_LASER_ON]            = {"laser-enable-gpio",  GPIOF_IN}, /* kept HiZ until explicitly enabled */
+        [PIN_LASER_ON]            = {"laser-enable-gpio",  GPIOF_OUT_INIT_LOW},
         [PIN_LASER_ON_HEAD]       = {"laser-on-head-gpio", GPIOF_OUT_INIT_LOW}, /* informative signal for the head */
         [PIN_CHARGE_PUMP]         = {"charge-pump-gpio",   GPIOF_OUT_INIT_LOW},
         [PIN_Z_STEP]              = {"z-step-gpio",        GPIOF_OUT_INIT_LOW},
@@ -55,6 +55,7 @@ const pin_set cnc_sdma_pin_set =
 /** Pin changes to apply after initialization, or when reenabling the driver. */
 DEFINE_PIN_CHANGE_SET(cnc_startup_pin_changes,
         {PIN_XY_ENABLE, 0}, /* active low */
+        {PIN_LASER_ON, 0},
         {PIN_CHARGE_PUMP, 0},
         {PIN_X_STEP, 0},
         {PIN_X_DIR, 0},
@@ -72,7 +73,7 @@ DEFINE_PIN_CHANGE_SET(cnc_startup_pin_changes,
  * Brings all drive lines low but keeps the steppers powered up.
  */
 DEFINE_PIN_CHANGE_SET(cnc_stop_pin_changes,
-        {PIN_LASER_ON, HI_Z},
+        {PIN_LASER_ON, 0},
         {PIN_CHARGE_PUMP, 0},
         {PIN_X_STEP, 0},
         {PIN_X_DIR, 0},
@@ -91,7 +92,7 @@ DEFINE_PIN_CHANGE_SET(cnc_stop_pin_changes,
  */
 DEFINE_PIN_CHANGE_SET(cnc_shutdown_pin_changes,
         {PIN_XY_ENABLE, 1}, /* active low */
-        {PIN_LASER_ON, HI_Z},
+        {PIN_LASER_ON, 0},
         {PIN_CHARGE_PUMP, 0},
         {PIN_X_STEP, 0},
         {PIN_X_DIR, 0},

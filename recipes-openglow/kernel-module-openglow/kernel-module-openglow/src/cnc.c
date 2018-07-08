@@ -816,9 +816,9 @@ int cnc_set_laser_output(struct cnc *self, int value)
 static void toggle_charge_pump(struct cnc *self)
 {
         int gpio = self->gpios[PIN_CHARGE_PUMP];
-        gpio_set_value(gpio, 0);
+//        gpio_set_value(gpio, 0);
         gpio_set_value(gpio, 1);
-        gpio_set_value(gpio, 0);
+//        gpio_set_value(gpio, 0);
 }
 
 

@@ -72,9 +72,11 @@
         pinctrl_hog: hog {
             fsl,pins = <
 #define GP_HOG_TP90        <&gpio1 3 GPIO_ACTIVE_HIGH> /* TP90 */
-                  MX6QDL_PAD_GPIO_3__GPIO1_IO03    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_GPIO_3__GPIO1_IO03    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
 #define GP_HOG_TP91        <&gpio7 13 GPIO_ACTIVE_HIGH> /* TP91 */
-                  MX6QDL_PAD_GPIO_18__GPIO7_IO13   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_GPIO_18__GPIO7_IO13   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+#define GP_PWR_HV_PFC_STOP  <&gpio2 1 GPIO_ACTIVE_HIGH> /* HV_PFC_STOP - Unknown Function - OUT?/IN? */
+                MX6QDL_PAD_NANDF_D1__GPIO2_IO01    (HYS | SPEED_MED_HIGH | DSE_40ohm)
             >;
         };
 
@@ -185,19 +187,19 @@
 #define GP_CTRL_HEAD <&gpio3 1 GPIO_ACTIVE_HIGH> /* LASER ON HEAD - OUT */
                   MX6QDL_PAD_EIM_DA1__GPIO3_IO01    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define GP_CTRL_BTN         <&gpio3 31 GPIO_ACTIVE_LOW> /* nBUTTON - IN */
-                  MX6QDL_PAD_EIM_D31__GPIO3_IO31    (HYS | PUE | PKE)
+                  MX6QDL_PAD_EIM_D31__GPIO3_IO31    (HYS | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_CTRL_DOORS       <&gpio3 10 GPIO_ACTIVE_LOW> /* nDOORS_OK - IN */
-                  MX6QDL_PAD_EIM_DA10__GPIO3_IO10   (HYS | PUE | PKE)
+                  MX6QDL_PAD_EIM_DA10__GPIO3_IO10   (HYS | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_CTRL_ILOCK       <&gpio3 11 GPIO_ACTIVE_LOW> /* nINTLOCK_OK - IN */
-                  MX6QDL_PAD_EIM_DA11__GPIO3_IO11   (HYS | PUE | PKE)
+                  MX6QDL_PAD_EIM_DA11__GPIO3_IO11   (HYS | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_CTRL_LID1        <&gpio3 9 GPIO_ACTIVE_LOW> /* nLID_SW1 - IN */
-                  MX6QDL_PAD_EIM_DA9__GPIO3_IO09    (HYS | PUE | PKE)
+                  MX6QDL_PAD_EIM_DA9__GPIO3_IO09    (HYS | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_CTRL_LID2        <&gpio2 7 GPIO_ACTIVE_LOW> /* nLID_SW2 - IN */
-                  MX6QDL_PAD_NANDF_D7__GPIO2_IO07   (HYS | PUE | PKE)
+                  MX6QDL_PAD_NANDF_D7__GPIO2_IO07   (HYS | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_CTRL_SAFE_FIRE   <&gpio3 0 GPIO_ACTIVE_LOW> /* nSAFE_TO_FIRE - IN */
-                  MX6QDL_PAD_EIM_DA0__GPIO3_IO00    (HYS | PUE | PKE)
+                  MX6QDL_PAD_EIM_DA0__GPIO3_IO00    (HYS | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_CTRL_RUN_PRGM    <&gpio3 4 GPIO_ACTIVE_HIGH> /* RUN_PRGM - IN */
-                  MX6QDL_PAD_EIM_DA4__GPIO3_IO04    (HYS | PUE | PKE)
+                  MX6QDL_PAD_EIM_DA4__GPIO3_IO04    (HYS | SPEED_MED_HIGH | DSE_40ohm)
               >;
           };
 
@@ -208,8 +210,6 @@
                   MX6QDL_PAD_NANDF_D6__GPIO2_IO06    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define GP_PWR_12V_OK       <&gpio1 9 GPIO_ACTIVE_HIGH> /* 12VDC_OK - IN */
                   MX6QDL_PAD_GPIO_9__GPIO1_IO09      (HYS | PUE | PKE)
-#define GP_PWR_HV_PFC_STOP  <&gpio2 1 GPIO_ACTIVE_HIGH> /* HV_PFC_STOP - Unknown Function - OUT?/IN? */
-                  MX6QDL_PAD_NANDF_D1__GPIO2_IO01    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
               >;
           };
 
@@ -309,8 +309,8 @@
               fsl,pins = <
                   MX6QDL_PAD_CSI0_DAT14__UART5_TX_DATA (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
                   MX6QDL_PAD_CSI0_DAT15__UART5_RX_DATA (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                  MX6QDL_PAD_CSI0_DAT18__UART5_CTS_B   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                  MX6QDL_PAD_CSI0_DAT19__UART5_RTS_B   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_DAT18__UART5_RTS_B   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                  MX6QDL_PAD_CSI0_DAT19__UART5_CTS_B   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
               >;
           };
 
@@ -852,6 +852,7 @@
 &uart5 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart5>;
+    uart-has-rtscts;
 	status = "okay";
 };
 
