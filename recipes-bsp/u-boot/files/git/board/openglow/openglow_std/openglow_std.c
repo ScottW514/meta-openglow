@@ -167,11 +167,14 @@ static void setup_spi(void)
 static unsigned gpios_out_low[] = {
 	IMX_GPIO_NR(3, 0),	/* disable HIGH VOLTAGE Watch Dog*/
 	IMX_GPIO_NR(7, 12),	/* disable HIGH VOLTAGE FIRE*/
+	IMX_GPIO_NR(1, 21),	/* disable HIGH VOLTAGE PWM */
 	IMX_GPIO_NR(3, 2),	/* disable 40VDC */
 	IMX_GPIO_NR(1, 0),	/* disable USB otg power */
 	IMX_GPIO_NR(1, 2),	/* disable wireless */
 	IMX_GPIO_NR(5, 19),	/* disable bluetooth */
-	IMX_GPIO_NR(1, 17),	/* disable Water Sensor Heater */
+	IMX_GPIO_NR(1, 17),	/* disable Water Sensor Heater PWM */
+	IMX_GPIO_NR(1, 18),	/* disable LID LED PWM */
+	IMX_GPIO_NR(2, 23),	/* disable TEC */
 };
 
 static unsigned gpios_out_high[] = {
