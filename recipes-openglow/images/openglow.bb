@@ -10,11 +10,6 @@ IMAGE_INSTALL = " \
 	${CORE_IMAGE_EXTRA_INSTALL} \
 	cairo \
 	glibc-utils \
-	gstreamer1.0 \
-	gstreamer1.0-plugins-bad \
-	gstreamer1.0-plugins-base \
-	gstreamer1.0-plugins-good \
-	gstreamer1.0-plugins-imx \
 	i2c-tools \
 	localedef \
 	nano \
@@ -40,9 +35,16 @@ IMAGE_INSTALL = " \
 	u-boot-fw-utils \
 	wpa-supplicant \
 "
+# Cam support - temporatily removed
+# gstreamer1.0
+# gstreamer1.0-plugins-bad
+# gstreamer1.0-plugins-base
+# gstreamer1.0-plugins-good
+# gstreamer1.0-plugins-imx
 
-IMAGE_FEATURES += " ssh-server-openssh "
 
 # Require for Hardware Diagnostics Tool
 # Will be separated into its own recipe when finished.
 # python3-flask, python3-pyyaml, python3-requests, python-six, python-typing, python3-jsonschema
+
+IMAGE_FEATURES += " ssh-server-openssh "
