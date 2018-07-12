@@ -499,6 +499,7 @@
         pinctrl-0         = <&pinctrl_gpio_thermal>;
         tec-gpio          = TEC_EN;
         water-pump-gpio   = WATER_PUMP_EN;
+        water-heater-pwm  = <1>;
     };
     regulators {
 		compatible = "simple-bus";

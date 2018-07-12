@@ -3,7 +3,8 @@
  *
  * I/O port and PWM configuration.
  *
- * Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
+ * Copyright (C) 2018 Scott Wiederhold <s.e.wiederhold@gmail.com>
+ * Portions Copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -170,7 +171,7 @@ int io_init_pwms(struct device_node *of_node, const struct pwm_channel_config *p
  * Sets the duty cycle (percentage) of the given PWM channel.
  *
  * @param pwm_channel Channel to update
- * @param duty        Desired duty cycle (0=0%, 65535=100%)
+ * @param duty        Desired duty cycle (0-100%)
  */
 void io_pwm_set_duty_cycle(struct pwm_channel *pwm_channel, u16 duty);
 
@@ -178,7 +179,7 @@ void io_pwm_set_duty_cycle(struct pwm_channel *pwm_channel, u16 duty);
  * Retrieves the current duty cycle setting of the given PWM channel.
  *
  * @param pwm_channel Channel
- * @return            Duty cycle (0=0%, 65535=100%)
+ * @return            Duty cycle (0-100%)
  */
 u16 io_pwm_get_duty_cycle(struct pwm_channel *pwm_channel);
 

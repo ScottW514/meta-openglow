@@ -63,12 +63,7 @@
 #define ATTR_POSITION               position
 #define ATTR_SDMA_CONTEXT           sdma_context
 
-#define ATTR_INTAKE1_TACH           tach_intake_1
-#define ATTR_INTAKE2_TACH           tach_intake_2
-#define ATTR_EXHAUST_TACH           tach_exhaust
-#define ATTR_INTAKE_PWM             intake_pwm
-#define ATTR_EXHAUST_PWM            exhaust_pwm
-#define ATTR_HEATER_PWM             heater_pwm
+#define ATTR_WATER_HTR_PWM          water_heater_pwm
 #define ATTR_WATER_PUMP_ON          water_pump_on
 #define ATTR_TEC_ON                 tec_on
 #define ATTR_WATER_TEMP_1           water_temp_1
@@ -88,12 +83,7 @@
 #define ATTR_Z_STEP_PATH            SYSFS_ATTR_DIR STR(ATTR_Z_STEP)
 #define ATTR_MOTOR_LOCK_PATH        SYSFS_ATTR_DIR STR(ATTR_MOTOR_LOCK)
 
-#define ATTR_INTAKE_PWM_PATH        THERMAL_SYSFS_ATTR_DIR STR(ATTR_INTAKE_PWM)
-#define ATTR_EXHAUST_PWM_PATH       THERMAL_SYSFS_ATTR_DIR STR(ATTR_EXHAUST_PWM)
-#define ATTR_HEATER_PWM_PATH        THERMAL_SYSFS_ATTR_DIR STR(ATTR_HEATER_PWM)
-#define ATTR_INTAKE1_TACH_PATH      THERMAL_SYSFS_ATTR_DIR STR(ATTR_INTAKE1_TACH)
-#define ATTR_INTAKE2_TACH_PATH      THERMAL_SYSFS_ATTR_DIR STR(ATTR_INTAKE2_TACH)
-#define ATTR_EXHAUST_TACH_PATH      THERMAL_SYSFS_ATTR_DIR STR(ATTR_EXHAUST_TACH)
+#define ATTR_WATER_HTR_PWM_PATH        THERMAL_SYSFS_ATTR_DIR STR(ATTR_HEATER_PWM)
 #define ATTR_WATER_PUMP_ON_PATH     THERMAL_SYSFS_ATTR_DIR STR(ATTR_WATER_PUMP_ON)
 #define ATTR_TEC_ON_PATH            THERMAL_SYSFS_ATTR_DIR STR(ATTR_TEC_ON)
 

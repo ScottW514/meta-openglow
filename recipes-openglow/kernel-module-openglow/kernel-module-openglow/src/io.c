@@ -204,14 +204,10 @@ fail:
 
 void io_pwm_set_duty_cycle(struct pwm_channel *pwm_channel, u16 duty)
 {
-        /* Directly mapping the interval [0,65535] to the closed interval [0%,100%] */
-        /* requires division by 65535 (and 64-bit division would be needed to avoid */
-        /* overflow.) */
-        /* For simplification, map 0 to 0%, and [1,65535] to [0.003%,100%]. */
         struct pwm_device *pwmdev = pwm_channel->pwmdev;
         if (pwmdev) {
                 u32 period_ns = pwm_channel->period;
-                u32 duty_ns = (duty) ? (period_ns*(duty+1)) >> 16 : 0;
+                u32 duty_ns = (period_ns / 100) * duty;
                 pwm_channel->duty_fraction = duty;
                 pwm_config(pwmdev, duty_ns, period_ns);
         }

@@ -30,40 +30,13 @@
 
 enum {
   PIN_WATER_PUMP,
-  PIN_WATER_HEATER,
   PIN_TEC,
-  PIN_INTAKE1_TACH,
-  PIN_INTAKE2_TACH,
-  PIN_EXHAUST_TACH,
   THERMAL_NUM_GPIO_PINS
 };
 
 enum {
-  PWM_INTAKE,
-  PWM_EXHAUST,
+  PWM_WATER_HTR,
   THERMAL_NUM_PWM_CHANNELS
-};
-
-enum {
-  TACH_INTAKE1,
-  TACH_INTAKE2,
-  TACH_EXHAUST,
-  THERMAL_NUM_TACH_SIGNALS
-};
-
-
-/**
- * Frequencies below MINIMUM_TACH_FREQUENCY_HZ will read as 0
- */
-#define MINIMUM_TACH_FREQUENCY_HZ 10
-#define MAXIMUM_TACH_PERIOD_NS (1000000000UL/MINIMUM_TACH_FREQUENCY_HZ)
-
-struct tach_channel {
-  int irq_num;
-  spinlock_t lock;
-  /** these two times are shared between IRQ handler and tach_show() */
-  ktime_t last_period;  /** period as of last IRQ */
-  ktime_t last_edge;  /** last edge IRQ time */
 };
 
 struct thermal {
@@ -74,11 +47,7 @@ struct thermal {
   /** PWM channels. */
   struct pwm_channel pwms[THERMAL_NUM_PWM_CHANNELS];
   /** Heater control uses a low frequency PWM controlled by software. */
-  struct hrtimer heater_pwm_timer;
-  /** Heater PWM duty cycle; 0=0%, 65535=100% */
   u16 heater_duty_fraction;
-  /** Tach data. */
-  struct tach_channel tachs[THERMAL_NUM_TACH_SIGNALS];
   /** Notifiers */
   struct notifier_block dms_notifier;
 };
