@@ -23,10 +23,10 @@
 #ifndef KERNEL_SRC_THERMAL_H_
 #define KERNEL_SRC_THERMAL_H_
 
-#include <linux/platform_device.h>
+#include <linux/i2c.h>
 
-int thermal_probe(struct platform_device *pdev);
+int thermal_probe(struct i2c_client *client, const struct i2c_device_id *id);
 
-int thermal_remove(struct platform_device *pdev);
+int thermal_remove(struct i2c_client *client);
 
 #endif

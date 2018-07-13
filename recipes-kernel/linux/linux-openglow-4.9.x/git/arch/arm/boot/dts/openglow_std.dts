@@ -477,6 +477,7 @@
           timer              = <&epit1>;
           sdma-params        = <26 0xe00>; /* SDMA Channel, Script Offset */
           };
+
 	openglow-hog {
 		compatible = "openglow,hog";
 		pinctrl-names = "default";
@@ -493,14 +494,6 @@
         power-40v-ok-gpio = PWR_40VDC_OK;
     };
 
-    openglow-thermal {
-        compatible = "openglow,thermal";
-        pinctrl-names     = "default";
-        pinctrl-0         = <&pinctrl_gpio_thermal>;
-        tec-gpio          = TEC_EN;
-        water-pump-gpio   = WATER_PUMP_EN;
-        water-heater-pwm  = <1>;
-    };
     regulators {
 		compatible = "simple-bus";
 		#address-cells = <1>;
@@ -733,6 +726,20 @@
     adc: max11611@35 {
     	compatible = "maxim,max11611";
     	reg = <0x35>;
+    };
+
+    /* Fan Controller */
+    emc2305@2C {
+	    compatible = "openglow,thermal";
+	    reg = <0x2C>;
+	    #address-cells = <1>;
+	    #size-cells = <0>;
+        tec-gpio          = TEC_EN;
+        water-pump-gpio   = WATER_PUMP_EN;
+        water-heater-pwm  = <1>;
+        exhaust-fan       = <0>;
+        intake-fan-1      = <1>;
+        intake-fan-2      = <2>;
     };
 };
 
