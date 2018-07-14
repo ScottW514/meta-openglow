@@ -95,6 +95,7 @@ static void thermal_make_safe(struct thermal *self)
         for (i = 0; i < THERMAL_NUM_PWM_CHANNELS; i++) {
                 io_pwm_set_duty_cycle(&self->pwms[i], 0);
         }
+        struct i2c_client *client = to_i2c_client(self->dev);
 	i2c_smbus_write_byte_data(client, SEL_FAN(FAN_EXHAUST, REG_FAN_SETTING), 0x00);
 	i2c_smbus_write_byte_data(client, SEL_FAN(FAN_INTAKE1, REG_FAN_SETTING), 0x00);
 	i2c_smbus_write_byte_data(client, SEL_FAN(FAN_INTAKE2, REG_FAN_SETTING), 0x00);
