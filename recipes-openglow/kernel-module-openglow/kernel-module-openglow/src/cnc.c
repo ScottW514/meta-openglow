@@ -69,10 +69,10 @@ struct gpio_desc {
 #define LASER_PWM_IDLE_DUTY     65535
 
 /**
- * How often the charge pump input is pulsed while running
+ * How often the watchdog input is pulsed while running
  * (to keep the laser firing)
  */
-#define CHARGE_PUMP_INTERVAL_NS               (200 * NSEC_PER_MSEC)
+#define HV_WDOG_INTERVAL_NS               (200 * NSEC_PER_MSEC)
 
 /**
  * Minimum step frequency for controlled decelerations and accelerations.
@@ -123,26 +123,24 @@ static const u32 fatal_fault_conditions =
 #define SIGNAL_FROM_FAULT_DEV_ID(dev_id) ((u32)(dev_id) & 3U)
 
 static const u32 sdma_script[] = {
-// ORIGINIAL GF SCRIPT - MODIFIED TO HAVE CORRECT GPIOS
-// I have a rewritten version (a bit more efficient) that will replace this.
-        0x09010b00, 0x69c80400, 0x69c84e00, 0x7d6e50e7, 0x00bc52ef, 0x02bc00ca, 0x7d68009e, 0x68106209,
-        0x02677d67, 0x50f7007f, 0x7c02124a, 0x02240356, 0x02617c01, 0x03360332, 0x03580263, 0x7c020352,
-        0x03380333, 0x02667c01, 0x03536b2b, 0x080d7803, 0x01890189, 0x01890260, 0x7c01035e, 0x02627c02,
-        0x03550357, 0x02657c01, 0x03540339, 0x033d0264, 0x7c020359, 0x035d5097, 0x03b06b2b, 0x08327803,
-        0x01890189, 0x01890260, 0x7c0650c7, 0x02617c01, 0x20021801, 0x58c70262, 0x7c0650cf, 0x02637d01,
-        0x20021801, 0x58cf0265, 0x7c0650d7, 0x02667d01, 0x20021801, 0x58d70121, 0x033e0335, 0x03370334,
-        0x6b2b52f7, 0x50df009a, 0x58df50e7, 0x009a58e7, 0x50ff4800, 0x7d042001, 0x58ff7c01, 0x03000162,
-        0x01227d93, 0x04000160, 0x7d8f0300, 0x04000160, 0x7d870161, 0x7de650f7, 0x007f7d06, 0x60d06dd3,
-        0x3a7f6ac8, 0x68d30141, 0x01420160, 0x7dda0000,
+        0x09010b00, 0x69c80400, 0x69c84e00, 0x7d7350e7, 0x00bc52ef, 0x02bc00ca, 0x7d6d009e, 0x68106209,
+        0x02677d6c, 0x50f7007f, 0x7c02124a, 0x02245097, 0x68140b00, 0x034e0261, 0x7c01032e, 0x03220347,
+        0x02637c02, 0x03420327, 0x03300266, 0x7c010350, 0x6b2b080d, 0x78030189, 0x01890189, 0x02607c01,
+        0x034f0262, 0x7c020343, 0x03490265, 0x7c01034b, 0x6b2b509f, 0x68140b00, 0x02647c02, 0x034c0340,
+        0x6b2b0832, 0x78030189, 0x01890189, 0x02607c06, 0x50c70261, 0x7c012002, 0x180158c7, 0x02627c06,
+        0x50cf0263, 0x7d012002, 0x180158cf, 0x02657c06, 0x50d70266, 0x7d012002, 0x180158d7, 0x01215097,
+        0x6814032f, 0x03230329, 0x03346b2b, 0x52f750df, 0x009a58df, 0x50e7009a, 0x58e750ff, 0x48007d04,
+        0x200158ff, 0x7c010300, 0x01620122, 0x7d8e0400, 0x01607d8a, 0x03000400, 0x01607d82, 0x01617de6,
+        0x50f7007f, 0x7d0660d0, 0x6dd33a7f, 0x6ac868d3, 0x01410142, 0x01607dda,
 };
 
 static const ktime_t ramp_update_interval_ktime = { .tv64 = RAMP_UPDATE_INTERVAL_NS };
-static const ktime_t charge_pump_interval_ktime  = { .tv64 = CHARGE_PUMP_INTERVAL_NS };
+static const ktime_t hv_wdog_interval_ktime  = { .tv64 = HV_WDOG_INTERVAL_NS };
 
 extern struct kobject *openglow_kobj;
 
 static void _cnc_ramp_stop(struct cnc *self);
-static void toggle_charge_pump(struct cnc *self);
+static void toggle_hv_wdog(struct cnc *self);
 
 static int load_sdma_script(struct cnc *self)
 {
@@ -160,7 +158,8 @@ static int load_sdma_script(struct cnc *self)
                 [7] = sdma_context_address_for_channel(self->sdma_ch_num)
                 },
                 .pda = epit_status_register_address(self->epit),
-                .mda = io_base_address(self->gpios, NUM_GPIO_PINS, cnc_sdma_pin_set),
+                .ca = io_base_address(self->gpios, NUM_GPIO_PINS, cnc_sdma_step_dir_pin_set),
+                .cs = io_base_address(self->gpios, NUM_GPIO_PINS, cnc_sdma_laser_aux_pin_set),
                 /* source and destination address frozen; start in read mode */
                 .ms = 0x00000000,
                 /* destination address frozen; 32-bit write size; start in write mode */
@@ -292,7 +291,7 @@ static void _driver_stop(struct cnc *self, enum cnc_state next_state)
 {
         dev_dbg(self->dev, "stopping cut...");
         epit_stop(self->epit);
-        hrtimer_cancel(&self->charge_pump_timer);
+        hrtimer_cancel(&self->hv_wdog_timer);
         sdma_event_disable(self->sdmac, epit_sdma_event(self->epit));
         _cnc_ramp_stop(self);
 
@@ -317,8 +316,9 @@ static void _driver_stop(struct cnc *self, enum cnc_state next_state)
  */
 static void _cnc_ramp_start(struct cnc *self)
 {
+        // TODO: Verify that this actually pulls the line low.
         /* Disable DMA control of laser enable; force the line low. */
-        gpio_direction_input(self->gpios[PIN_LASER_ON]);
+        gpio_direction_input(self->gpios[PIN_FIRE]);
         /* Begin periodic updates */
         tasklet_hrtimer_start(&self->ramp_timer, ramp_update_interval_ktime,
         HRTIMER_MODE_REL);
@@ -433,9 +433,10 @@ void cnc_sdma_interrupt(void *param)
         spin_lock_bh(&self->status_lock);
         /* "enable_laser_on_interrupt" is set when we're expecting an SDMA waypoint */
         /* interrupt during a resume. */
+        // TODO: Check that this is actually working this way
         if (unlikely(self->status.enable_laser_on_interrupt)) {
                 self->status.enable_laser_on_interrupt = false;
-                gpio_direction_output(self->gpios[PIN_LASER_ON], 0);
+                gpio_direction_output(self->gpios[PIN_FIRE], 0);
         }
         /* "decel_on_interrupt" is set when we're expecting an SDMA waypoint */
         /* interrupt during a backtrack. */
@@ -570,8 +571,8 @@ static int cnc_run_with_options(struct cnc *self, struct cnc_run_options opts)
                                 io_pwm_set_duty_cycle(&self->laser_pwm, LASER_PWM_IDLE_DUTY);
                         }
 
-                        toggle_charge_pump(self); /* pulse once to prime charge pump before cut start */
-                        hrtimer_start(&self->charge_pump_timer, charge_pump_interval_ktime, HRTIMER_MODE_REL);
+                        toggle_hv_wdog(self); /* pulse once to prime watchod before cut start */
+                        hrtimer_start(&self->hv_wdog_timer, hv_wdog_interval_ktime, HRTIMER_MODE_REL);
                         /* Enable timer events */
                         sdma_event_enable(self->sdmac, epit_sdma_event(self->epit));
 
@@ -801,33 +802,34 @@ int cnc_clear_pulse_data(struct cnc *self, enum cnc_lseek_options opts)
 
 int cnc_set_laser_output(struct cnc *self, int value)
 {
-        /* If value == 0, LASER_ON is an output. */
-        /* Otherwise, LASER_ON is high impedance. */
+        // TODO: Verify if this is actually working this way. I suspect it is not.
+        /* If value == 0, FIRE is an output. */
+        /* Otherwise, FIRE is high impedance. */
         if (value == 0) {
                 /* Allow LASER_ON to be driven by sdma. */
-                gpio_direction_output(self->gpios[PIN_LASER_ON], 0);
+                gpio_direction_output(self->gpios[PIN_FIRE], 0);
         } else {
-                gpio_direction_input(self->gpios[PIN_LASER_ON]);
+                gpio_direction_input(self->gpios[PIN_FIRE]);
         }
         return 0;
 }
 
 
-static void toggle_charge_pump(struct cnc *self)
+static void toggle_hv_wdog(struct cnc *self)
 {
-        int gpio = self->gpios[PIN_CHARGE_PUMP];
-//        gpio_set_value(gpio, 0);
+        int gpio = self->gpios[PIN_HV_WDOG];
+        gpio_set_value(gpio, 0);
         gpio_set_value(gpio, 1);
-//        gpio_set_value(gpio, 0);
+        gpio_set_value(gpio, 0);
 }
 
 
 /* Called from hard interrupt context */
-static enum hrtimer_restart charge_pump_timer_cb(struct hrtimer *timer)
+static enum hrtimer_restart hv_wdog_timer_cb(struct hrtimer *timer)
 {
-        struct cnc *self = container_of(timer, struct cnc, charge_pump_timer);
-        toggle_charge_pump(self);
-        hrtimer_forward_now(timer, charge_pump_interval_ktime);
+        struct cnc *self = container_of(timer, struct cnc, hv_wdog_timer);
+        toggle_hv_wdog(self);
+        hrtimer_forward_now(timer, hv_wdog_interval_ktime);
         return HRTIMER_RESTART;
 }
 
@@ -997,8 +999,8 @@ int cnc_probe(struct platform_device *pdev)
         tasklet_init(&self->fault_tasklet, fault_tasklet_fn, (unsigned long)self);
         cnc_set_step_frequency(self, STEP_FREQUENCY_DEFAULT);
         tasklet_hrtimer_init(&self->ramp_timer, ramp_update_tasklet_fn, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-        hrtimer_init(&self->charge_pump_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-        self->charge_pump_timer.function = charge_pump_timer_cb;
+        hrtimer_init(&self->hv_wdog_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+        self->hv_wdog_timer.function = hv_wdog_timer_cb;
 
 #if INITIAL_STATE_DISABLED
         self->status.state = STATE_DISABLED;
@@ -1157,7 +1159,7 @@ int cnc_remove(struct platform_device *pdev)
         epit_stop(self->epit);
         sdma_set_channel_interrupt_callback(self->sdmac, NULL, NULL);
         tasklet_hrtimer_cancel(&self->ramp_timer);
-        hrtimer_cancel(&self->charge_pump_timer);
+        hrtimer_cancel(&self->hv_wdog_timer);
 #if INSTALL_PANIC_HANDLER
         atomic_notifier_chain_unregister(&panic_notifier_list, &self->panic_notifier);
 #endif

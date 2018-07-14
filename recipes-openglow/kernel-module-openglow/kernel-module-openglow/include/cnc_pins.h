@@ -27,22 +27,28 @@
 #include "io.h"
 
 enum {
-  PIN_XY_ENABLE,
-  PIN_X_STEP,
-  PIN_X_DIR,
-  PIN_Y1_STEP,
-  PIN_Y1_DIR,
-  PIN_Y2_STEP,
-  PIN_Y2_DIR,
-  PIN_Z_STEP,
-  PIN_Z_DIR,
-  PIN_LASER_ON,
-  PIN_LASER_ON_HEAD,
-  PIN_CHARGE_PUMP,
-  /* ---------- */
-  NUM_GPIO_PINS
+        PIN_BEAM_DET_EN,
+        PIN_FIRE,
+        PIN_HV_OK,
+        PIN_HV_WDOG,
+        PIN_OK_2_FIRE,
+        PIN_XY_ENABLE,
+        PIN_X_STEP,
+        PIN_X_DIR,
+        PIN_X_DIAG0,
+        PIN_X_DIAG1,
+        PIN_Y1_STEP,
+        PIN_Y1_DIR,
+        PIN_Y1_DIAG0,
+        PIN_Y1_DIAG1,
+        PIN_Y2_STEP,
+        PIN_Y2_DIR,
+        PIN_Y2_DIAG0,
+        PIN_Y2_DIAG1,
+        PIN_Z_STEP,
+        PIN_Z_DIR,
+        NUM_GPIO_PINS
 };
-
 
 
 /**
@@ -64,9 +70,14 @@ extern const struct pin_change_set *cnc_stop_pin_changes;
 extern const struct pin_change_set *cnc_shutdown_pin_changes;
 
 /**
- * A set indicating which pins are controlled by the SDMA script.
+ * Set indicating which step/dir pins are controlled by the SDMA script.
  */
-extern const pin_set cnc_sdma_pin_set;
+extern const pin_set cnc_sdma_step_dir_pin_set;
+
+/**
+ * Set indicating which laser/aux pins are controlled by the SDMA script.
+ */
+extern const pin_set cnc_sdma_laser_aux_pin_set;
 
 /**
  * Array of pin configurations.

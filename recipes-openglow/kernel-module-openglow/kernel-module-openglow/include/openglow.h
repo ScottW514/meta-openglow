@@ -84,8 +84,6 @@
 #define ATTR_WATER_HTR_PWM          water_heater_pwm
 #define ATTR_WATER_PUMP_ON          water_pump_on
 #define ATTR_TEC_ON                 tec_on
-#define ATTR_WATER_TEMP_1           water_temp_1
-#define ATTR_WATER_TEMP_2           water_temp_2
 
 #define ATTR_INTAKE_PWM_PATH        THERMAL_SYSFS_ATTR_DIR STR(ATTR_INTAKE_PWM)
 #define ATTR_INTAKE1_TACH_PATH      THERMAL_SYSFS_ATTR_DIR STR(ATTR_INTAKE1_TACH)
@@ -270,7 +268,7 @@ enum tmc2130_register
         TMC2130_REG_LOST_STEPS      = 0x73
 };
 
-enum thermal_fan_global_registers
+enum emc2303_global_registers
 {
 	REG_CONFIGURATION = 0x20,
 	REG_FAN_STATUS = 0x24,
@@ -289,7 +287,7 @@ enum thermal_fan_global_registers
 	REG_REVISION = 0xff
 };
 
-enum thermal_fan_registers
+enum emc2303_channel_registers
 {
 	REG_FAN_SETTING = 0x30,
 	REG_PWM_DIVIDE = 0x31,
