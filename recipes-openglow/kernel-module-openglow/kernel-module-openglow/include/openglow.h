@@ -30,6 +30,7 @@
 
 #define ROOT_KOBJ_NAME              "openglow"
 #define CNC_GROUP_NAME              "cnc"
+#define LEDS_GROUP_NAME             "leds"
 #define THERMAL_GROUP_NAME          "thermal"
 #define TMC2130_GROUP_NAME          "tmc2130"
 
@@ -37,6 +38,7 @@
 
 #define SYSFS_ROOT_DIR              "/sys/" ROOT_KOBJ_NAME "/"
 #define SYSFS_ATTR_DIR              SYSFS_ROOT_DIR CNC_GROUP_NAME "/"
+#define LEDS_SYSFS_ATTR_DIR         SYSFS_ROOT_DIR LEDS_GROUP_NAME "/"
 #define THERMAL_SYSFS_ATTR_DIR      SYSFS_ROOT_DIR THERMAL_GROUP_NAME "/"
 #define PULSE_DEVICE_DIR            "/dev/"
 #define INPUT_DEVICE_DIR            "/dev/input/by-path/"
@@ -159,6 +161,16 @@
 #define ATTR_ENCM_CTRL_PATH         TMC2130_SYSFS_ATTR_DIR STR(ATTR_ENCM_CTRL)
 #define ATTR_LOST_STEPS_PATH        TMC2130_SYSFS_ATTR_DIR STR(ATTR_LOST_STEPS)
 #define ATTR_STATUS_PATH            TMC2130_SYSFS_ATTR_DIR STR(ATTR_STATUS)
+
+#define ATTR_LID_LED_PWM            lid_led_pwm
+#define ATTR_LED_RED_PWM            btn_red_led_pwm
+#define ATTR_LED_GREEN_PWM          btn_green_led_pwm
+#define ATTR_LED_BLUE_PWM           btn_blue_led_pwm
+
+#define ATTR_LID_LED_PWM_PATH       LEDS_SYSFS_ATTR_DIR STR(ATTR_LID_LED_PWM)
+#define ATTR_LED_RED_PWM_PATH       LEDS_SYSFS_ATTR_DIR STR(ATTR_LED_RED_PWM)
+#define ATTR_LED_GREEN_PWM_PATH     LEDS_SYSFS_ATTR_DIR STR(ATTR_LED_GREEN_PWM)
+#define ATTR_LED_BLUE_PWM_PATH      LEDS_SYSFS_ATTR_DIR STR(ATTR_LED_BLUE_PWM)
 
 /**
  * Recommended buffer size for reading the value of the state attribute,

@@ -4,7 +4,7 @@ SRC_DIR = ./src
 
 KERNEL_SRC ?= /usr/src/kernel
 
-SRC = io.c tmc2130.c thermal.c \
+SRC = leds.c io.c tmc2130.c thermal.c \
       cnc_buffer.c cnc.c cnc_api.c cnc_pins.c \
       openglow.c
 

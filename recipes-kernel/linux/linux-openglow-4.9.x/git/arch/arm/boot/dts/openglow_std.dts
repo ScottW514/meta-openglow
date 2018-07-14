@@ -741,6 +741,18 @@
         intake-fan-1      = <1>;
         intake-fan-2      = <2>;
     };
+
+    /* LED Controller */
+    emc2305@2D {
+	    compatible = "openglow,leds";
+	    reg = <0x2D>;
+	    #address-cells = <1>;
+	    #size-cells = <0>;
+        lid-led-pwm      = <2>;
+        button-blue-led  = <0>;
+        button-green-led = <1>;
+        button-red-led   = <2>;
+    };
 };
 
 &mipi_csi {

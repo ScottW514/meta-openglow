@@ -22,7 +22,6 @@
 #include "device_attr.h"
 #include "io.h"
 #include "openglow.h"
-#include <linux/interrupt.h>
 
 #define SEL_FAN(fan, reg) (reg + fan * 0x10)
 
@@ -31,21 +30,25 @@ extern struct kobject *openglow_kobj;
 /** Module parameters */
 extern int thermal_enabled;
 
+
 static const struct pin_config thermal_pin_configs[THERMAL_NUM_GPIO_PINS] = {
         /* pump should be on at start */
         [PIN_WATER_PUMP]      = {"water-pump-gpio", GPIOF_OUT_INIT_HIGH},
         [PIN_TEC]             = {"tec-gpio",        GPIOF_OUT_INIT_LOW},
 };
 
+
 static const struct pwm_channel_config thermal_pwm_configs[THERMAL_NUM_PWM_CHANNELS] = {
         [PWM_WATER_HTR]     = {"water-heater-pwm",    10000000},
 };
+
 
 static const struct fan_config fan_configs[THERMAL_NUM_FANS] = {
 	[FAN_EXHAUST]     = {"exhaust-fan"},
 	[FAN_INTAKE1]     = {"intake-fan-1"},
 	[FAN_INTAKE2]     = {"intake-fan-2"},
 };
+
 
 /**
  * Pin changes to apply when the driver is unloaded.
@@ -54,6 +57,7 @@ DEFINE_PIN_CHANGE_SET(thermal_shutdown_pin_changes,
         {PIN_WATER_PUMP, 0},
         {PIN_TEC, 0},
 );
+
 
 static uint8_t thermal_read_i2c_byte(struct i2c_client *client, int reg)
 {
@@ -64,6 +68,7 @@ static uint8_t thermal_read_i2c_byte(struct i2c_client *client, int reg)
         mutex_unlock(&self->lock);
         return ret;
 }
+
 
 static uint16_t thermal_read_i2c_word(struct i2c_client *client, int reg)
 {
@@ -87,7 +92,7 @@ static int thermal_write_i2c_byte(struct i2c_client *client, int reg, uint8_t ne
         return ret;
 }
 
-/* Deadman switch trip notification */
+
 static void thermal_make_safe(struct thermal *self)
 {
         int i;
@@ -152,6 +157,7 @@ static ssize_t thermal_write_register_ascii(struct device *dev, int reg, const c
 	return (ret >= 0) ? count : ret;
 }
 
+
 #define DEFINE_PWM_ATTR(name, pwm) \
         static ssize_t name##_show(struct device *dev, struct device_attribute *attr, char *buf) { \
                 struct thermal *self = dev_get_drvdata(dev); \
@@ -211,9 +217,11 @@ static struct attribute *thermal_attrs[] = {
         NULL
 };
 
+
 const struct attribute_group thermal_attr_group = {
         .attrs = thermal_attrs
 };
+
 
 int thermal_init_fans(struct device_node *of_node, const struct fan_config *fan_configs, int *fans, size_t nfans)
 {
@@ -228,6 +236,7 @@ int thermal_init_fans(struct device_node *of_node, const struct fan_config *fan_
         }
         return 0;
 }
+
 
 int thermal_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
