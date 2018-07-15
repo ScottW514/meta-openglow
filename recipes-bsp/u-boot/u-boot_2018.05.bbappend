@@ -10,14 +10,14 @@ do_mkimage () {
         mkdir ${S}/board/openglow/${MACHINE}
     fi
     uboot-mkimage -A arm -O linux -T script -C none -a 0 -e 0 \
-                -n "upgrade script" -d ${UPGRADESCRIPT} \
+                -n "Upgrade Script" -d ${UPGRADESCRIPT} \
                 ${S}/board/openglow/${MACHINE}/u-boot_upgrade.scr
-    install -D -m 644 ${S}/board/openglow/${MACHINE}/u-boot_upgrade.scr \
-                ${D}/u-boot_upgrade_install.scr
 }
 addtask mkimage after do_compile before do_install
 
-do_deploy_append () {
+do_imginstall () {
+    install -D -m 644 ${S}/board/openglow/${MACHINE}/u-boot_upgrade.scr \
+                ${D}/u-boot_upgrade_install.scr
     install -D -m 644 ${D}/u-boot_upgrade_install.scr \
                 ${DEPLOYDIR}/u-boot_upgrade-${MACHINE}-${PV}-${PR}.scr
 
@@ -26,3 +26,4 @@ do_deploy_append () {
     ln -sf u-boot_upgrade-${MACHINE}-${PV}-${PR}.scr \
                 u-boot_upgrade-${MACHINE}.scr
 }
+addtask imginstall after do_mkimage before do_install
