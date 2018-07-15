@@ -4,7 +4,10 @@ HOMEPAGE = "https://www.openglow.org/"
 AUTHOR = "Scott Wiederhold"
 SECTION = "base"
 LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=7116033ecf2072d9f5f263e09ec7d3e9"
+LICENSE_PATH = "${S}"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI = " \
     file://openglow-profile.sh \
