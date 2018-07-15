@@ -11,47 +11,47 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
- /* PAD Control Definitions
-  *
-  * Be sure to check IMX6 DQ Reference Manual to verify each
-  * PADs actual capability (i.e. GPIO00 - See Ch 36.4.376).
-  * PAD Operating frequency is dependent on many factors (See Ch 28.4.2.3)
-  *
-  * For a better explanation, see Freescale AN5078
-  * http://cache.freescale.com/files/32bit/doc/app_note/AN5078.pdf
-  */
- /* Hysteresis */
- #define HYS            (1 << 16) /* OFF: CMOS Input, ON: Schmitt trigger Input */
- /* Pull Up/Keeper Mode Select */
- #define PUE            (1 << 13) /* OFF: Keeper, ON: Pull Up */
- /* Pull Up/Down - Value */
- #define PUS_22K_UP     (3 << 14)
- #define PUS_47K_UP     (1 << 14)
- #define PUS_100K_UP    (2 << 14)
- #define PUS_100K_DOWN  (0 << 14) /* Default */
- /* Pull Up/Keeper - Enable */
- #define PKE            (1 << 12) /* OFF: Disabled, ON: Enabled */
- /* Open Drain Enable */
- #define ODE            (1 << 11) /* OFF: CMOS output, ON: Open Drain */
- /* Speed - The range of this capability is PAD specific */
- #define SPEED_LOW      (0 << 6)
- #define SPEED_MED_LOW  (1 << 6)
- #define SPEED_MED_HIGH (2 << 6)
- #define SPEED_HIGH     (3 << 6)
- /* Drive Strength */
- #define DSE_DISABLE    (0 << 3) /* Default - HI-Z */
- #define DSE_33ohm      (7 << 3)
- #define DSE_40ohm      (6 << 3)
- #define DSE_50ohm      (5 << 3)
- #define DSE_60ohm      (4 << 3)
- #define DSE_90ohm      (3 << 3)
- #define DSE_130ohm     (2 << 3)
- #define DSE_260ohm     (1 << 3)
- /* Slew Rate */
- #define SRE_SLOW       (0 << 0) /* Default */
- #define SRE_FAST       (1 << 0)
- /* SION - Software Input On Field */
- #define SION       (1 << 30)
+/* PAD Control Definitions
+*
+* Be sure to check IMX6 DQ Reference Manual to verify each
+* PADs actual capability (i.e. GPIO00 - See Ch 36.4.376).
+* PAD Operating frequency is dependent on many factors (See Ch 28.4.2.3)
+*
+* For a better explanation, see Freescale AN5078
+* http://cache.freescale.com/files/32bit/doc/app_note/AN5078.pdf
+*/
+/* Hysteresis */
+#define HYS            (1 << 16) /* OFF: CMOS Input, ON: Schmitt trigger Input */
+/* Pull Up/Keeper Mode Select */
+#define PUE            (1 << 13) /* OFF: Keeper, ON: Pull Up */
+/* Pull Up/Down - Value */
+#define PUS_22K_UP     (3 << 14)
+#define PUS_47K_UP     (1 << 14)
+#define PUS_100K_UP    (2 << 14)
+#define PUS_100K_DOWN  (0 << 14) /* Default */
+/* Pull Up/Keeper - Enable */
+#define PKE            (1 << 12) /* OFF: Disabled, ON: Enabled */
+/* Open Drain Enable */
+#define ODE            (1 << 11) /* OFF: CMOS output, ON: Open Drain */
+/* Speed - The range of this capability is PAD specific */
+#define SPEED_LOW      (0 << 6)
+#define SPEED_MED_LOW  (1 << 6)
+#define SPEED_MED_HIGH (2 << 6)
+#define SPEED_HIGH     (3 << 6)
+/* Drive Strength */
+#define DSE_DISABLE    (0 << 3) /* Default - HI-Z */
+#define DSE_33ohm      (7 << 3)
+#define DSE_40ohm      (6 << 3)
+#define DSE_50ohm      (5 << 3)
+#define DSE_60ohm      (4 << 3)
+#define DSE_90ohm      (3 << 3)
+#define DSE_130ohm     (2 << 3)
+#define DSE_260ohm     (1 << 3)
+/* Slew Rate */
+#define SRE_SLOW       (0 << 0) /* Default */
+#define SRE_FAST       (1 << 0)
+/* SION - Software Input On Field */
+#define SION       (1 << 30)
 
 /dts-v1/;
 
@@ -722,24 +722,15 @@
         compatible = "national,lm75b";
     };
 
-    /* HEAD ACCELEROMETER */
-    head-accel@1e {
-        reg = <0x1e>;
-        compatible = "st,lis2hh12";
+    /* HEAD FAN Controller */
+    emc2302@2E {
+	    compatible = "openglow,head_fans";
+	    reg = <0x2E>;
+	    #address-cells = <1>;
+	    #size-cells = <0>;
+        air-assist-fan  = <0>;
+        lens-purge-fan  = <1>;
     };
-
-    /* HEAD CAMERA */
-    ov5648_mipi_slave@36 {
-		compatible = "ovti,ov5648_mipi_slave";
-		reg = <0x36>;
-		clocks = <&clks 0>;
-		clock-names = "csi_mclk";
-		ipu_id = <0>;
-		csi_id = <1>;
-		mclk = <25000000>;
-		mclk_source = <0>;
-		extended-buffer;
-	};
 };
 
 /* LID */
@@ -750,7 +741,7 @@
 	status = "okay";
 
     /* LID ACCELEROMETER */
-    head-accel@1e {
+    lid-accel@1e {
         reg = <0x1e>;
         compatible = "st,lis2hh12";
     };
@@ -786,7 +777,7 @@
     };
 
     /* Fan Controller */
-    emc2305@2C {
+    emc2303@2C {
 	    compatible = "openglow,thermal";
 	    reg = <0x2C>;
 	    #address-cells = <1>;
@@ -800,15 +791,15 @@
     };
 
     /* LED Controller */
-    emc2305@2D {
+    emc2303@2D {
 	    compatible = "openglow,leds";
 	    reg = <0x2D>;
 	    #address-cells = <1>;
 	    #size-cells = <0>;
         lid-led-pwm      = <2>;
-        button-blue-led  = <0>;
+        button-red-led  = <0>;
         button-green-led = <1>;
-        button-red-led   = <2>;
+        button-blue-led   = <2>;
     };
 };
 

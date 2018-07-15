@@ -30,6 +30,7 @@
 
 #define ROOT_KOBJ_NAME              "openglow"
 #define CNC_GROUP_NAME              "cnc"
+#define HEAD_FANS_GROUP_NAME        "head_fans"
 #define LEDS_GROUP_NAME             "leds"
 #define THERMAL_GROUP_NAME          "thermal"
 #define TMC2130_GROUP_NAME          "tmc2130"
@@ -38,6 +39,7 @@
 
 #define SYSFS_ROOT_DIR              "/sys/" ROOT_KOBJ_NAME "/"
 #define SYSFS_ATTR_DIR              SYSFS_ROOT_DIR CNC_GROUP_NAME "/"
+#define HEAD_FANS_SYSFS_ATTR_DIR    SYSFS_ROOT_DIR HEAD_FANS_GROUP_NAME "/"
 #define LEDS_SYSFS_ATTR_DIR         SYSFS_ROOT_DIR LEDS_GROUP_NAME "/"
 #define THERMAL_SYSFS_ATTR_DIR      SYSFS_ROOT_DIR THERMAL_GROUP_NAME "/"
 #define PULSE_DEVICE_DIR            "/dev/"
@@ -93,6 +95,14 @@
 #define ATTR_WATER_HTR_PWM_PATH     THERMAL_SYSFS_ATTR_DIR STR(ATTR_WATER_HTR_PWM)
 #define ATTR_WATER_PUMP_ON_PATH     THERMAL_SYSFS_ATTR_DIR STR(ATTR_WATER_PUMP_ON)
 #define ATTR_TEC_ON_PATH            THERMAL_SYSFS_ATTR_DIR STR(ATTR_TEC_ON)
+
+#define ATTR_AIR_ASSIST_PWM         air_assist_pwm
+#define ATTR_AIR_ASSIST_TACH        air_assist_tach
+#define ATTR_LENS_PURGE_PWM         lens_purge_pwm
+
+#define ATTR_AIR_ASSIST_PWM_PATH    HEAD_FANS_SYSFS_ATTR_DIR STR(ATTR_AIR_ASSIST_PWM)
+#define ATTR_AIR_ASSIST_TACH_PATH   HEAD_FANS_SYSFS_ATTR_DIR STR(ATTR_AIR_ASSIST_TACH)
+#define ATTR_LENS_PURGE_PWM_PATH    HEAD_FANS_SYSFS_ATTR_DIR STR(ATTR_LENS_PURGE_PWM)
 
 #define ATTR_GCONF                  gconf
 #define ATTR_GSTAT                  gstat

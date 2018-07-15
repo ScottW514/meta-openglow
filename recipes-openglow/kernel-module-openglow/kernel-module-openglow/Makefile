@@ -6,7 +6,7 @@ KERNEL_SRC ?= /usr/src/kernel
 
 SRC = leds.c io.c tmc2130.c thermal.c \
       cnc_buffer.c cnc.c cnc_api.c cnc_pins.c \
-      openglow.c
+      openglow.c head_fans.c
 
 
 ccflags-y += -I$(PWD)/include -Wno-unknown-pragmas
