@@ -731,6 +731,22 @@
         air-assist-fan  = <0>;
         lens-purge-fan  = <1>;
     };
+
+    /* HEAD LENS Step Driver */
+    z-axis@30 {
+	    compatible = "openglow,lens";
+	    reg = <0x30>;
+	    #address-cells = <1>;
+	    #size-cells = <0>;
+        enable-gpio   = <0>;
+        decay-gpio    = <1>;
+        fault-gpio    = <2>;
+        reset-gpio    = <3>;
+        home-gpio     = <4>;
+        mode-2-gpio   = <5>;
+        mode-1-gpio   = <6>;
+        mode-0-gpio   = <7>;
+    };
 };
 
 /* LID */
@@ -816,13 +832,13 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm1>;
 	status = "okay";
+	fsl,extra-prescale = <13>;
 };
 
 &pwm3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm3>;
 	status = "okay";
-    fsl,extra-prescale = <13>;
 };
 
 &pwm4 {
