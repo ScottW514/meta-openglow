@@ -51,7 +51,7 @@
 #define SRE_SLOW       (0 << 0) /* Default */
 #define SRE_FAST       (1 << 0)
 /* SION - Software Input On Field */
-#define SION       (1 << 30)
+#define SION           (1 << 30)
 
 /dts-v1/;
 
@@ -213,11 +213,11 @@
             >;
         };
 
-        /* GPIO - Power */
-        pinctrl_gpio_power: gpio-powergrp {
+        /* GPIO - Power 12 V*/
+        pinctrl_gpio_power_12v: gpio-power12vgrp {
             fsl,pins = <
 #define PWR_12VDC_EN        <&gpio2 2 GPIO_ACTIVE_HIGH> /* 12VDC_EN - OUT */
-                MX6QDL_PAD_NANDF_D2__GPIO2_IO02    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_NANDF_D2__GPIO2_IO02    (PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define PWR_12VDC_OK        <&gpio2 3 GPIO_ACTIVE_HIGH> /* 12VDC_OK - IN */
                 MX6QDL_PAD_NANDF_D3__GPIO2_IO03      (HYS | PUE | PKE)
             >;
@@ -227,7 +227,7 @@
         pinctrl_gpio_power_40v: gpio-power40vgrp {
             fsl,pins = <
 #define PWR_40VDC_EN        <&gpio3 2 GPIO_ACTIVE_HIGH> /* 40VDC_EN - OUT */
-                MX6QDL_PAD_EIM_DA2__GPIO3_IO02    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA2__GPIO3_IO02    (PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define PWR_40VDC_OK        <&gpio2 6 GPIO_ACTIVE_HIGH> /* 40VDC_OK - IN */
                 MX6QDL_PAD_NANDF_D6__GPIO2_IO06      (HYS | PUE | PKE)
             >;
@@ -237,9 +237,9 @@
         pinctrl_gpio_thermal: gpio-thermalgrp {
             fsl,pins = <
 #define TEC_EN  <&gpio2 23 GPIO_ACTIVE_HIGH> /* TEC_EN - OUT */
-                MX6QDL_PAD_EIM_CS0__GPIO2_IO23     (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_CS0__GPIO2_IO23     (SION | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
 #define WATER_PUMP_EN   <&gpio3 23 GPIO_ACTIVE_HIGH> /* WTR_PMP_EN - OUT */
-                MX6QDL_PAD_EIM_D23__GPIO3_IO23     (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_D23__GPIO3_IO23     (SION | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
             >;
         };
 
@@ -541,16 +541,6 @@
 		pinctrl-0 = <&pinctrl_hog>;
     };
 
-	openglow-power {
-		compatible = "openglow,power";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_gpio_power>;
-        power-12v-en-gpio = PWR_12VDC_EN;
-        power-12v-ok-gpio = PWR_12VDC_OK;
-        power-40v-en-gpio = PWR_40VDC_EN;
-        power-40v-ok-gpio = PWR_40VDC_OK;
-    };
-
     regulators {
 		compatible = "simple-bus";
 		#address-cells = <1>;
@@ -574,9 +564,22 @@
 			regulator-always-on;
 		};
 
-        reg_40v: 40v {
+		reg_12v: 12v {
             compatible = "regulator-fixed";
             reg = <3>;
+            pinctrl-names = "default";
+            pinctrl-0 = <&pinctrl_gpio_power_12v>;
+            gpio = PWR_12VDC_EN;
+            regulator-name = "12v";
+            regulator-min-microvolt = <12000000>;
+            regulator-max-microvolt = <12000000>;
+            enable-active-high;
+			regulator-boot-on;
+		};
+
+        reg_40v: 40v {
+            compatible = "regulator-fixed";
+            reg = <4>;
             pinctrl-names = "default";
             pinctrl-0 = <&pinctrl_gpio_power_40v>;
             gpio = PWR_40VDC_EN;
@@ -586,9 +589,9 @@
             enable-active-high;
 		};
 
-        reg_wlan_en: regulator@3 {
+        reg_wlan_en: regulator@5 {
 			compatible = "regulator-fixed";
-			reg = <4>;
+			reg = <5>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_reg_wlan_en>;
 			regulator-name = "wlan-en";
@@ -599,9 +602,9 @@
 			enable-active-high;
 		};
 
-		reg_usbhst1_vbus: regulator@4 {
+		reg_usbhst1_vbus: regulator@6 {
 			compatible = "regulator-fixed";
-			reg = <5>;
+			reg = <6>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_reg_usbhst1_vbus>;
 			regulator-name = "usb_host_vbus";
@@ -611,9 +614,9 @@
 			enable-active-high;
 		};
 
-		reg_usbotg_vbus: regulator@5 {
+		reg_usbotg_vbus: regulator@7 {
 			compatible = "regulator-fixed";
-			reg = <6>;
+			reg = <7>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_reg_usbotg_vbus>;
 			regulator-name = "usb_otg_vbus";

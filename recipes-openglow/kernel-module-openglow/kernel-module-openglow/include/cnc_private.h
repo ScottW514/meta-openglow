@@ -338,6 +338,8 @@ struct cnc {
   int gpios[NUM_GPIO_PINS];
   /** Laser power PWM channel. */
   struct pwm_channel laser_pwm;
+  /** 12V power supply. */
+  struct regulator *supply_12v;
   /** 40V power supply. */
   struct regulator *supply_40v;
   /**

@@ -163,13 +163,6 @@ static int __init openglow_init(void)
                 goto failed_thermal_init;
         }
 
-        /* Initialize the head fan subsystem */
-        status = i2c_add_driver(&head_fans);
-        if (status < 0) {
-                pr_err("failed to initialize head fan controller\n");
-                goto failed_head_fans_init;
-        }
-
         /* Initialize the LED subsystem */
         status = i2c_add_driver(&leds);
         if (status < 0) {
@@ -191,16 +184,23 @@ static int __init openglow_init(void)
           goto failed_tmc2130_init;
         }
 
+        /* Initialize the head fan subsystem */
+        status = i2c_add_driver(&head_fans);
+        if (status < 0) {
+                pr_err("failed to initialize head fan controller\n");
+                goto failed_head_fans_init;
+        }
+
         pr_info("%s: done\n", __func__);
         return 0;
 
-failed_tmc2130_init:
-        platform_driver_unregister(&cnc);
-failed_cnc_init:
-        i2c_del_driver(&leds);
-failed_leds_init:
-        i2c_del_driver(&thermal);
 failed_head_fans_init:
+failed_tmc2130_init:
+platform_driver_unregister(&cnc);
+failed_cnc_init:
+i2c_del_driver(&leds);
+failed_leds_init:
+i2c_del_driver(&thermal);
 failed_thermal_init:
         kobject_put(openglow_kobj);
         return status;

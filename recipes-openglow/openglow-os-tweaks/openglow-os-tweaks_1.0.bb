@@ -14,6 +14,7 @@ SRC_URI = " \
 "
 
 do_install() {
+    # Install custom profile
     install -d ${D}${sysconfdir}/profile.d/
     install -m 0755 ${WORKDIR}/openglow-profile.sh ${D}${sysconfdir}/profile.d/
 }

@@ -178,8 +178,8 @@ static unsigned gpios_out_low[] = {
 };
 
 static unsigned gpios_out_high[] = {
-	IMX_GPIO_NR(2, 2),	/* enable 12VDC */
 	IMX_GPIO_NR(3, 23),	/* enable Water Pump */
+	IMX_GPIO_NR(2, 2),	/* enable 12VDC */
 };
 
 static void set_gpios(unsigned *p, int cnt, int val)
