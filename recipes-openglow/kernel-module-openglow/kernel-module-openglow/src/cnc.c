@@ -758,7 +758,7 @@ int cnc_single_z_step(struct cnc *self, bool direction)
 
         gpio_set_value(z_dir_gpio, direction);
         gpio_set_value(z_step_gpio, 1);
-        udelay(2); /* DRV8818 wants a minimum 1us pulse duration */
+        udelay(4); /* DRV8824 wants a minimum 2us pulse duration */
         gpio_set_value(z_step_gpio, 0);
         gpio_set_value(z_dir_gpio, 0);
         return 0;
@@ -1180,11 +1180,6 @@ int cnc_remove(struct platform_device *pdev)
 #endif
         io_release_pwms(&self->laser_pwm, 1);
         stepper_power_off(self);
-        if (regulator_disable(self->supply_12v)) {
-                dev_err(&pdev->dev, "unable to disable 12V supply");
-        } else {
-                dev_info(&pdev->dev, "12V off");
-        }
         io_release_gpios(self->gpios, NUM_GPIO_PINS);
         self->state_attr_node = NULL;
         sysfs_remove_link(&pdev->dev.kobj, CNC_GROUP_NAME);

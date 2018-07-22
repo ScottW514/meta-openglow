@@ -736,9 +736,9 @@
     };
 
     /* HEAD LENS Step Driver */
-    z-axis@30 {
+    z-axis@20 {
 	    compatible = "openglow,lens";
-	    reg = <0x30>;
+	    reg = <0x20>;
 	    #address-cells = <1>;
 	    #size-cells = <0>;
         enable-gpio   = <0>;

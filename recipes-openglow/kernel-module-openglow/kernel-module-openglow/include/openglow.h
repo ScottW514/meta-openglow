@@ -32,6 +32,7 @@
 #define CNC_GROUP_NAME              "cnc"
 #define HEAD_FANS_GROUP_NAME        "head_fans"
 #define LEDS_GROUP_NAME             "leds"
+#define LENS_GROUP_NAME             "z-axis"
 #define THERMAL_GROUP_NAME          "thermal"
 #define TMC2130_GROUP_NAME          "tmc2130"
 
@@ -41,6 +42,7 @@
 #define SYSFS_ATTR_DIR              SYSFS_ROOT_DIR CNC_GROUP_NAME "/"
 #define HEAD_FANS_SYSFS_ATTR_DIR    SYSFS_ROOT_DIR HEAD_FANS_GROUP_NAME "/"
 #define LEDS_SYSFS_ATTR_DIR         SYSFS_ROOT_DIR LEDS_GROUP_NAME "/"
+#define LENS_SYSFS_ATTR_DIR         SYSFS_ROOT_DIR LENS_GROUP_NAME "/"
 #define THERMAL_SYSFS_ATTR_DIR      SYSFS_ROOT_DIR THERMAL_GROUP_NAME "/"
 #define PULSE_DEVICE_DIR            "/dev/"
 #define INPUT_DEVICE_DIR            "/dev/input/by-path/"
@@ -179,6 +181,25 @@
 #define ATTR_LED_RED_PWM_PATH       LEDS_SYSFS_ATTR_DIR STR(ATTR_LED_RED_PWM)
 #define ATTR_LED_GREEN_PWM_PATH     LEDS_SYSFS_ATTR_DIR STR(ATTR_LED_GREEN_PWM)
 #define ATTR_LED_BLUE_PWM_PATH      LEDS_SYSFS_ATTR_DIR STR(ATTR_LED_BLUE_PWM)
+
+#define ATTR_LENS_ENABLE            enable
+#define ATTR_LENS_DISABLE           disable
+#define ATTR_LENS_STATUS            status
+#define ATTR_LENS_FAULT             fault
+#define ATTR_LENS_MODE              mode
+#define ATTR_LENS_DECAY             decay
+#define ATTR_LENS_HOME              home
+#define ATTR_LENS_RESET             reset
+
+#define ATTR_LENS_ENABLE_PATH       LENS_SYSFS_ATTR_DIR STR(ATTR_LENS_ENABLE)
+#define ATTR_LENS_DISABLE_PATH      LENS_SYSFS_ATTR_DIR STR(ATTR_LENS_DISABLE)
+#define ATTR_LENS_STATUS_PATH       LENS_SYSFS_ATTR_DIR STR(ATTR_LENS_STATUS)
+#define ATTR_LENS_FAULT_PATH        LENS_SYSFS_ATTR_DIR STR(ATTR_LENS_FAULT)
+#define ATTR_LENS_MODE_PATH         LENS_SYSFS_ATTR_DIR STR(ATTR_LENS_MODE)
+#define ATTR_LENS_DECAY_PATH        LENS_SYSFS_ATTR_DIR STR(ATTR_LENS_DECAY)
+#define ATTR_LENS_HOME_PATH         LENS_SYSFS_ATTR_DIR STR(ATTR_LENS_HOME)
+#define ATTR_LENS_RESET_PATH        LENS_SYSFS_ATTR_DIR STR(ATTR_LENS_RESET)
+
 
 /**
  * Recommended buffer size for reading the value of the state attribute,

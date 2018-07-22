@@ -28,6 +28,7 @@
 #include "cnc.h"
 #include "head_fans.h"
 #include "leds.h"
+#include "lens.h"
 #include "thermal.h"
 #include "tmc2130.h"
 #include "openglow.h"
@@ -36,12 +37,14 @@
 int cnc_enabled = 1;
 int head_fans_enabled = 1;
 int leds_enabled = 1;
+int lens_enabled = 1;
 int thermal_enabled = 1;
 int tmc2130_enabled = 1;
 
 module_param(cnc_enabled, int, 0);
 module_param(head_fans_enabled, int, 0);
 module_param(leds_enabled, int, 0);
+module_param(lens_enabled, int, 0);
 module_param(thermal_enabled, int, 0);
 module_param(tmc2130_enabled, int, 0);
 
@@ -83,6 +86,27 @@ static struct i2c_driver head_fans = {
                 .name =   "openglow_head_fans",
                 .owner =  THIS_MODULE,
                 .of_match_table = of_match_ptr(head_fans_dt_ids),
+        },
+};
+
+static const struct of_device_id lens_dt_ids[] = {
+        { .compatible = "openglow,lens" },
+        {},
+};
+
+static struct i2c_device_id lens_idtable[] = {
+        { "openglow_lens", 0 },
+        {},
+};
+
+static struct i2c_driver lens = {
+        .probe =  lens_probe,
+        .remove = lens_remove,
+        .id_table = lens_idtable,
+        .driver = {
+                .name =   "openglow_lens",
+                .owner =  THIS_MODULE,
+                .of_match_table = of_match_ptr(lens_dt_ids),
         },
 };
 
@@ -191,9 +215,18 @@ static int __init openglow_init(void)
                 goto failed_head_fans_init;
         }
 
+        /* Initialize the lens stepper subsystem */
+        status = i2c_add_driver(&lens);
+        if (status < 0) {
+                pr_err("failed to initialize lens stepper\n");
+                goto failed_lens_init;
+        }
+
         pr_info("%s: done\n", __func__);
         return 0;
 
+failed_lens_init:
+i2c_del_driver(&head_fans);
 failed_head_fans_init:
 failed_tmc2130_init:
 platform_driver_unregister(&cnc);
@@ -216,6 +249,7 @@ static void __exit openglow_exit(void)
         i2c_del_driver(&leds);
         i2c_del_driver(&thermal);
         i2c_del_driver(&head_fans);
+        i2c_del_driver(&lens);
         kobject_put(openglow_kobj);
         pr_info("%s: done\n", __func__);
 }
@@ -228,6 +262,7 @@ static struct of_device_id openglow_dt_ids[] = {
         { .compatible = "openglow,cnc" },
         { .compatible = "openglow,head_fans" },
         { .compatible = "openglow,leds" },
+        { .compatible = "openglow,lens" },
         { .compatible = "openglow,thermal" },
         {}
 };
