@@ -132,6 +132,7 @@ static struct sensor_data ov5648_data;
 static struct additional_data ov5648_data_add;
 static int sel_gpio = -EINVAL;
 static int sel_active;
+static int oe_gpio = -EINVAL;
 static int strobe_software = 0;
 
 #define INIT_ARRAY \
@@ -2235,6 +2236,16 @@ static int ov5648_probe(struct i2c_client *client,
         if (retval < 0) {
             dev_warn(dev, "request of sel_gpio failed");
             sel_gpio = -EINVAL;
+        }
+    }
+
+    /* request MIPI mux output enable GPIO */
+    oe_gpio = of_get_named_gpio_flags(dev->of_node, "oe-gpios", 0, &flags);
+    if (gpio_is_valid(oe_gpio)) {
+        retval = devm_gpio_request_one(dev, oe_gpio, GPIOF_OUT_INIT_LOW, "ov5648_mipi_oe");
+        if (retval < 0) {
+            dev_warn(dev, "request of oe_gpio failed");
+            oe_gpio = -EINVAL;
         }
     }
 

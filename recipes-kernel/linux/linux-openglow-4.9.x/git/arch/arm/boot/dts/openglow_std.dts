@@ -258,7 +258,7 @@
                 MX6QDL_PAD_KEY_ROW3__I2C2_SDA      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
 #define CSI_SEL    <&gpio3 22 GPIO_ACTIVE_HIGH> /* CAM_SEL */
                 MX6QDL_PAD_EIM_D22__GPIO3_IO22     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
-#define CSI_EN     <&gpio1 16 GPIO_ACTIVE_HIGH> /* CSI SWITCH ENABLE - OUT */
+#define CSI_OE     <&gpio1 16 GPIO_ACTIVE_HIGH> /* CSI SWITCH OUTPUT ENABLE - OUT */
                 MX6QDL_PAD_SD1_DAT0__GPIO1_IO16    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
             >;
         };
@@ -772,6 +772,7 @@
 		clocks = <&clks 0>;
 		clock-names = "csi_mclk";
 		sel-gpios = CSI_SEL;
+		oe-gpios = CSI_OE;
 		default-state = "off"; /* off=camera A, on=camera B */
 		ipu_id = <0>;
 		csi_id = <1>;
