@@ -20,44 +20,12 @@
 * For a better explanation, see Freescale AN5078
 * http://cache.freescale.com/files/32bit/doc/app_note/AN5078.pdf
 */
-/* Hysteresis */
-#define HYS            (1 << 16) /* OFF: CMOS Input, ON: Schmitt trigger Input */
-/* Pull Up/Keeper Mode Select */
-#define PUE            (1 << 13) /* OFF: Keeper, ON: Pull Up */
-/* Pull Up/Down - Value */
-#define PUS_22K_UP     (3 << 14)
-#define PUS_47K_UP     (1 << 14)
-#define PUS_100K_UP    (2 << 14)
-#define PUS_100K_DOWN  (0 << 14) /* Default */
-/* Pull Up/Keeper - Enable */
-#define PKE            (1 << 12) /* OFF: Disabled, ON: Enabled */
-/* Open Drain Enable */
-#define ODE            (1 << 11) /* OFF: CMOS output, ON: Open Drain */
-/* Speed - The range of this capability is PAD specific */
-#define SPEED_LOW      (0 << 6)
-#define SPEED_MED_LOW  (1 << 6)
-#define SPEED_MED_HIGH (2 << 6)
-#define SPEED_HIGH     (3 << 6)
-/* Drive Strength */
-#define DSE_DISABLE    (0 << 3) /* Default - HI-Z */
-#define DSE_33ohm      (7 << 3)
-#define DSE_40ohm      (6 << 3)
-#define DSE_50ohm      (5 << 3)
-#define DSE_60ohm      (4 << 3)
-#define DSE_90ohm      (3 << 3)
-#define DSE_130ohm     (2 << 3)
-#define DSE_260ohm     (1 << 3)
-/* Slew Rate */
-#define SRE_SLOW       (0 << 0) /* Default */
-#define SRE_FAST       (1 << 0)
-/* SION - Software Input On Field */
-#define SION           (1 << 30)
-
 /dts-v1/;
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include "imx6q.dtsi"
+#include "openglow_common.dtsi"
 
 / {
 	model = "OpenGlow Standard - Prototype 2";
@@ -72,60 +40,60 @@
         pinctrl_hog: hog {
             fsl,pins = <
 #define TP01_GPIO3_IO20     <&gpio3 20 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_EIM_D20__GPIO3_IO20     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_D20__GPIO3_IO20     	WEAK_PULLUP
 #define TP02_GPIO3_IO05     <&gpio3 5 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_EIM_DA5__GPIO3_IO05     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA5__GPIO3_IO05     	WEAK_PULLUP
 #define TP03_GPIO3_IO03     <&gpio3 3 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_EIM_DA3__GPIO3_IO03     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA3__GPIO3_IO03     	WEAK_PULLUP
 #define TP04_GPIO3_IO01     <&gpio3 1 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_EIM_DA1__GPIO3_IO01     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA1__GPIO3_IO01     	WEAK_PULLUP
 #define TP05_GPIO2_IO25     <&gpio2 25 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_EIM_OE__GPIO2_IO25      (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_OE__GPIO2_IO25      	WEAK_PULLUP
 #define TP06_GPIO2_IO04     <&gpio2 4 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_NANDF_D4__GPIO2_IO04    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_NANDF_D4__GPIO2_IO04   	WEAK_PULLUP
 #define TP07_GPIO3_IO11     <&gpio3 11 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_EIM_DA11__GPIO3_IO11    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA11__GPIO3_IO11    	WEAK_PULLUP
 #define TP08_GPIO3_IO10     <&gpio3 10 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_EIM_DA10__GPIO3_IO10    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA10__GPIO3_IO10    	WEAK_PULLUP
 #define TP09_GPIO2_IO07     <&gpio2 7 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_NANDF_D7__GPIO2_IO07    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_NANDF_D7__GPIO2_IO07    	WEAK_PULLUP
 #define TP10_GPIO3_IO09     <&gpio3 9 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_EIM_DA9__GPIO3_IO09     (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA9__GPIO3_IO09     	WEAK_PULLUP
 #define TP11_GPIO5_IO23     <&gpio5 23 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_CSI0_DAT5__GPIO5_IO23    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_DAT5__GPIO5_IO23    WEAK_PULLUP
             >;
         };
 
         pinctrl_bt_rfkill: bt-rfkillgrp {
             fsl,pins = <
 #define BT_EN               <&gpio5 19 GPIO_ACTIVE_LOW>
-                MX6QDL_PAD_CSI0_MCLK__GPIO5_IO19    (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_MCLK__GPIO5_IO19    WEAK_PULLUP
             >;
         };
 
         /* SOM on-board Serial Flash */
         pinctrl_ecspi1: ecspi1grp {
             fsl,pins = <
-                MX6QDL_PAD_EIM_D17__ECSPI1_MISO     (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_EIM_D18__ECSPI1_MOSI     (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_EIM_D16__ECSPI1_SCLK     (SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_EIM_D17__ECSPI1_MISO     SPI_PAD_CTRL
+                MX6QDL_PAD_EIM_D18__ECSPI1_MOSI     SPI_PAD_CTRL
+                MX6QDL_PAD_EIM_D16__ECSPI1_SCLK     SPI_PAD_CTRL
 #define ECSPI1_CS           <&gpio3 19 GPIO_ACTIVE_LOW>
-                MX6QDL_PAD_EIM_D19__GPIO3_IO19      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_EIM_D19__GPIO3_IO19      NO_PAD_CTRL
             >;
         };
 
         /* Stepper Drivers SPI Bus */
         pinctrl_ecspi2: ecspi2grp {
             fsl,pins = <
-                MX6QDL_PAD_CSI0_DAT10__ECSPI2_MISO  (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_CSI0_DAT9__ECSPI2_MOSI   (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_CSI0_DAT8__ECSPI2_SCLK   (SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_CSI0_DAT10__ECSPI2_MISO  SPI_PAD_CTRL
+                MX6QDL_PAD_CSI0_DAT9__ECSPI2_MOSI   SPI_PAD_CTRL
+                MX6QDL_PAD_CSI0_DAT8__ECSPI2_SCLK   SPI_PAD_CTRL
 #define ESPI2_SS0           <&gpio2 26 GPIO_ACTIVE_LOW> /* X-Stepper */
-                MX6QDL_PAD_EIM_RW__GPIO2_IO26       (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_EIM_RW__GPIO2_IO26       WEAK_PULLUP
 #define ESPI2_SS2           <&gpio3 24 GPIO_ACTIVE_LOW> /* Y1-Stepper */
-                MX6QDL_PAD_EIM_D24__GPIO3_IO24      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_EIM_D24__GPIO3_IO24      WEAK_PULLUP
 #define ESPI2_SS3           <&gpio3 25 GPIO_ACTIVE_LOW> /* Y2-Stepper */
-                MX6QDL_PAD_EIM_D25__GPIO3_IO25      (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_EIM_D25__GPIO3_IO25      WEAK_PULLUP
             >;
         };
 
@@ -133,21 +101,21 @@
         pinctrl_gpio_aux: gpio-auxgrp {
             fsl,pins = <
 #define AUXIO_1             <&gpio4 11 GPIO_ACTIVE_HIGH> /* AUX_IO01 */
-                MX6QDL_PAD_KEY_ROW2__GPIO4_IO11    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_KEY_ROW2__GPIO4_IO11    	WEAK_PULLUP
 #define AUXIO_2             <&gpio3 12 GPIO_ACTIVE_HIGH> /* AUX_IO02 */
-                MX6QDL_PAD_EIM_DA12__GPIO3_IO12    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA12__GPIO3_IO12    	WEAK_PULLUP
 #define AUXIO_3             <&gpio1 1 GPIO_ACTIVE_HIGH> /* AUX_IO03 */
-                MX6QDL_PAD_GPIO_1__GPIO1_IO01    (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_GPIO_1__GPIO1_IO01      	WEAK_PULLUP
 #define AUXIO_4             <&gpio5 24 GPIO_ACTIVE_HIGH> /* AUX_IO04 */
-                MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24   	WEAK_PULLUP
 #define AUXIO_5             <&gpio5 25 GPIO_ACTIVE_HIGH> /* AUX_IO05 */
-                MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25   (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25   	WEAK_PULLUP
 #define AUXIO_6             <&gpio5 29 GPIO_ACTIVE_HIGH> /* AUX_IO06 */
-                MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29  	WEAK_PULLUP
 #define AUXIO_7             <&gpio1 9 GPIO_ACTIVE_HIGH>  /* AUX_IO07 */
-                MX6QDL_PAD_GPIO_9__GPIO1_IO09  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_GPIO_9__GPIO1_IO09  		WEAK_PULLUP
 #define AUXIO_8             <&gpio7 13 GPIO_ACTIVE_HIGH>  /* AUX_IO08 */
-                MX6QDL_PAD_GPIO_18__GPIO7_IO13  (HYS | PUE | PKE | PUS_100K_UP| SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_GPIO_18__GPIO7_IO13  	WEAK_PULLUP
             >;
         };
 
@@ -155,45 +123,45 @@
         pinctrl_cnc: gpio-cncgrp {
             fsl,pins = <
 #define BEAM_DET_EN     <&gpio7 0 GPIO_ACTIVE_HIGH>  /* LASER ON HEAD NOTIFICATION - OUT */
-                MX6QDL_PAD_SD3_DAT5__GPIO7_IO00     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_SD3_DAT5__GPIO7_IO00     WEAK_PULLUP
 #define FIRE            <&gpio7 12 GPIO_ACTIVE_HIGH> /* FIRE LASER - OUT */
-                MX6QDL_PAD_GPIO_17__GPIO7_IO12      (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_GPIO_17__GPIO7_IO12      (WEAK_PULLUP | MUX_MODE_SION)
 #define HV_OK           <&gpio2 1 GPIO_ACTIVE_HIGH>  /* HV_OK - IN */
-                MX6QDL_PAD_NANDF_D1__GPIO2_IO01     (HYS | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_NANDF_D1__GPIO2_IO01     INPUT_HYS
 #define HV_WDOG         <&gpio3 0 GPIO_ACTIVE_HIGH>  /* LASER PWR WATCH DOG */
-                MX6QDL_PAD_EIM_DA0__GPIO3_IO00      (SION | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA0__GPIO3_IO00      WEAK_PULLUP
 #define nSTEP_EN        <&gpio5 30 GPIO_ACTIVE_LOW>  /* XY_STEP_EN - OUT */
-                MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30   (PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_DAT12__GPIO5_IO30   MED_PULLUP
 #define OK_2_FIRE       <&gpio3 29 GPIO_ACTIVE_HIGH> /* OK_2_FIRE - IN */
-                MX6QDL_PAD_EIM_D29__GPIO3_IO29      (HYS | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_D29__GPIO3_IO29      INPUT_HYS
 #define X_DIR           <&gpio6 14 GPIO_ACTIVE_HIGH> /* X_DIR - OUT */
-                MX6QDL_PAD_NANDF_CS1__GPIO6_IO14    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_NANDF_CS1__GPIO6_IO14    WEAK_PULLUP
 #define X_STEP          <&gpio6 15 GPIO_ACTIVE_HIGH> /* X_STEP - OUT */
-                MX6QDL_PAD_NANDF_CS2__GPIO6_IO15    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_NANDF_CS2__GPIO6_IO15    WEAK_PULLUP
 #define X_DIAG0         <&gpio5 22 GPIO_ACTIVE_HIGH> /* X_DIAG0 - IN */
-                MX6QDL_PAD_CSI0_DAT4__GPIO5_IO22    (PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_DAT4__GPIO5_IO22    MED_PULLUP
 #define X_DIAG1         <&gpio5 21 GPIO_ACTIVE_HIGH> /* X_DIAG1 - IN */
-                MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21   (PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21   MED_PULLUP
 #define Y1_DIR          <&gpio6 2 GPIO_ACTIVE_HIGH>  /* Y1_DIR - OUT */
-                MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02   WEAK_PULLUP
 #define Y1_STEP         <&gpio6 3 GPIO_ACTIVE_HIGH>  /* Y1_STEP - OUT */
-                MX6QDL_PAD_CSI0_DAT17__GPIO6_IO03   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_DAT17__GPIO6_IO03   WEAK_PULLUP
 #define Y1_DIAG0        <&gpio4 5 GPIO_ACTIVE_HIGH>  /* Y1_DIAG0 - IN */
-                MX6QDL_PAD_GPIO_19__GPIO4_IO05      (PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_GPIO_19__GPIO4_IO05      MED_PULLUP
 #define Y1_DIAG1        <&gpio1 5 GPIO_ACTIVE_HIGH>  /* Y1_DIAG1 - IN */
-                MX6QDL_PAD_GPIO_5__GPIO1_IO05       (PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_GPIO_5__GPIO1_IO05       MED_PULLUP
 #define Y2_DIR          <&gpio6 7 GPIO_ACTIVE_HIGH>  /* Y2_DIR - OUT */
-                MX6QDL_PAD_NANDF_CLE__GPIO6_IO07    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_NANDF_CLE__GPIO6_IO07    WEAK_PULLUP
 #define Y2_STEP         <&gpio6 9 GPIO_ACTIVE_HIGH>  /* Y2_STEP - OUT */
-                MX6QDL_PAD_NANDF_WP_B__GPIO6_IO09   (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_NANDF_WP_B__GPIO6_IO09   WEAK_PULLUP
 #define Y2_DIAG0        <&gpio5 18 GPIO_ACTIVE_HIGH> /* Y2_DIAG0 - IN */
-                MX6QDL_PAD_CSI0_PIXCLK__GPIO5_IO18  (PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_PIXCLK__GPIO5_IO18  MED_PULLUP
 #define Y2_DIAG1        <&gpio5 31 GPIO_ACTIVE_HIGH> /* Y2_DIAG1 - IN */
-                MX6QDL_PAD_CSI0_DAT13__GPIO5_IO31   (PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_DAT13__GPIO5_IO31   MED_PULLUP
 #define Z_DIR           <&gpio6 16 GPIO_ACTIVE_HIGH> /* Z_DIR - OUT */
-                MX6QDL_PAD_NANDF_CS3__GPIO6_IO16    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_NANDF_CS3__GPIO6_IO16    WEAK_PULLUP
 #define Z_STEP          <&gpio6 11 GPIO_ACTIVE_HIGH> /* Z_STEP - OUT */
-                MX6QDL_PAD_NANDF_CS0__GPIO6_IO11    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_NANDF_CS0__GPIO6_IO11    WEAK_PULLUP
             >;
         };
 
@@ -201,15 +169,15 @@
         pinctrl_gpio_controlinputs: gpio-controlgrp {
             fsl,pins = <
 #define BEAM_DETECT     <&gpio7 1 GPIO_ACTIVE_HIGH>  /* BEAM DETECT from HEAD */
-                MX6QDL_PAD_SD3_DAT4__GPIO7_IO01    (HYS | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_SD3_DAT4__GPIO7_IO01    INPUT_HYS
 #define INTERLOCK       <&gpio3 7 GPIO_ACTIVE_HIGH>  /* INTERLOCK - IN */
-                MX6QDL_PAD_EIM_DA7__GPIO3_IO07     (HYS | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA7__GPIO3_IO07     INPUT_HYS
 #define LID_SW1         <&gpio3 4 GPIO_ACTIVE_HIGH>  /* LID_SW1 - IN */
-                MX6QDL_PAD_EIM_DA4__GPIO3_IO04     (HYS | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA4__GPIO3_IO04     INPUT_HYS
 #define LID_SW2         <&gpio3 31 GPIO_ACTIVE_HIGH> /* LID_SW2 - IN */
-                MX6QDL_PAD_EIM_D31__GPIO3_IO31     (HYS | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_D31__GPIO3_IO31     INPUT_HYS
 #define nBUTTON         <&gpio3 8 GPIO_ACTIVE_LOW>  /* BUTTON - IN */
-                MX6QDL_PAD_EIM_DA8__GPIO3_IO08     (HYS | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA8__GPIO3_IO08     INPUT_HYS
             >;
         };
 
@@ -217,9 +185,9 @@
         pinctrl_gpio_power_12v: gpio-power12vgrp {
             fsl,pins = <
 #define PWR_12VDC_EN        <&gpio2 2 GPIO_ACTIVE_HIGH> /* 12VDC_EN - OUT */
-                MX6QDL_PAD_NANDF_D2__GPIO2_IO02    (PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_NANDF_D2__GPIO2_IO02   	MED_PULLUP
 #define PWR_12VDC_OK        <&gpio2 3 GPIO_ACTIVE_HIGH> /* 12VDC_OK - IN */
-                MX6QDL_PAD_NANDF_D3__GPIO2_IO03      (HYS | PUE | PKE)
+                MX6QDL_PAD_NANDF_D3__GPIO2_IO03   	INPUT_HYS
             >;
         };
 
@@ -227,9 +195,9 @@
         pinctrl_gpio_power_40v: gpio-power40vgrp {
             fsl,pins = <
 #define PWR_40VDC_EN        <&gpio3 2 GPIO_ACTIVE_HIGH> /* 40VDC_EN - OUT */
-                MX6QDL_PAD_EIM_DA2__GPIO3_IO02    (PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA2__GPIO3_IO02  	MED_PULLUP
 #define PWR_40VDC_OK        <&gpio2 6 GPIO_ACTIVE_HIGH> /* 40VDC_OK - IN */
-                MX6QDL_PAD_NANDF_D6__GPIO2_IO06      (HYS | PUE | PKE)
+                MX6QDL_PAD_NANDF_D6__GPIO2_IO06  	INPUT_HYS
             >;
         };
 
@@ -237,179 +205,179 @@
         pinctrl_gpio_thermal: gpio-thermalgrp {
             fsl,pins = <
 #define TEC_EN  <&gpio2 23 GPIO_ACTIVE_HIGH> /* TEC_EN - OUT */
-                MX6QDL_PAD_EIM_CS0__GPIO2_IO23     (SION | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_CS0__GPIO2_IO23     (MED_PULLUP  | MUX_MODE_SION)
 #define WATER_PUMP_EN   <&gpio3 23 GPIO_ACTIVE_HIGH> /* WTR_PMP_EN - OUT */
-                MX6QDL_PAD_EIM_D23__GPIO3_IO23     (SION | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_D23__GPIO3_IO23     (MED_PULLUP  | MUX_MODE_SION)
             >;
         };
 
         /* Interconnect I2C Bus */
         pinctrl_i2c1: i2c1grp {
             fsl,pins = <
-                MX6QDL_PAD_EIM_D21__I2C1_SCL      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_EIM_D28__I2C1_SDA      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_EIM_D21__I2C1_SCL      I2C_PAD_CTRL
+                MX6QDL_PAD_EIM_D28__I2C1_SDA      I2C_PAD_CTRL
             >;
         };
 
         /* Lid I2C Bus */
         pinctrl_i2c2: i2c2grp {
             fsl,pins = <
-                MX6QDL_PAD_KEY_COL3__I2C2_SCL      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_KEY_ROW3__I2C2_SDA      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_KEY_COL3__I2C2_SCL      I2C_PAD_CTRL
+                MX6QDL_PAD_KEY_ROW3__I2C2_SDA      I2C_PAD_CTRL
 #define CSI_SEL    <&gpio3 22 GPIO_ACTIVE_HIGH> /* CAM_SEL */
-                MX6QDL_PAD_EIM_D22__GPIO3_IO22     (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_D22__GPIO3_IO22     WEAK_PULLUP
 #define CSI_OE     <&gpio1 16 GPIO_ACTIVE_HIGH> /* CSI SWITCH OUTPUT ENABLE - OUT */
-                MX6QDL_PAD_SD1_DAT0__GPIO1_IO16    (PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_SD1_DAT0__GPIO1_IO16    WEAK_PULLUP
             >;
         };
 
         /* Control I2C Bus */
         pinctrl_i2c3: i2c3grp {
             fsl,pins = <
-                MX6QDL_PAD_GPIO_3__I2C3_SCL       (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_GPIO_16__I2C3_SDA      (SION | HYS | PUS_100K_UP | PUE | PKE | ODE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_GPIO_3__I2C3_SCL   	I2C_PAD_CTRL
+                MX6QDL_PAD_GPIO_16__I2C3_SDA  	I2C_PAD_CTRL
             >;
         };
 
         /* PWM1_LASER */
         pinctrl_pwm1: pwm1grp {
             fsl,pins = <
-                MX6QDL_PAD_SD1_DAT3__PWM1_OUT     (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_SD1_DAT3__PWM1_OUT 	PWM_PAD_CTRL
             >;
         };
 
         /* PWM3_WATER_HTR */
         pinctrl_pwm3: pwm3grp {
             fsl,pins = <
-                MX6QDL_PAD_SD1_DAT1__PWM3_OUT   (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_SD1_DAT1__PWM3_OUT	PWM_PAD_CTRL
             >;
         };
 
         /* PWM4_LID_LED */
         pinctrl_pwm4: pwm4grp {
             fsl,pins = <
-                MX6QDL_PAD_SD1_CMD__PWM4_OUT    (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_SD1_CMD__PWM4_OUT	PWM_PAD_CTRL
             >;
         };
 
         /* UART1 - USB Console TTYMXC0 */
         pinctrl_uart1: uart1grp {
             fsl,pins = <
-                MX6QDL_PAD_SD3_DAT7__UART1_TX_DATA  (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD3_DAT6__UART1_RX_DATA  (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_SD3_DAT7__UART1_TX_DATA	UART_PAD_CTRL
+                MX6QDL_PAD_SD3_DAT6__UART1_RX_DATA  UART_PAD_CTRL
             >;
         };
 
         /* UART2 - Filter TTYMXC1 */
         pinctrl_uart2: uart2grp {
             fsl,pins = <
-                MX6QDL_PAD_EIM_D26__UART2_TX_DATA  (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_EIM_D27__UART2_RX_DATA  (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_EIM_D26__UART2_TX_DATA  UART_PAD_CTRL
+                MX6QDL_PAD_EIM_D27__UART2_RX_DATA  UART_PAD_CTRL
             >;
         };
 
         /* UART5 - Bluetooth TTYMXC4*/
         pinctrl_uart5: uart5grp {
             fsl,pins = <
-                MX6QDL_PAD_CSI0_DAT14__UART5_TX_DATA (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_CSI0_DAT15__UART5_RX_DATA (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_CSI0_DAT18__UART5_RTS_B   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_CSI0_DAT19__UART5_CTS_B   (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_CSI0_DAT14__UART5_TX_DATA	UART_PAD_CTRL
+                MX6QDL_PAD_CSI0_DAT15__UART5_RX_DATA	UART_PAD_CTRL
+                MX6QDL_PAD_CSI0_DAT18__UART5_RTS_B  	UART_PAD_CTRL
+                MX6QDL_PAD_CSI0_DAT19__UART5_CTS_B   	UART_PAD_CTRL
             >;
         };
 
         /* USB HOST 1 */
         pinctrl_usbhst1: usbhst1grp {
         	fsl,pins = <
-        		MX6QDL_PAD_EIM_D30__USB_H1_OC		0x1b0b0 /* USB_HOST_OC */
+        		MX6QDL_PAD_EIM_D30__USB_H1_OC		WEAK_PULLUP /* USB_HOST_OC */
         	>;
         };
         pinctrl_reg_usbhst1_vbus: reg-usbhst1-vbusgrp {
         	fsl,pins = <
 #define USB_HOST_PWR_EN	<&gpio4 10 GPIO_ACTIVE_HIGH>
-        		MX6QDL_PAD_KEY_COL2__GPIO4_IO10		0x030b0
+        		MX6QDL_PAD_KEY_COL2__GPIO4_IO10		WEAK_PULLDOWN
         	>;
         };
         /* USB OTG */
         pinctrl_usbotg: usbotggrp {
         	fsl,pins = <
-        		MX6QDL_PAD_ENET_RX_ER__USB_OTG_ID		0x17059
-        		MX6QDL_PAD_KEY_COL4__USB_OTG_OC		0x1b0b0
+        		MX6QDL_PAD_ENET_RX_ER__USB_OTG_ID	USB_OTG_PAD_CTRL
+        		MX6QDL_PAD_KEY_COL4__USB_OTG_OC		WEAK_PULLUP
         	>;
         };
         pinctrl_reg_usbotg_vbus: reg-usbotg-vbusgrp {
         	fsl,pins = <
 #define USB_OTG_PWR_EN	<&gpio1 0 GPIO_ACTIVE_HIGH>
-        		MX6QDL_PAD_GPIO_0__GPIO1_IO00		0x030b0
+        		MX6QDL_PAD_GPIO_0__GPIO1_IO00		WEAK_PULLDOWN
         	>;
         };
 
         /* uSDHC2 - Wireless module */
         pinctrl_usdhc2: usdhc2grp {
             fsl,pins = <
-                MX6QDL_PAD_SD2_CLK__SD2_CLK         (HYS | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_CMD__SD2_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT0__SD2_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT1__SD2_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT2__SD2_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT3__SD2_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD1_CLK__OSC32K_32K_OUT  (SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_SD2_CLK__SD2_CLK         	USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_CMD__SD2_CMD         	USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT0__SD2_DATA0      	USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT1__SD2_DATA1      	USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT2__SD2_DATA2      	USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT3__SD2_DATA3      	USDHC_PAD_CTRL
+                MX6QDL_PAD_SD1_CLK__OSC32K_32K_OUT 		USDHC_PAD_CTRL
 #define WLAN_IRQ        <&gpio5 20 IRQ_TYPE_LEVEL_HIGH>
-                MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20    (HYS | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20		WEAK_PULLDOWN
             >;
         };
 
         pinctrl_usdhc2_100mhz: usdhc2grp-100mhz {
             fsl,pins = <
-                MX6QDL_PAD_SD2_CMD__SD2_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_CLK__SD2_CLK         (HYS | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT0__SD2_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT1__SD2_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT2__SD2_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT3__SD2_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_SD2_CMD__SD2_CMD         USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_CLK__SD2_CLK         USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT0__SD2_DATA0      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT1__SD2_DATA1      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT2__SD2_DATA2      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT3__SD2_DATA3      USDHC_PAD_CTRL
             >;
         };
 
         pinctrl_usdhc2_200mhz: usdhc2grp-200mhz {
             fsl,pins = <
-                MX6QDL_PAD_SD2_CMD__SD2_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_CLK__SD2_CLK         (HYS | SPEED_HIGH | DSE_33ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT0__SD2_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT1__SD2_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT2__SD2_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
-                MX6QDL_PAD_SD2_DAT3__SD2_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_HIGH | DSE_33ohm | SRE_FAST)
+                MX6QDL_PAD_SD2_CMD__SD2_CMD         USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_CLK__SD2_CLK         USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT0__SD2_DATA0     	USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT1__SD2_DATA1      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT2__SD2_DATA2      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD2_DAT3__SD2_DATA3      USDHC_PAD_CTRL
             >;
         };
 
         /* uSDHC3 - /dev/mmcblk0 - SD Card Slot */
         pinctrl_usdhc3: usdhc3grp {
             fsl,pins = <
-                MX6QDL_PAD_SD3_CLK__SD3_CLK         (HYS | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD3_CMD__SD3_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD3_DAT0__SD3_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD3_DAT1__SD3_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD3_DAT2__SD3_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
-                MX6QDL_PAD_SD3_DAT3__SD3_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_40ohm | SRE_FAST)
+                MX6QDL_PAD_SD3_CLK__SD3_CLK         USDHC_PAD_CTRL
+                MX6QDL_PAD_SD3_CMD__SD3_CMD         USDHC_PAD_CTRL
+                MX6QDL_PAD_SD3_DAT0__SD3_DATA0      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD3_DAT1__SD3_DATA1      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD3_DAT2__SD3_DATA2      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD3_DAT3__SD3_DATA3     	USDHC_PAD_CTRL
 #define SD3_CD      <&gpio3 6 GPIO_ACTIVE_LOW>
-                MX6QDL_PAD_EIM_DA6__GPIO3_IO06     (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_EIM_DA6__GPIO3_IO06     	WEAK_PULLUP
             >;
         };
 
         /* uSDHC4 - /dev/mmcblk1 - SOM on-board MMC */
         pinctrl_usdhc4: usdhc4grp {
             fsl,pins = <
-                MX6QDL_PAD_SD4_CLK__SD4_CLK         (HYS | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-                MX6QDL_PAD_SD4_CMD__SD4_CMD         (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-                MX6QDL_PAD_SD4_DAT0__SD4_DATA0      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-                MX6QDL_PAD_SD4_DAT1__SD4_DATA1      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-                MX6QDL_PAD_SD4_DAT2__SD4_DATA2      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-                MX6QDL_PAD_SD4_DAT3__SD4_DATA3      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-                MX6QDL_PAD_SD4_DAT4__SD4_DATA4      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-                MX6QDL_PAD_SD4_DAT5__SD4_DATA5      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-                MX6QDL_PAD_SD4_DAT6__SD4_DATA6      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
-                MX6QDL_PAD_SD4_DAT7__SD4_DATA7      (HYS | PUS_47K_UP | PUE | PKE | SPEED_MED_LOW | DSE_90ohm | SRE_FAST)
+                MX6QDL_PAD_SD4_CLK__SD4_CLK         USDHC_PAD_CTRL
+                MX6QDL_PAD_SD4_CMD__SD4_CMD         USDHC_PAD_CTRL
+                MX6QDL_PAD_SD4_DAT0__SD4_DATA0      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD4_DAT1__SD4_DATA1      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD4_DAT2__SD4_DATA2      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD4_DAT3__SD4_DATA3      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD4_DAT4__SD4_DATA4      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD4_DAT5__SD4_DATA5      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD4_DAT6__SD4_DATA6      USDHC_PAD_CTRL
+                MX6QDL_PAD_SD4_DAT7__SD4_DATA7      USDHC_PAD_CTRL
 #define SD4_RESET   <&gpio2 0 GPIO_ACTIVE_LOW>
-                MX6QDL_PAD_NANDF_D0__GPIO2_IO00     (HYS | PUS_100K_UP | PUE | PKE | SPEED_MED_HIGH | DSE_40ohm) /* RESET */
+                MX6QDL_PAD_NANDF_D0__GPIO2_IO00     WEAK_PULLUP /* RESET */
             >;
         };
 
@@ -417,7 +385,7 @@
         pinctrl_reg_wlan_en: reg-wlan-engrp {
             fsl,pins = <
 #define WL_EN       <&gpio1 2 GPIO_ACTIVE_HIGH>
-                MX6QDL_PAD_GPIO_2__GPIO1_IO02 (PUE | PKE | SPEED_MED_HIGH | DSE_40ohm)
+                MX6QDL_PAD_GPIO_2__GPIO1_IO02		WEAK_PULLDOWN
             >;
         };
     };
