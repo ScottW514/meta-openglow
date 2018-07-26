@@ -16,15 +16,23 @@
 #include <asm/arch/mx6-pins.h>
 #include <linux/errno.h>
 #include <asm/gpio.h>
+#include <i2c.h>
 #include <asm/mach-imx/iomux-v3.h>
 #include <asm/mach-imx/spi.h>
 #include <asm/mach-imx/boot_mode.h>
+#include <asm/mach-imx/mxc_i2c.h>
 #include <mmc.h>
 #include <fsl_esdhc.h>
 #include <asm/arch/crm_regs.h>
 #include <input.h>
 
 DECLARE_GLOBAL_DATA_PTR;
+
+#define FAN_CONTROLLER_ADDR	0x2C
+
+#define I2C_PAD_CTRL	(PAD_CTL_PUS_100K_UP |			\
+	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_HYS |	\
+	PAD_CTL_ODE | PAD_CTL_SRE_FAST)
 
 #define UART_PAD_CTRL  (PAD_CTL_PUS_100K_UP |			\
 	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm |			\
@@ -44,6 +52,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define WEAK_PULLDOWN	(PAD_CTL_PUS_100K_DOWN |		\
 	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm |			\
 	PAD_CTL_HYS | PAD_CTL_SRE_SLOW)
+
+#define I2C_PAD MUX_PAD_CTRL(I2C_PAD_CTRL)
 
 int dram_init(void)
 {
@@ -87,11 +97,71 @@ static void setup_iomux_uart(void)
 	imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
 }
 
+#ifdef CONFIG_SYS_I2C_MXC
+
+#define I2C_PADS(name, scl_i2c, scl_gpio, scl_gp, sda_i2c, sda_gpio, sda_gp) \
+	struct i2c_pads_info i2c_pad_info##name = {		\
+		.scl = {.i2c_mode = scl_i2c | I2C_PAD, .gpio_mode = scl_gpio | I2C_PAD, .gp = scl_gp}, \
+		.sda = {.i2c_mode = sda_i2c | I2C_PAD, .gpio_mode = sda_gpio | I2C_PAD, .gp = sda_gp}};
+#define I2C_PADS_INFO(name) &i2c_pad_info##name
+
+I2C_PADS(I2C_1,
+	MX6_PAD_EIM_D21__I2C1_SCL, MX6_PAD_EIM_D21__GPIO3_IO21, IMX_GPIO_NR(3, 21),
+	MX6_PAD_EIM_D28__I2C1_SDA, MX6_PAD_EIM_D28__GPIO3_IO28, IMX_GPIO_NR(3, 28))
+I2C_PADS(I2C_2,
+	MX6_PAD_KEY_COL3__I2C2_SCL, MX6_PAD_KEY_COL3__GPIO4_IO12, IMX_GPIO_NR(4, 12),
+	MX6_PAD_KEY_ROW3__I2C2_SDA, MX6_PAD_KEY_ROW3__GPIO4_IO13, IMX_GPIO_NR(4, 13))
+I2C_PADS(I2C_3,
+	MX6_PAD_GPIO_3__I2C3_SCL, MX6_PAD_GPIO_3__GPIO1_IO03, IMX_GPIO_NR(1, 3),
+	MX6_PAD_GPIO_16__I2C3_SDA, MX6_PAD_GPIO_16__GPIO7_IO11, IMX_GPIO_NR(7, 11))
+
+#ifdef FAN_CONTROLLER_ADDR
+int i2c_fan_device_init(void)
+{
+	uint8_t data;
+	int err;
+
+	i2c_set_bus_num(2);
+	if (err) {
+		printf("Failure changing I2C bus number (%d)\n", err);
+	}
+	i2c_read(0x2C, 0xfe, 1, &data, 1);
+	if (data != 0x5D) {
+		printf("Fan Controller I2C Manufacturer ID invalid (%x)\n", data);
+		return -ENODEV;
+	}
+	i2c_read(0x2C, 0xfd, 1, &data, 1);
+	if (data != 0x35) {
+		printf("Fan Controller I2C Product ID invalid (%x)\n", data);
+		return -ENODEV;
+	}
+
+	/* PWM Outputs to Push-Pull */
+	data = 0x07;
+	err = i2c_write(0x2C, 0x2b, 1, &data, 1);
+	/* Set all fan outputs to 0 */
+	data = 0x00;
+	err += i2c_write(0x2C, 0x30, 1, &data, 1);
+	err += i2c_write(0x2C, 0x40, 1, &data, 1);
+	err += i2c_write(0x2C, 0x50, 1, &data, 1);
+	if (err) {
+		printf("Failed to initialize Fan Controller\n");
+		return -ENODEV;
+	}
+
+	printf("Fans: Initialized\n");
+	return 0;
+}
+#endif /* FAN_CONTROLLER_ADDR */
+
+#endif /* CONFIG_SYS_I2C_MXC */
+
 #ifdef CONFIG_FSL_ESDHC
 static struct fsl_esdhc_cfg usdhc_cfg[2] = {
 	{USDHC3_BASE_ADDR},
 	{USDHC4_BASE_ADDR},
 };
+
 
 int board_mmc_getcd(struct mmc *mmc)
 {
@@ -104,6 +174,7 @@ int board_mmc_getcd(struct mmc *mmc)
 		return 1;
 	}
 }
+
 
 int board_mmc_init(bd_t *bis)
 {
@@ -142,6 +213,7 @@ int board_mmc_init(bd_t *bis)
 }
 #endif
 
+
 #ifdef CONFIG_MXC_SPI
 int board_spi_cs_gpio(unsigned bus, unsigned cs)
 {
@@ -162,7 +234,6 @@ static void setup_spi(void)
 					 ARRAY_SIZE(ecspi1_pads));
 }
 #endif
-
 
 static unsigned gpios_out_low[] = {
 	IMX_GPIO_NR(3, 0),	/* disable HIGH VOLTAGE Watch Dog*/
@@ -190,6 +261,7 @@ static void set_gpios(unsigned *p, int cnt, int val)
 		gpio_direction_output(*p++, val);
 }
 
+
 int board_early_init_f(void)
 {
 	setup_iomux_uart();
@@ -209,6 +281,7 @@ int overwrite_console(void)
 	return 1;
 }
 
+
 int board_init(void)
 {
 	struct iomuxc *const iomuxc_regs = (struct iomuxc *)IOMUXC_BASE_ADDR;
@@ -216,6 +289,17 @@ int board_init(void)
 	clrsetbits_le32(&iomuxc_regs->gpr[1],
 			IOMUXC_GPR1_OTG_ID_MASK,
 			IOMUXC_GPR1_OTG_ID_GPIO1);
+
+#ifdef CONFIG_SYS_I2C_MXC
+	setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, I2C_PADS_INFO(I2C_1));
+	setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, I2C_PADS_INFO(I2C_2));
+	setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, I2C_PADS_INFO(I2C_3));
+
+#ifdef FAN_CONTROLLER_ADDR
+	i2c_fan_device_init();
+#endif
+
+#endif
 
 	/* address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_SDRAM + 0x100;
@@ -227,11 +311,13 @@ int board_init(void)
 	return 0;
 }
 
+
 int checkboard(void)
 {
 	puts("Board: OpenGlow STD Prototype 2\n");
 	return 0;
 }
+
 
 #ifdef CONFIG_CMD_BMODE
 static const struct boot_mode board_boot_modes[] = {
@@ -241,6 +327,7 @@ static const struct boot_mode board_boot_modes[] = {
 	{NULL,		0},
 };
 #endif
+
 
 int misc_init_r(void)
 {
