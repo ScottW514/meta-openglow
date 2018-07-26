@@ -125,12 +125,12 @@ int i2c_fan_device_init(void)
 	if (err) {
 		printf("Failure changing I2C bus number (%d)\n", err);
 	}
-	i2c_read(0x2C, 0xfe, 1, &data, 1);
+	i2c_read(FAN_CONTROLLER_ADDR, 0xfe, 1, &data, 1);
 	if (data != 0x5D) {
 		printf("Fan Controller I2C Manufacturer ID invalid (%x)\n", data);
 		return -ENODEV;
 	}
-	i2c_read(0x2C, 0xfd, 1, &data, 1);
+	i2c_read(FAN_CONTROLLER_ADDR, 0xfd, 1, &data, 1);
 	if (data != 0x35) {
 		printf("Fan Controller I2C Product ID invalid (%x)\n", data);
 		return -ENODEV;
@@ -138,12 +138,12 @@ int i2c_fan_device_init(void)
 
 	/* PWM Outputs to Push-Pull */
 	data = 0x07;
-	err = i2c_write(0x2C, 0x2b, 1, &data, 1);
+	err = i2c_write(FAN_CONTROLLER_ADDR, 0x2b, 1, &data, 1);
 	/* Set all fan outputs to 0 */
 	data = 0x00;
-	err += i2c_write(0x2C, 0x30, 1, &data, 1);
-	err += i2c_write(0x2C, 0x40, 1, &data, 1);
-	err += i2c_write(0x2C, 0x50, 1, &data, 1);
+	err += i2c_write(FAN_CONTROLLER_ADDR, 0x30, 1, &data, 1);
+	err += i2c_write(FAN_CONTROLLER_ADDR, 0x40, 1, &data, 1);
+	err += i2c_write(FAN_CONTROLLER_ADDR, 0x50, 1, &data, 1);
 	if (err) {
 		printf("Failed to initialize Fan Controller\n");
 		return -ENODEV;
