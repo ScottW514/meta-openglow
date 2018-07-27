@@ -175,6 +175,7 @@ int leds_probe(struct i2c_client *client, const struct i2c_device_id *id)
         if (ret) {
                 goto failed_pwm_init;
         }
+        io_pwm_set_duty_cycle(&self->pwms[PWM_LID_LED], 10);
 
 	/* Set up LEDs */
         ret = leds_init_leds(client->dev.of_node, led_configs, self->leds, LEDS_NUM_LEDS);

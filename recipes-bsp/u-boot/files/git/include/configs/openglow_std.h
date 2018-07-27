@@ -91,4 +91,8 @@
 #define CONFIG_SYS_I2C_MXC_I2C3		/* enable I2C bus 3 */
 #define CONFIG_SYS_I2C_SPEED		  100000
 
+/* PWM Config */
+#define CONFIG_PWM_IMX
+#define CONFIG_IMX6_PWM_PER_CLK         66000000
+
 #endif	       /* __CONFIG_H */

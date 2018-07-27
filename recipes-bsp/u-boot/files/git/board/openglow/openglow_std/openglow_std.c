@@ -17,6 +17,7 @@
 #include <linux/errno.h>
 #include <asm/gpio.h>
 #include <i2c.h>
+#include <pwm.h>
 #include <asm/mach-imx/iomux-v3.h>
 #include <asm/mach-imx/spi.h>
 #include <asm/mach-imx/boot_mode.h>
@@ -29,6 +30,7 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 #define FAN_CONTROLLER_ADDR	0x2C
+#define LID_LED_PWM		3
 
 #define I2C_PAD_CTRL	(PAD_CTL_PUS_100K_UP |			\
 	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm | PAD_CTL_HYS |	\
@@ -41,6 +43,10 @@ DECLARE_GLOBAL_DATA_PTR;
 #define USDHC_PAD_CTRL (PAD_CTL_PUS_47K_UP |			\
 	PAD_CTL_SPEED_LOW | PAD_CTL_DSE_80ohm |			\
 	PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
+
+#define PWM_PAD_CTRL (PAD_CTL_SPEED_MED |  			\
+	PAD_CTL_DSE_40ohm | PAD_CTL_SRE_FAST | 			\
+	PAD_CTL_PUE | PAD_CTL_PKE)
 
 #define SPI_PAD_CTRL (PAD_CTL_HYS | PAD_CTL_SPEED_MED |		\
 	PAD_CTL_DSE_40ohm     | PAD_CTL_SRE_FAST)
@@ -149,12 +155,33 @@ int i2c_fan_device_init(void)
 		return -ENODEV;
 	}
 
-	printf("Fans: Initialized\n");
+	printf("Fans:  Initialized\n");
 	return 0;
 }
 #endif /* FAN_CONTROLLER_ADDR */
 
 #endif /* CONFIG_SYS_I2C_MXC */
+
+#ifdef LID_LED_PWM
+static iomux_v3_cfg_t const pwm4_pads[] = {
+	MX6_PAD_SD1_CMD__PWM4_OUT | MUX_PAD_CTRL(PWM_PAD_CTRL)};
+
+int pwm_lid_led_init(void)
+{
+	imx_iomux_v3_setup_multiple_pads(pwm4_pads, ARRAY_SIZE(pwm4_pads));
+	/* 500Hz, 10% duty cycle */
+	if (pwm_config(LID_LED_PWM, 200000, 2000000)) {
+		printf("Failed to config Lid LED PWM\n");
+		return -ENODEV;
+	}
+	if (pwm_enable(LID_LED_PWM)) {
+		printf("Failed to enable Lid LED PWM\n");
+		return -ENODEV;
+	}
+	printf("Lid LED: Initialized\n");
+	return 0;
+}
+#endif /* LID_LED_PWM */
 
 #ifdef CONFIG_FSL_ESDHC
 static struct fsl_esdhc_cfg usdhc_cfg[2] = {
@@ -244,7 +271,6 @@ static unsigned gpios_out_low[] = {
 	IMX_GPIO_NR(1, 2),	/* disable wireless */
 	IMX_GPIO_NR(5, 19),	/* disable bluetooth */
 	IMX_GPIO_NR(1, 17),	/* disable Water Sensor Heater PWM */
-	IMX_GPIO_NR(1, 18),	/* disable LID LED PWM */
 	IMX_GPIO_NR(2, 23),	/* disable TEC */
 };
 
@@ -299,6 +325,10 @@ int board_init(void)
 	i2c_fan_device_init();
 #endif
 
+#endif /* CONFIG_SYS_I2C_MXC */
+
+#ifdef LID_LED_PWM
+	pwm_lid_led_init();
 #endif
 
 	/* address of boot parameters */

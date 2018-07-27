@@ -1083,21 +1083,6 @@ int cnc_probe(struct platform_device *pdev)
                 goto failed_pulsedev_register;
         }
 
-        /* Acquire the 12V supply */
-        self->supply_12v = devm_regulator_get_exclusive(&pdev->dev, "12v");
-        if (IS_ERR(self->supply_12v)) {
-                dev_err(&pdev->dev, "failed to get 12V regulator");
-                goto failed_regulator_get;
-        }
-        /* Power Up the 12V supply */
-        if (!regulator_is_enabled(self->supply_12v)) {
-                if (regulator_enable(self->supply_12v)) {
-                        dev_err(&pdev->dev, "unable to enable 12V supply");
-                } else {
-                        dev_info(&pdev->dev, "12V on");
-                }
-        }
-
         /* Acquire the 40V supply */
         self->supply_40v = devm_regulator_get_exclusive(&pdev->dev, "40v");
         if (IS_ERR(self->supply_40v)) {

@@ -537,12 +537,10 @@
             reg = <3>;
             pinctrl-names = "default";
             pinctrl-0 = <&pinctrl_gpio_power_12v>;
-            gpio = PWR_12VDC_EN;
             regulator-name = "12v";
             regulator-min-microvolt = <12000000>;
             regulator-max-microvolt = <12000000>;
-            enable-active-high;
-			regulator-boot-on;
+			regulator-always-on;
 		};
 
         reg_40v: 40v {
