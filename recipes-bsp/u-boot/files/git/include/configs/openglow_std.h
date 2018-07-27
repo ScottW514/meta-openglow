@@ -38,10 +38,6 @@
 
 #define CONFIG_PREBOOT                 ""
 
-#define CONFIG_DRIVE_MMC "mmc "
-#define CONFIG_DRIVE_TYPES CONFIG_DRIVE_MMC
-#define CONFIG_UMSDEVS CONFIG_DRIVE_MMC
-
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"bootargs=console=ttymxc0,115200 vmalloc=400M consoleblank=0 rootwait cpu=6D board=openglow_std root=/dev/mmcblk0p2\0" \
 	"bootcmd=load mmc 0 ${fdt_addr} openglow_std.dtb; load mmc 0 ${loadaddr} zImage; bootz ${loadaddr} - ${fdt_addr}\0" \
@@ -89,10 +85,10 @@
 #define CONFIG_SYS_I2C_MXC_I2C1		/* enable I2C bus 1 */
 #define CONFIG_SYS_I2C_MXC_I2C2		/* enable I2C bus 2 */
 #define CONFIG_SYS_I2C_MXC_I2C3		/* enable I2C bus 3 */
-#define CONFIG_SYS_I2C_SPEED		  100000
+#define CONFIG_SYS_I2C_SPEED		100000
 
 /* PWM Config */
 #define CONFIG_PWM_IMX
-#define CONFIG_IMX6_PWM_PER_CLK         66000000
+#define CONFIG_IMX6_PWM_PER_CLK		66000000
 
 #endif	       /* __CONFIG_H */
