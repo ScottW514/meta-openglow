@@ -24,8 +24,9 @@
 #include "cnc_private.h"
 #include "device_attr.h"
 #include "notifiers.h"
-
-#pragma mark - Character device fops
+#include "io.h"
+#include <linux/io.h>
+#include <linux/interrupt.h>
 
 /* miscdevice sets filp's private_data pointer to itself */
 #define DEV_SELF_FROM_FILP(filp) \
@@ -111,9 +112,6 @@ static loff_t pulsedev_llseek(struct file *filp, loff_t off, int whence)
         return cnc_clear_pulse_data(self, (enum cnc_lseek_options)off);
 }
 
-
-
-#pragma mark - Sysfs attributes
 
 static ssize_t state_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -206,7 +204,6 @@ void cnc_notify_state_changed(struct cnc *self)
                 sysfs_notify_dirent(self->state_attr_node);
         }
 }
-
 
 
 #define _DEFINE_COMMAND_ATTR(name) \
