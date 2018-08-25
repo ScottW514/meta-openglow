@@ -1,6 +1,6 @@
 require u-boot-openglow-common_${PV}.inc
 
-DEPENDS = "u-boot-mkimage-native"
+DEPENDS += "u-boot-mkimage-native"
 
 UPGRADESCRIPT = "${S}/board/openglow/openglow_std/u-boot_upgrade.txt"
 
