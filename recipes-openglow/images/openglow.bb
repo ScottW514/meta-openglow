@@ -23,11 +23,12 @@ IMAGE_INSTALL = " \
 	python-six \
 	python-typing \
 	python3 \
+	python3-evdev \
 	python3-flask \
 	python3-jsonschema \
+	python3-gfutilities \
 	python3-pip \
 	python3-pyyaml \
-	python3-requests \
 	python3-setuptools \
 	python3-smbus \
 	python3-spidev \
