@@ -13,8 +13,8 @@ SRC_URI = "git://github.com/boundarydevices/linux-imx6.git;branch=${SRCBRANCH} \
            file://Add-OV5648-Driver.patch \
 "
 
-LOCALVERSION = "-1.0.0-ga+openglow"
-SRCBRANCH = "boundary-imx_4.9.x_1.0.0_ga"
+LOCALVERSION = "-2.0.0-ga+openglow"
+SRCBRANCH = "boundary-imx_4.9.x_2.0.0_ga"
 SRCREV = "${AUTOREV}"
 DEPENDS += "lzop-native bc-native"
 COMPATIBLE_MACHINE = "openglow_std"
