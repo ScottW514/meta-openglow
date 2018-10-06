@@ -37,11 +37,11 @@ IMAGE_INSTALL = " \
 	python3-setuptools \
 	python3-smbus \
 	python3-spidev \
+	rng-tools \
 	stress-ng \
 	u-boot-fw-utils \
 	wpa-supplicant \
 "
-
 
 # Require for Hardware Diagnostics Tool
 # Will be separated into its own recipe when finished.
