@@ -38,6 +38,7 @@ IMAGE_INSTALL = " \
 	python3-smbus \
 	python3-spidev \
 	rng-tools \
+	rt-tests \
 	stress-ng \
 	u-boot-fw-utils \
 	wpa-supplicant \

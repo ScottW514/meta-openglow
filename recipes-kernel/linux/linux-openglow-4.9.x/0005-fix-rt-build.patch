@@ -1,0 +1,201 @@
+Fix build errors when RT patch is applied
+
+Upstream-Status: Inappropriate [other]
+Freescale does not support the RT patch
+
+Signed-off-by: Scott Wiederhold <s.e.wiederhold@gmail.com> [updated for 4.9.128]
+Signed-off-by: Jacob Kroon <jacob.kroon@mikrodidakt.se>
+Signed-off-by: Dominic Sacré <dominic.sacre@gmx.de> [updated for 3.14.28]
+
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+index 2ec98dc..5d0b7df 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+@@ -280,7 +280,7 @@
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
+     idr_preload(GFP_KERNEL | gcdNOWARN);
+
+-    spin_lock(&Database->lock);
++    raw_spin_lock(&Database->lock);
+
+     next = (Database->curr + 1 <= 0) ? 1 : Database->curr + 1;
+
+@@ -294,7 +294,7 @@
+         Database->curr = *Id = result;
+     }
+
+-    spin_unlock(&Database->lock);
++    raw_spin_unlock(&Database->lock);
+
+     idr_preload_end();
+
+@@ -309,7 +309,7 @@
+         return gcvSTATUS_OUT_OF_MEMORY;
+     }
+
+-    spin_lock(&Database->lock);
++    raw_spin_lock(&Database->lock);
+
+     next = (Database->curr + 1 <= 0) ? 1 : Database->curr + 1;
+
+@@ -321,7 +321,7 @@
+         Database->curr = *Id;
+     }
+
+-    spin_unlock(&Database->lock);
++    raw_spin_unlock(&Database->lock);
+
+     if (result == -EAGAIN)
+     {
+@@ -346,11 +346,11 @@
+ {
+     gctPOINTER pointer;
+
+-    spin_lock(&Database->lock);
++    raw_spin_lock(&Database->lock);
+
+     pointer = idr_find(&Database->idr, Id);
+
+-    spin_unlock(&Database->lock);
++    raw_spin_unlock(&Database->lock);
+
+     if (pointer)
+     {
+@@ -374,11 +374,11 @@
+     IN gctUINT32 Id
+     )
+ {
+-    spin_lock(&Database->lock);
++    raw_spin_lock(&Database->lock);
+
+     idr_remove(&Database->idr, Id);
+
+-    spin_unlock(&Database->lock);
++    raw_spin_unlock(&Database->lock);
+
+     return gcvSTATUS_OK;
+ }
+@@ -440,7 +440,7 @@
+         pte = pte_offset_map_lock(current->mm, pmd, logical, &ptl);
+         if (!pte)
+         {
+-            spin_unlock(ptl);
++            raw_spin_unlock(ptl);
+             return gcvSTATUS_NOT_FOUND;
+         }
+
+@@ -1686,11 +1686,11 @@
+ {
+     unsigned long flags;
+
+-    spin_lock_irqsave(&Os->registerAccessLock, flags);
++    raw_spin_lock_irqsave(&Os->registerAccessLock, flags);
+
+     if (unlikely(Os->clockStates[Core] == gcvFALSE))
+     {
+-        spin_unlock_irqrestore(&Os->registerAccessLock, flags);
++        raw_spin_unlock_irqrestore(&Os->registerAccessLock, flags);
+
+         /*
+          * Read register when power off:
+@@ -1709,7 +1709,7 @@
+     }
+
+     *Data = readl((gctUINT8 *)Os->device->registerBases[Core] + Address);
+-    spin_unlock_irqrestore(&Os->registerAccessLock, flags);
++    raw_spin_unlock_irqrestore(&Os->registerAccessLock, flags);
+
+ #if gcdDUMP_AHB_ACCESS
+     if (!in_irq())
+@@ -1764,11 +1764,11 @@
+ {
+     unsigned long flags;
+
+-    spin_lock_irqsave(&Os->registerAccessLock, flags);
++    raw_spin_lock_irqsave(&Os->registerAccessLock, flags);
+
+     if (unlikely(Os->clockStates[Core] == gcvFALSE))
+     {
+-        spin_unlock_irqrestore(&Os->registerAccessLock, flags);
++        raw_spin_unlock_irqrestore(&Os->registerAccessLock, flags);
+
+         gcmkPRINT("[galcore]: %s(%d) GPU[%d] external clock off",
+                   __func__, __LINE__, Core);
+@@ -1779,7 +1779,7 @@
+     }
+
+     writel(Data, (gctUINT8 *)Os->device->registerBases[Core] + Address);
+-    spin_unlock_irqrestore(&Os->registerAccessLock, flags);
++    raw_spin_unlock_irqrestore(&Os->registerAccessLock, flags);
+
+ #if gcdDUMP_AHB_ACCESS
+     if (!in_irq())
+@@ -5389,12 +5389,12 @@
+     {
+         unsigned long flags;
+
+-        spin_lock_irqsave(&Os->registerAccessLock, flags);
++        raw_spin_lock_irqsave(&Os->registerAccessLock, flags);
+
+         /* Record clock states, ahead. */
+         Os->clockStates[Core] = Clock;
+
+-        spin_unlock_irqrestore(&Os->registerAccessLock, flags);
++        raw_spin_unlock_irqrestore(&Os->registerAccessLock, flags);
+     }
+
+     if (powerChange && (Power == gcvTRUE))
+@@ -5904,7 +5904,7 @@
+
+     gcmkASSERT(signal->id == (gctUINT32)(gctUINTPTR_T)Signal);
+
+-    spin_lock(&signal->lock);
++    raw_spin_lock(&signal->lock);
+
+     if (State)
+     {
+@@ -5926,7 +5926,7 @@
+         signal->done = 0;
+     }
+
+-    spin_unlock(&signal->lock);
++    raw_spin_unlock(&signal->lock);
+
+ #if gcdANDROID_NATIVE_FENCE_SYNC
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4,9,0)
+@@ -6049,9 +6049,9 @@
+
+     gcmkASSERT(signal->id == (gctUINT32)(gctUINTPTR_T)Signal);
+
+-    spin_lock(&signal->lock);
++    raw_spin_lock(&signal->lock);
+     done = signal->done;
+-    spin_unlock(&signal->lock);
++    raw_spin_unlock(&signal->lock);
+
+     /*
+      * Do not need to lock below:
+@@ -6139,9 +6139,9 @@
+
+     if (gcmIS_SUCCESS(status))
+     {
+-        spin_lock(&signal->lock);
++        raw_spin_lock(&signal->lock);
+         status = signal->done ? gcvSTATUS_TRUE : gcvSTATUS_FALSE;
+-        spin_unlock(&signal->lock);
++        raw_spin_unlock(&signal->lock);
+     }
+
+     return status;
+diff --git a/include/linux/imx_sema4.h b/include/linux/imx_sema4.h
+index 9787980..3586199 100644
+--- a/include/linux/imx_sema4.h
++++ b/include/linux/imx_sema4.h
+@@ -9,6 +9,8 @@
+ #ifndef __LINUX_IMX_SEMA4_H__
+ #define __LINUX_IMX_SEMA4_H__
+
++#include <linux/wait.h>
++
+ #define SEMA4_NUM_DEVICES	1
+ #define SEMA4_NUM_GATES		16
