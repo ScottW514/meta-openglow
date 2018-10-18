@@ -42,10 +42,14 @@ IMAGE_INSTALL = " \
 	stress-ng \
 	u-boot-fw-utils \
 	wpa-supplicant \
+	xenomai-mercury \
 "
 
 # Require for Hardware Diagnostics Tool
 # Will be separated into its own recipe when finished.
 # python3-flask, python3-pyyaml, python3-requests, python-six, python-typing, python3-jsonschema
 
-IMAGE_FEATURES += " ssh-server-openssh "
+IMAGE_FEATURES += " \
+	ssh-server-openssh \
+	tools-debug \
+ "
