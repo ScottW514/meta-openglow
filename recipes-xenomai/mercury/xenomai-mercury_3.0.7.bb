@@ -10,26 +10,26 @@ SRC_URI = "\
 "
 SRC_URI[xenomai.sha256sum] = "4818eae60ea6da409d7900769a5a95744a8e0147a494cf79f2cab57e8b3606b8"
 
+inherit autotools pkgconfig
+
 S = "${WORKDIR}/xenomai-v${PV}/"
-includedir = "/usr/xenomai/lib"
-oldincludedir = "/usr/xenomai/lib"
+includedir = "/usr/include/xenomai"
+oldincludedir = "/usr/include/xenomai"
 prefix = "/usr/xenomai"
 exec_prefix = "/usr/xenomai"
 
-FILES_${PN} += "/usr/xenomai/demo/"
-INSANE_SKIP_${PN} += "dev-deps"
+FILES_${PN} += "/usr/xenomai/demo /usr/xenomai/lib/"
+#INSANE_SKIP_${PN} += "dev-deps"
 
-EXTRA_OECONF_append_arm = " --with-core=mercury --enable-smp --enable-pshared"
-DEPENDS = "linux-openglow-rt"
+EXTRA_OECONF_append_arm = " --with-core=mercury --enable-smp --enable-pshared "
+DEPENDS = "linux-openglow-rt glibc"
 COMPATIBLE_MACHINE = "openglow_std"
-
-inherit autotools gettext
 
 do_bootstrap() {
     cd ${S}
     ./scripts/bootstrap
 }
-addtask do_bootstrap before do_configure
+addtask do_bootstrap after do_unpack before do_configure
 
 do_install_append() {
     install -d ${D}${sysconfdir}/ld.so.conf.d/

@@ -53,3 +53,5 @@ IMAGE_FEATURES += " \
 	ssh-server-openssh \
 	tools-debug \
  "
+
+TOOLCHAIN_HOST_TASK += "nativesdk-cmake"
