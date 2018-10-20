@@ -15,10 +15,10 @@ do_mkimage () {
 }
 addtask mkimage after do_compile before do_install
 
-do_imginstall () {
+do_install_append () {
     install -D -m 644 ${S}/board/openglow/${MACHINE}/u-boot_upgrade.scr \
-                ${D}/u-boot_upgrade_install.scr
-    install -D -m 644 ${D}/u-boot_upgrade_install.scr \
+                ${D}/boot/u-boot_upgrade_install.scr
+    install -D -m 644 ${D}/boot/u-boot_upgrade_install.scr \
                 ${DEPLOYDIR}/u-boot_upgrade-${MACHINE}-${PV}-${PR}.scr
 
     cd ${DEPLOYDIR}
@@ -26,4 +26,3 @@ do_imginstall () {
     ln -sf u-boot_upgrade-${MACHINE}-${PV}-${PR}.scr \
                 u-boot_upgrade-${MACHINE}.scr
 }
-addtask imginstall after do_mkimage before do_install
