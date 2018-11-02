@@ -113,6 +113,51 @@ int cnc_disable(struct cnc *self);
 int cnc_enable(struct cnc *self);
 
 /**
+ * Pulses stepper once.
+ *
+ * @param direction Desired state of the direction line
+ * @return          0 on success
+ *                  -EPERM if the driver is not in the idle or disabled state
+ */
+int cnc_single_step(struct cnc *self, bool direction, int step_pin, int dir_pin);
+
+/**
+ * Pulses the X-axis stepper once.
+ *
+ * @param direction Desired state of the direction line
+ * @return          0 on success
+ *                  -EPERM if the driver is not in the idle or disabled state
+ */
+int cnc_single_x_step(struct cnc *self, bool direction);
+
+/**
+ * Pulses the Y-axis steppers (Y1, Y2) once.
+ *
+ * @param direction Desired state of the direction line
+ * @return          0 on success
+ *                  -EPERM if the driver is not in the idle or disabled state
+ */
+int cnc_single_y_step(struct cnc *self, bool direction);
+
+/**
+ * Pulses the Y1-axis stepper once.
+ *
+ * @param direction Desired state of the direction line
+ * @return          0 on success
+ *                  -EPERM if the driver is not in the idle or disabled state
+ */
+int cnc_single_y1_step(struct cnc *self, bool direction);
+
+/**
+ * Pulses the Y2-axis stepper once.
+ *
+ * @param direction Desired state of the direction line
+ * @return          0 on success
+ *                  -EPERM if the driver is not in the idle or disabled state
+ */
+int cnc_single_y2_step(struct cnc *self, bool direction);
+
+/**
  * Pulses the Z-axis stepper once.
  *
  * @param direction Desired state of the direction line

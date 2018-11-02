@@ -730,13 +730,13 @@ int cnc_enable(struct cnc *self)
 /**
  * Idle: take step
  * Running: error
- * Disabled: take step (Z axis enable isn't controlled by kernel module)
+ * Disabled: take step
  * Fault: error (TODO)
  */
-int cnc_single_z_step(struct cnc *self, bool direction)
+int cnc_single_step(struct cnc *self, bool direction, int step_pin, int dir_pin)
 {
         int ret = 0;
-        int z_step_gpio, z_dir_gpio;
+        int step_gpio, dir_gpio;
         spin_lock_bh(&self->status_lock);
         switch (self->status.state) {
                 case STATE_RUNNING:
@@ -753,15 +753,73 @@ int cnc_single_z_step(struct cnc *self, bool direction)
                 return ret;
         }
 
-        z_step_gpio = self->gpios[PIN_Z_STEP];
-        z_dir_gpio = self->gpios[PIN_Z_DIR];
+        step_gpio = self->gpios[step_pin];
+        dir_gpio = self->gpios[dir_pin];
 
-        gpio_set_value(z_dir_gpio, direction);
-        gpio_set_value(z_step_gpio, 1);
+        gpio_set_value(dir_gpio, direction);
+        gpio_set_value(step_gpio, 1);
         udelay(4); /* DRV8824 wants a minimum 2us pulse duration */
-        gpio_set_value(z_step_gpio, 0);
-        gpio_set_value(z_dir_gpio, 0);
+        gpio_set_value(step_gpio, 0);
+        gpio_set_value(dir_gpio, 0);
         return 0;
+}
+
+/**
+ * Idle: take step on x axis
+ * Running: error
+ * Disabled: take step
+ * Fault: error (TODO)
+ */
+int cnc_single_x_step(struct cnc *self, bool direction)
+{
+        return cnc_single_step(self, direction, PIN_X_STEP, PIN_X_DIR);
+}
+
+/**
+ * Idle: take step on both y axis steppers
+ * Running: error
+ * Disabled: take step
+ * Fault: error (TODO)
+ */
+int cnc_single_y_step(struct cnc *self, bool direction)
+{
+        int ret;
+        ret = cnc_single_y1_step(self, direction);
+        if (ret < 0) return ret;
+        return cnc_single_y2_step(self, direction);
+}
+
+/**
+ * Idle: take step on y1 axis
+ * Running: error
+ * Disabled: take step
+ * Fault: error (TODO)
+ */
+int cnc_single_y1_step(struct cnc *self, bool direction)
+{
+        return cnc_single_step(self, direction, PIN_Y1_STEP, PIN_Y1_DIR);
+}
+
+/**
+ * Idle: take step on y2 axis
+ * Running: error
+ * Disabled: take step
+ * Fault: error (TODO)
+ */
+int cnc_single_y2_step(struct cnc *self, bool direction)
+{
+        return cnc_single_step(self, direction, PIN_Y2_STEP, PIN_Y2_DIR);
+}
+
+/**
+ * Idle: take step on z axis
+ * Running: error
+ * Disabled: take step
+ * Fault: error (TODO)
+ */
+int cnc_single_z_step(struct cnc *self, bool direction)
+{
+        return cnc_single_step(self, direction, PIN_Z_STEP, PIN_Z_DIR);
 }
 
 

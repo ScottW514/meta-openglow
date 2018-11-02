@@ -261,7 +261,11 @@ DEFINE_DEVICE_ATTR(ATTR_STEP_FREQ, S_IRUSR|S_IWUSR, step_freq_show, step_freq_st
 DEFINE_DEVICE_ATTR(ATTR_POSITION, S_IRUSR, position_show, NULL);
 DEFINE_DEVICE_ATTR(ATTR_SDMA_CONTEXT, S_IRUSR, sdma_context_show, NULL);
 DEFINE_DEVICE_ATTR(ATTR_MOTOR_LOCK, S_IRUSR|S_IWUSR, motor_lock_show, motor_lock_store);
-DEFINE_BOOL_ATTR(ATTR_Z_STEP, cnc_single_z_step);
+DEFINE_BOOL_ATTR(ATTR_X_STEP,  cnc_single_x_step);
+DEFINE_BOOL_ATTR(ATTR_Y_STEP,  cnc_single_y_step);
+DEFINE_BOOL_ATTR(ATTR_Y1_STEP, cnc_single_y1_step);
+DEFINE_BOOL_ATTR(ATTR_Y2_STEP, cnc_single_y2_step);
+DEFINE_BOOL_ATTR(ATTR_Z_STEP,  cnc_single_z_step);
 DEFINE_BOOL_ATTR(ATTR_LASER_OUTPUT, cnc_set_laser_output);
 
 static struct attribute *cnc_attrs[] = {
@@ -277,6 +281,10 @@ static struct attribute *cnc_attrs[] = {
         DEV_ATTR_PTR(ATTR_LASER_OUTPUT),
         DEV_ATTR_PTR(ATTR_POSITION),
         DEV_ATTR_PTR(ATTR_SDMA_CONTEXT),
+        DEV_ATTR_PTR(ATTR_X_STEP),
+        DEV_ATTR_PTR(ATTR_Y_STEP),
+        DEV_ATTR_PTR(ATTR_Y1_STEP),
+        DEV_ATTR_PTR(ATTR_Y2_STEP),
         DEV_ATTR_PTR(ATTR_Z_STEP),
         DEV_ATTR_PTR(ATTR_MOTOR_LOCK),
         NULL

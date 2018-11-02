@@ -60,6 +60,10 @@
 #define ATTR_RESUME                 resume
 #define ATTR_DISABLE                disable
 #define ATTR_ENABLE                 enable
+#define ATTR_X_STEP                 x_step
+#define ATTR_Y_STEP                 y_step
+#define ATTR_Y1_STEP                y1_step
+#define ATTR_Y2_STEP                y2_step
 #define ATTR_Z_STEP                 z_step
 #define ATTR_LASER_OUTPUT           laser_output
 #define ATTR_MOTOR_LOCK             motor_lock
@@ -77,6 +81,10 @@
 #define ATTR_RESUME_PATH                SYSFS_ATTR_DIR STR(ATTR_RESUME)
 #define ATTR_DISABLE_PATH               SYSFS_ATTR_DIR STR(ATTR_DISABLE)
 #define ATTR_STEP_FREQ_PATH             SYSFS_ATTR_DIR STR(ATTR_STEP_FREQ)
+#define ATTR_X_STEP_PATH                SYSFS_ATTR_DIR STR(ATTR_X_STEP)
+#define ATTR_Y_STEP_PATH                SYSFS_ATTR_DIR STR(ATTR_Y_STEP)
+#define ATTR_Y1_STEP_PATH               SYSFS_ATTR_DIR STR(ATTR_Y1_STEP)
+#define ATTR_Y2_STEP_PATH               SYSFS_ATTR_DIR STR(ATTR_Y2_STEP)
 #define ATTR_Z_STEP_PATH                SYSFS_ATTR_DIR STR(ATTR_Z_STEP)
 #define ATTR_MOTOR_LOCK_PATH            SYSFS_ATTR_DIR STR(ATTR_MOTOR_LOCK)
 
