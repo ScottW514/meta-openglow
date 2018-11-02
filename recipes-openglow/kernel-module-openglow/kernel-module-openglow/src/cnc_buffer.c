@@ -26,7 +26,7 @@
  * Size of the contiguous memory region used as the pulse data buffer.
  * Must be a power of two.
  */
-#define CNC_BUFFER_SIZE     (128 * SZ_1M)
+#define CNC_BUFFER_SIZE     (256 * SZ_1M)
 
 /**
  * Enforce a minimum gap between head and tail.
