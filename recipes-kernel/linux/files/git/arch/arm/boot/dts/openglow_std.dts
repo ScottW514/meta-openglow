@@ -100,18 +100,6 @@
         /* GPIO - Aux I/O */
         pinctrl_gpio_aux: gpio-auxgrp {
             fsl,pins = <
-#define AUXIO_1             <&gpio4 11 GPIO_ACTIVE_HIGH> /* AUX_IO01 */
-                MX6QDL_PAD_KEY_ROW2__GPIO4_IO11    	WEAK_PULLUP
-#define AUXIO_2             <&gpio3 12 GPIO_ACTIVE_HIGH> /* AUX_IO02 */
-                MX6QDL_PAD_EIM_DA12__GPIO3_IO12    	WEAK_PULLUP
-#define AUXIO_3             <&gpio1 1 GPIO_ACTIVE_HIGH> /* AUX_IO03 */
-                MX6QDL_PAD_GPIO_1__GPIO1_IO01      	WEAK_PULLUP
-#define AUXIO_4             <&gpio5 24 GPIO_ACTIVE_HIGH> /* AUX_IO04 */
-                MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24   	WEAK_PULLUP
-#define AUXIO_5             <&gpio5 25 GPIO_ACTIVE_HIGH> /* AUX_IO05 */
-                MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25   	WEAK_PULLUP
-#define AUXIO_6             <&gpio5 29 GPIO_ACTIVE_HIGH> /* AUX_IO06 */
-                MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29  	WEAK_PULLUP
 #define AUXIO_7             <&gpio1 9 GPIO_ACTIVE_HIGH>  /* AUX_IO07 */
                 MX6QDL_PAD_GPIO_9__GPIO1_IO09  		WEAK_PULLUP
 #define AUXIO_8             <&gpio7 13 GPIO_ACTIVE_HIGH>  /* AUX_IO08 */
@@ -119,6 +107,23 @@
             >;
         };
 
+		/* GPIO - Limit I/O */
+        pinctrl_limit_aux: gpio-limitgrp {
+            fsl,pins = <
+#define AUXIO_1             <&gpio4 11 GPIO_ACTIVE_HIGH> /* AUX_IO01 X-Axis POS Limit */
+                MX6QDL_PAD_KEY_ROW2__GPIO4_IO11    	WEAK_PULLUP
+#define AUXIO_2             <&gpio3 12 GPIO_ACTIVE_HIGH> /* AUX_IO02 X-Axis NEG Limit */
+                MX6QDL_PAD_EIM_DA12__GPIO3_IO12    	WEAK_PULLUP
+#define AUXIO_3             <&gpio1 1 GPIO_ACTIVE_HIGH> /* AUX_IO03  Y1-Axis POS Limit */
+                MX6QDL_PAD_GPIO_1__GPIO1_IO01      	WEAK_PULLUP
+#define AUXIO_4             <&gpio5 24 GPIO_ACTIVE_HIGH> /* AUX_IO04 Y1-Axis NEG Limit */
+                MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24   	WEAK_PULLUP
+#define AUXIO_5             <&gpio5 25 GPIO_ACTIVE_HIGH> /* AUX_IO05 Y2-Axis POS Limit */
+                MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25   	WEAK_PULLUP
+#define AUXIO_6             <&gpio5 29 GPIO_ACTIVE_HIGH> /* AUX_IO06 Y2-Axis NEG Limit */
+                MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29  	WEAK_PULLUP
+            >;
+        };
         /* OPENGLOW - CNC */
         pinctrl_cnc: gpio-cncgrp {
             fsl,pins = <
@@ -423,12 +428,6 @@
         compatible = "openglow,aux";
         pinctrl-names = "default";
         pinctrl-0 = <&pinctrl_gpio_aux>;
-        aux01-gpio = AUXIO_1;
-        aux02-gpio = AUXIO_2;
-        aux03-gpio = AUXIO_3;
-        aux04-gpio = AUXIO_4;
-        aux05-gpio = AUXIO_5;
-        aux06-gpio = AUXIO_6;
         aux07-gpio = AUXIO_7;
         aux08-gpio = AUXIO_8;
     };
@@ -507,6 +506,54 @@
 		compatible = "openglow,hog";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_hog>;
+    };
+
+	openglow-limit {
+        compatible = "gpio-keys";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_limit_aux>;
+		x_limit_pos {
+            label = "x-limit-pos";
+            gpios = AUXIO_1;
+            debounce-interval = <60>;
+            linux,code = <1>;
+            linux,input-type = <EV_SW>;
+        };
+		x_limit_neg {
+            label = "x-limit-neg";
+            gpios = AUXIO_2;
+            debounce-interval = <60>;
+            linux,code = <2>;
+            linux,input-type = <EV_SW>;
+        };
+		y1_limit_pos {
+            label = "y1-limit-pos";
+            gpios = AUXIO_3;
+            debounce-interval = <60>;
+            linux,code = <3>;
+            linux,input-type = <EV_SW>;
+        };
+		y1_limit_neg {
+            label = "y1-limit-neg";
+            gpios = AUXIO_4;
+            debounce-interval = <60>;
+            linux,code = <4>;
+            linux,input-type = <EV_SW>;
+        };
+		y2_limit_pos {
+            label = "y2-limit-pos";
+            gpios = AUXIO_5;
+            debounce-interval = <60>;
+            linux,code = <5>;
+            linux,input-type = <EV_SW>;
+        };
+		y2_limit_neg {
+            label = "y2-limit-neg";
+            gpios = AUXIO_6;
+            debounce-interval = <60>;
+            linux,code = <6>;
+            linux,input-type = <EV_SW>;
+        };
     };
 
     regulators {
