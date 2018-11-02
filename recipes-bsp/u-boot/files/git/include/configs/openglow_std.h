@@ -39,7 +39,7 @@
 #define CONFIG_PREBOOT                 ""
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"bootargs=console=ttymxc0,115200 vmalloc=400M consoleblank=0 isolcpus=0 rootwait cpu=6Q board=openglow_std root=/dev/mmcblk0p2\0" \
+	"bootargs=console=ttymxc0,115200 vmalloc=400M consoleblank=0 isolcpus=3 rootwait cpu=6Q board=openglow_std root=/dev/mmcblk0p2\0" \
 	"bootcmd=load mmc 0 ${fdt_addr} openglow_std.dtb; load mmc 0 ${loadaddr} zImage; bootz ${loadaddr} - ${fdt_addr}\0" \
 	"clearenv=if sf probe || sf probe || sf probe 1 ; then " \
 		"sf erase 0xc0000 0x2000 && " \
