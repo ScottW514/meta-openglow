@@ -24,6 +24,7 @@ IMAGE_INSTALL = " \
 	openssh-sftp \
 	openssh-sftp-server \
 	pango \
+	procps \
 	python \
 	python-six \
 	python-typing \
