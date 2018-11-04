@@ -78,7 +78,7 @@
                 MX6QDL_PAD_EIM_D18__ECSPI1_MOSI     SPI_PAD_CTRL
                 MX6QDL_PAD_EIM_D16__ECSPI1_SCLK     SPI_PAD_CTRL
 #define ECSPI1_CS           <&gpio3 19 GPIO_ACTIVE_LOW>
-                MX6QDL_PAD_EIM_D19__GPIO3_IO19      NO_PAD_CTRL
+                MX6QDL_PAD_EIM_D19__GPIO3_IO19      WEAK_PULLUP
             >;
         };
 
