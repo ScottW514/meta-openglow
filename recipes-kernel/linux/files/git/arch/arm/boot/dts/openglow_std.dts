@@ -111,17 +111,17 @@
         pinctrl_limit_aux: gpio-limitgrp {
             fsl,pins = <
 #define AUXIO_1             <&gpio4 11 GPIO_ACTIVE_HIGH> /* AUX_IO01 X-Axis POS Limit */
-                MX6QDL_PAD_KEY_ROW2__GPIO4_IO11    	WEAK_PULLUP
+                MX6QDL_PAD_KEY_ROW2__GPIO4_IO11    	WEAK_PULLDOWN
 #define AUXIO_2             <&gpio3 12 GPIO_ACTIVE_HIGH> /* AUX_IO02 X-Axis NEG Limit */
-                MX6QDL_PAD_EIM_DA12__GPIO3_IO12    	WEAK_PULLUP
+                MX6QDL_PAD_EIM_DA12__GPIO3_IO12    	WEAK_PULLDOWN
 #define AUXIO_3             <&gpio1 1 GPIO_ACTIVE_HIGH> /* AUX_IO03  Y1-Axis POS Limit */
-                MX6QDL_PAD_GPIO_1__GPIO1_IO01      	WEAK_PULLUP
+                MX6QDL_PAD_GPIO_1__GPIO1_IO01      	WEAK_PULLDOWN
 #define AUXIO_4             <&gpio5 24 GPIO_ACTIVE_HIGH> /* AUX_IO04 Y1-Axis NEG Limit */
-                MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24   	WEAK_PULLUP
+                MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24   	WEAK_PULLDOWN
 #define AUXIO_5             <&gpio5 25 GPIO_ACTIVE_HIGH> /* AUX_IO05 Y2-Axis POS Limit */
-                MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25   	WEAK_PULLUP
+                MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25   	WEAK_PULLDOWN
 #define AUXIO_6             <&gpio5 29 GPIO_ACTIVE_HIGH> /* AUX_IO06 Y2-Axis NEG Limit */
-                MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29  	WEAK_PULLUP
+                MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29  	WEAK_PULLDOWN
             >;
         };
         /* OPENGLOW - CNC */
@@ -830,9 +830,9 @@
 	    #address-cells = <1>;
 	    #size-cells = <0>;
         lid-led-pwm      = <2>;
-        button-red-led  = <0>;
+        button-red-led  = <2>;
         button-green-led = <1>;
-        button-blue-led   = <2>;
+        button-blue-led   = <0>;
     };
 };
 
