@@ -120,13 +120,6 @@ static ssize_t state_show(struct device *dev, struct device_attribute *attr, cha
 }
 
 
-static ssize_t faults_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-        struct cnc *self = dev_get_drvdata(dev);
-        return scnprintf(buf, PAGE_SIZE, "%u\n", cnc_triggered_faults(self));
-}
-
-
 static ssize_t step_freq_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
         struct cnc *self = dev_get_drvdata(dev);
@@ -141,42 +134,6 @@ static ssize_t step_freq_store(struct device *dev, struct device_attribute *attr
         int ret = kstrtoul(buf, 10, &new_freq);
         if (ret) { return ret; }
         ret = cnc_set_step_frequency(self, new_freq);
-        return (ret == 0) ? count : ret;
-}
-
-
-static ssize_t ignored_faults_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-        struct cnc *self = dev_get_drvdata(dev);
-        return scnprintf(buf, PAGE_SIZE, "%u\n", self->ignored_faults);
-}
-
-
-static ssize_t ignored_faults_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
-{
-        struct cnc *self = dev_get_drvdata(dev);
-        unsigned long new_mask;
-        int ret = kstrtoul(buf, 10, &new_mask);
-        if (ret) { return ret; }
-        self->ignored_faults = new_mask;
-        return count;
-}
-
-
-static ssize_t motor_lock_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-        struct cnc *self = dev_get_drvdata(dev);
-        return scnprintf(buf, PAGE_SIZE, "%u\n", cnc_get_motor_lock(self));
-}
-
-
-static ssize_t motor_lock_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
-{
-        struct cnc *self = dev_get_drvdata(dev);
-        unsigned long new_value;
-        int ret = kstrtoul(buf, 10, &new_value);
-        if (ret) { return ret; }
-        ret = cnc_set_motor_lock(self, new_value);
         return (ret == 0) ? count : ret;
 }
 
@@ -248,45 +205,40 @@ static ssize_t resume_store(struct device *dev, struct device_attribute *attr, c
 }
 
 
-
-DEFINE_COMMAND_ATTR(ATTR_RUN);
-DEFINE_COMMAND_ATTR(ATTR_STOP);
-DEFINE_COMMAND_ATTR(ATTR_DISABLE);
-DEFINE_COMMAND_ATTR(ATTR_ENABLE);
-DEFINE_DEVICE_ATTR(ATTR_RESUME, S_IWUSR, NULL, resume_store);
-DEFINE_DEVICE_ATTR(ATTR_STATE, S_IRUSR, state_show, NULL);
-DEFINE_DEVICE_ATTR(ATTR_FAULTS, S_IRUSR, faults_show, NULL);
-DEFINE_DEVICE_ATTR(ATTR_IGNORED_FAULTS, S_IRUSR|S_IWUSR, ignored_faults_show, ignored_faults_store);
-DEFINE_DEVICE_ATTR(ATTR_STEP_FREQ, S_IRUSR|S_IWUSR, step_freq_show, step_freq_store);
-DEFINE_DEVICE_ATTR(ATTR_POSITION, S_IRUSR, position_show, NULL);
-DEFINE_DEVICE_ATTR(ATTR_SDMA_CONTEXT, S_IRUSR, sdma_context_show, NULL);
-DEFINE_DEVICE_ATTR(ATTR_MOTOR_LOCK, S_IRUSR|S_IWUSR, motor_lock_show, motor_lock_store);
+DEFINE_BOOL_ATTR(ATTR_LASER_OUTPUT, cnc_set_laser_output);
 DEFINE_BOOL_ATTR(ATTR_X_STEP,  cnc_single_x_step);
 DEFINE_BOOL_ATTR(ATTR_Y_STEP,  cnc_single_y_step);
 DEFINE_BOOL_ATTR(ATTR_Y1_STEP, cnc_single_y1_step);
 DEFINE_BOOL_ATTR(ATTR_Y2_STEP, cnc_single_y2_step);
 DEFINE_BOOL_ATTR(ATTR_Z_STEP,  cnc_single_z_step);
-DEFINE_BOOL_ATTR(ATTR_LASER_OUTPUT, cnc_set_laser_output);
+DEFINE_COMMAND_ATTR(ATTR_DISABLE);
+DEFINE_COMMAND_ATTR(ATTR_ENABLE);
+DEFINE_COMMAND_ATTR(ATTR_IGNORE_LIMITS);
+DEFINE_COMMAND_ATTR(ATTR_RUN);
+DEFINE_COMMAND_ATTR(ATTR_STOP);
+DEFINE_DEVICE_ATTR(ATTR_POSITION, S_IRUSR, position_show, NULL);
+DEFINE_DEVICE_ATTR(ATTR_RESUME, S_IWUSR, NULL, resume_store);
+DEFINE_DEVICE_ATTR(ATTR_SDMA_CONTEXT, S_IRUSR, sdma_context_show, NULL);
+DEFINE_DEVICE_ATTR(ATTR_STATE, S_IRUSR, state_show, NULL);
+DEFINE_DEVICE_ATTR(ATTR_STEP_FREQ, S_IRUSR|S_IWUSR, step_freq_show, step_freq_store);
 
 static struct attribute *cnc_attrs[] = {
-        DEV_ATTR_PTR(ATTR_STATE),
-        DEV_ATTR_PTR(ATTR_FAULTS),
-        DEV_ATTR_PTR(ATTR_IGNORED_FAULTS),
-        DEV_ATTR_PTR(ATTR_STEP_FREQ),
-        DEV_ATTR_PTR(ATTR_RUN),
-        DEV_ATTR_PTR(ATTR_STOP),
-        DEV_ATTR_PTR(ATTR_RESUME),
         DEV_ATTR_PTR(ATTR_DISABLE),
         DEV_ATTR_PTR(ATTR_ENABLE),
+        DEV_ATTR_PTR(ATTR_IGNORE_LIMITS),
         DEV_ATTR_PTR(ATTR_LASER_OUTPUT),
         DEV_ATTR_PTR(ATTR_POSITION),
+        DEV_ATTR_PTR(ATTR_RESUME),
+        DEV_ATTR_PTR(ATTR_RUN),
         DEV_ATTR_PTR(ATTR_SDMA_CONTEXT),
+        DEV_ATTR_PTR(ATTR_STATE),
+        DEV_ATTR_PTR(ATTR_STEP_FREQ),
+        DEV_ATTR_PTR(ATTR_STOP),
         DEV_ATTR_PTR(ATTR_X_STEP),
         DEV_ATTR_PTR(ATTR_Y_STEP),
         DEV_ATTR_PTR(ATTR_Y1_STEP),
         DEV_ATTR_PTR(ATTR_Y2_STEP),
         DEV_ATTR_PTR(ATTR_Z_STEP),
-        DEV_ATTR_PTR(ATTR_MOTOR_LOCK),
         NULL
 };
 

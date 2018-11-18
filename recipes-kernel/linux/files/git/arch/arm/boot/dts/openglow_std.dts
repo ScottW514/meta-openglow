@@ -100,30 +100,13 @@
         /* GPIO - Aux I/O */
         pinctrl_gpio_aux: gpio-auxgrp {
             fsl,pins = <
-#define AUXIO_7             <&gpio1 9 GPIO_ACTIVE_HIGH>  /* AUX_IO07 */
+#define AUXIO_1             <&gpio1 9 GPIO_ACTIVE_HIGH>  /* AUX_IO07 */
                 MX6QDL_PAD_GPIO_9__GPIO1_IO09  		WEAK_PULLUP
-#define AUXIO_8             <&gpio7 13 GPIO_ACTIVE_HIGH>  /* AUX_IO08 */
+#define AUXIO_2             <&gpio7 13 GPIO_ACTIVE_HIGH>  /* AUX_IO08 */
                 MX6QDL_PAD_GPIO_18__GPIO7_IO13  	WEAK_PULLUP
             >;
         };
 
-		/* GPIO - Limit I/O */
-        pinctrl_limit_aux: gpio-limitgrp {
-            fsl,pins = <
-#define AUXIO_1             <&gpio4 11 GPIO_ACTIVE_HIGH> /* AUX_IO01 X-Axis POS Limit */
-                MX6QDL_PAD_KEY_ROW2__GPIO4_IO11    	WEAK_PULLDOWN
-#define AUXIO_2             <&gpio3 12 GPIO_ACTIVE_HIGH> /* AUX_IO02 X-Axis NEG Limit */
-                MX6QDL_PAD_EIM_DA12__GPIO3_IO12    	WEAK_PULLDOWN
-#define AUXIO_3             <&gpio1 1 GPIO_ACTIVE_HIGH> /* AUX_IO03  Y1-Axis POS Limit */
-                MX6QDL_PAD_GPIO_1__GPIO1_IO01      	WEAK_PULLDOWN
-#define AUXIO_4             <&gpio5 24 GPIO_ACTIVE_HIGH> /* AUX_IO04 Y1-Axis NEG Limit */
-                MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24   	WEAK_PULLDOWN
-#define AUXIO_5             <&gpio5 25 GPIO_ACTIVE_HIGH> /* AUX_IO05 Y2-Axis POS Limit */
-                MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25   	WEAK_PULLDOWN
-#define AUXIO_6             <&gpio5 29 GPIO_ACTIVE_HIGH> /* AUX_IO06 Y2-Axis NEG Limit */
-                MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29  	WEAK_PULLDOWN
-            >;
-        };
         /* OPENGLOW - CNC */
         pinctrl_cnc: gpio-cncgrp {
             fsl,pins = <
@@ -147,6 +130,10 @@
                 MX6QDL_PAD_CSI0_DAT4__GPIO5_IO22    MED_PULLUP
 #define X_DIAG1         <&gpio5 21 GPIO_ACTIVE_HIGH> /* X_DIAG1 - IN */
                 MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21   MED_PULLUP
+#define X_LIMIT_P       <&gpio4 11 GPIO_ACTIVE_HIGH> /* AUX_IO01 X-Axis POS Limit */
+                MX6QDL_PAD_KEY_ROW2__GPIO4_IO11    	STRONG_PULLUP
+#define X_LIMIT_N       <&gpio3 12 GPIO_ACTIVE_HIGH> /* AUX_IO02 X-Axis NEG Limit */
+                MX6QDL_PAD_EIM_DA12__GPIO3_IO12    	STRONG_PULLUP
 #define Y1_DIR          <&gpio6 2 GPIO_ACTIVE_HIGH>  /* Y1_DIR - OUT */
                 MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02   WEAK_PULLUP
 #define Y1_STEP         <&gpio6 3 GPIO_ACTIVE_HIGH>  /* Y1_STEP - OUT */
@@ -155,6 +142,10 @@
                 MX6QDL_PAD_GPIO_19__GPIO4_IO05      MED_PULLUP
 #define Y1_DIAG1        <&gpio1 5 GPIO_ACTIVE_HIGH>  /* Y1_DIAG1 - IN */
                 MX6QDL_PAD_GPIO_5__GPIO1_IO05       MED_PULLUP
+#define Y1_LIMIT_P      <&gpio1 1 GPIO_ACTIVE_HIGH> /* AUX_IO03  Y1-Axis POS Limit */
+                MX6QDL_PAD_GPIO_1__GPIO1_IO01      	STRONG_PULLUP
+#define Y1_LIMIT_N      <&gpio5 24 GPIO_ACTIVE_HIGH> /* AUX_IO04 Y1-Axis NEG Limit */
+                MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24   	STRONG_PULLUP
 #define Y2_DIR          <&gpio6 7 GPIO_ACTIVE_HIGH>  /* Y2_DIR - OUT */
                 MX6QDL_PAD_NANDF_CLE__GPIO6_IO07    WEAK_PULLUP
 #define Y2_STEP         <&gpio6 9 GPIO_ACTIVE_HIGH>  /* Y2_STEP - OUT */
@@ -163,6 +154,10 @@
                 MX6QDL_PAD_CSI0_PIXCLK__GPIO5_IO18  MED_PULLUP
 #define Y2_DIAG1        <&gpio5 31 GPIO_ACTIVE_HIGH> /* Y2_DIAG1 - IN */
                 MX6QDL_PAD_CSI0_DAT13__GPIO5_IO31   MED_PULLUP
+#define Y2_LIMIT_P      <&gpio5 25 GPIO_ACTIVE_HIGH> /* AUX_IO05 Y2-Axis POS Limit */
+                MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25   	STRONG_PULLUP
+#define Y2_LIMIT_N      <&gpio5 29 GPIO_ACTIVE_HIGH> /* AUX_IO06 Y2-Axis NEG Limit */
+                MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29  	STRONG_PULLUP
 #define Z_DIR           <&gpio6 16 GPIO_ACTIVE_HIGH> /* Z_DIR - OUT */
                 MX6QDL_PAD_NANDF_CS3__GPIO6_IO16    WEAK_PULLUP
 #define Z_STEP          <&gpio6 11 GPIO_ACTIVE_HIGH> /* Z_STEP - OUT */
@@ -428,8 +423,8 @@
         compatible = "openglow,aux";
         pinctrl-names = "default";
         pinctrl-0 = <&pinctrl_gpio_aux>;
-        aux07-gpio = AUXIO_7;
-        aux08-gpio = AUXIO_8;
+        aux07-gpio = AUXIO_1;
+        aux08-gpio = AUXIO_2;
     };
 
     openglow-cnc {
@@ -440,15 +435,21 @@
         x-step-gpio          = X_STEP;
         x-dir-gpio           = X_DIR;
         x-diag0-gpio         = X_DIAG0;
-        x-diag1-gpio         = X_DIAG1;
+		x-diag1-gpio         = X_DIAG1;
+		x-limit-p-gpio       = X_LIMIT_P;
+		x-limit-n-gpio       = X_LIMIT_N;
         y1-step-gpio         = Y1_STEP;
         y1-dir-gpio          = Y1_DIR;
         y1-diag0-gpio        = Y1_DIAG0;
         y1-diag1-gpio        = Y1_DIAG1;
+		y1-limit-p-gpio      = Y1_LIMIT_P;
+		y1-limit-n-gpio      = Y1_LIMIT_N;
         y2-step-gpio         = Y2_STEP;
         y2-dir-gpio          = Y2_DIR;
         y2-diag0-gpio        = Y2_DIAG0;
         y2-diag1-gpio        = Y2_DIAG1;
+		y2-limit-p-gpio      = Y2_LIMIT_P;
+		y2-limit-n-gpio      = Y2_LIMIT_N;
         z-step-gpio          = Z_STEP;
         z-dir-gpio           = Z_DIR;
         hv-supply-ok-gpio    = HV_OK;
@@ -506,54 +507,6 @@
 		compatible = "openglow,hog";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_hog>;
-    };
-
-	openglow-limit {
-        compatible = "gpio-keys";
-        pinctrl-names = "default";
-        pinctrl-0 = <&pinctrl_limit_aux>;
-		x_limit_pos {
-            label = "x-limit-pos";
-            gpios = AUXIO_1;
-            debounce-interval = <60>;
-            linux,code = <1>;
-            linux,input-type = <EV_SW>;
-        };
-		x_limit_neg {
-            label = "x-limit-neg";
-            gpios = AUXIO_2;
-            debounce-interval = <60>;
-            linux,code = <2>;
-            linux,input-type = <EV_SW>;
-        };
-		y1_limit_pos {
-            label = "y1-limit-pos";
-            gpios = AUXIO_3;
-            debounce-interval = <60>;
-            linux,code = <3>;
-            linux,input-type = <EV_SW>;
-        };
-		y1_limit_neg {
-            label = "y1-limit-neg";
-            gpios = AUXIO_4;
-            debounce-interval = <60>;
-            linux,code = <4>;
-            linux,input-type = <EV_SW>;
-        };
-		y2_limit_pos {
-            label = "y2-limit-pos";
-            gpios = AUXIO_5;
-            debounce-interval = <60>;
-            linux,code = <5>;
-            linux,input-type = <EV_SW>;
-        };
-		y2_limit_neg {
-            label = "y2-limit-neg";
-            gpios = AUXIO_6;
-            debounce-interval = <60>;
-            linux,code = <6>;
-            linux,input-type = <EV_SW>;
-        };
     };
 
     regulators {

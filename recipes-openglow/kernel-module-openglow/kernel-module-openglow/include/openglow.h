@@ -52,8 +52,7 @@
 #define PULSE_DEVICE_NAME           "openglow"
 
 #define ATTR_STATE                  state
-#define ATTR_FAULTS                 faults
-#define ATTR_IGNORED_FAULTS         ignored_faults
+#define ATTR_IGNORE_LIMITS          ignore_limits
 #define ATTR_STEP_FREQ              step_freq
 #define ATTR_RUN                    run
 #define ATTR_STOP                   stop
@@ -66,14 +65,12 @@
 #define ATTR_Y2_STEP                y2_step
 #define ATTR_Z_STEP                 z_step
 #define ATTR_LASER_OUTPUT           laser_output
-#define ATTR_MOTOR_LOCK             motor_lock
 #define ATTR_POSITION               position
 #define ATTR_SDMA_CONTEXT           sdma_context
 
 #define PULSE_DEVICE_PATH               PULSE_DEVICE_DIR PULSE_DEVICE_NAME
 #define ATTR_STATE_PATH                 SYSFS_ATTR_DIR STR(ATTR_STATE)
-#define ATTR_FAULTS_PATH                SYSFS_ATTR_DIR STR(ATTR_FAULTS)
-#define ATTR_IGNORED_FAULTS_PATH        SYSFS_ATTR_DIR STR(ATTR_IGNORED_FAULTS)
+#define ATTR_IGNORE_LIMITS_PATH         SYSFS_ATTR_DIR STR(ATTR_IGNORE_LIMITS)
 #define ATTR_POSITION_PATH              SYSFS_ATTR_DIR STR(ATTR_POSITION)
 #define ATTR_LASER_OUTPUT_PATH          SYSFS_ATTR_DIR STR(ATTR_LASER_OUTPUT)
 #define ATTR_RUN_PATH                   SYSFS_ATTR_DIR STR(ATTR_RUN)
@@ -86,7 +83,6 @@
 #define ATTR_Y1_STEP_PATH               SYSFS_ATTR_DIR STR(ATTR_Y1_STEP)
 #define ATTR_Y2_STEP_PATH               SYSFS_ATTR_DIR STR(ATTR_Y2_STEP)
 #define ATTR_Z_STEP_PATH                SYSFS_ATTR_DIR STR(ATTR_Z_STEP)
-#define ATTR_MOTOR_LOCK_PATH            SYSFS_ATTR_DIR STR(ATTR_MOTOR_LOCK)
 
 #define ATTR_INTAKE_PWM             intake_pwm
 #define ATTR_INTAKE1_TACH           intake_1_tach
@@ -222,7 +218,7 @@ enum cnc_state {
         STATE_IDLE,
         STATE_RUNNING,
         STATE_DISABLED,
-        STATE_FAULT,
+        STATE_LIMIT,
         NUM_VALID_STATES,
         /**
         * An error occurred communicating with the kernel module,
@@ -238,20 +234,15 @@ enum cnc_axis {
         NUM_AXES
 };
 
-/** Bits in the triggered_faults field */
-enum fault_condition {
-        FAULT_X,
-        FAULT_Y1,
-        FAULT_Y2,
-        NUM_FAULT_CONDITIONS
-};
-
-/** Bits in the motor_lock field */
-enum motor_lock_options {
-        MOTOR_LOCK_X  = 1 << 0,
-        MOTOR_LOCK_Y1 = 1 << 1,
-        MOTOR_LOCK_Y2 = 1 << 2,
-        MOTOR_LOCK_Z  = 1 << 3,
+/** Limit switch conditions */
+enum limit_condition {
+        LIMIT_X_P,
+        LIMIT_X_N,
+        LIMIT_Y1_P,
+        LIMIT_Y1_N,
+        LIMIT_Y2_P,
+        LIMIT_Y2_N,
+        NUM_LIMIT_CONDITIONS
 };
 
 /** Struct returned by the `position` sysfs attribute */

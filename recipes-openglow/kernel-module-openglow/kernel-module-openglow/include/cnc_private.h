@@ -51,7 +51,7 @@ struct cnc;
  *
  * @return 0 on success
  *         -ENODATA if there is no pulse data enqueued,
- *         -EPERM if the driver is already running, or in the fault state.
+ *         -EPERM if the driver is already running, or in the limit state.
  *
  * @note No operation is performed if the driver is already running.
  */
@@ -61,7 +61,7 @@ int cnc_run(struct cnc *self);
  * Immediately stops the SDMA script and returns to the idle state.
  *
  * @return 0 on success
- *         -EPERM if the driver is in the fault state.
+ *         -EPERM if the driver is in the limit state.
  */
 int cnc_stop(struct cnc *self);
 
@@ -105,12 +105,20 @@ int cnc_resume(struct cnc *self, uint32_t laser_delay_steps);
 int cnc_disable(struct cnc *self);
 
 /**
- * Transitions the driver from the fault or disabled state to the idle state.
+ * Transitions the driver from the limit or disabled state to the idle state.
  *
  * @return 0 on success
- *         -EPERM if the driver is not in the idle, disabled, or fault state
+ *         -EPERM if the driver is not in the idle, or disabled state.
  */
 int cnc_enable(struct cnc *self);
+
+/**
+ * Clears LIMIT state to permit motion off of tripped limit switch.
+ *
+ * @return 0 on success
+ *         -EPERM if the driver is not limit state.
+ */
+int cnc_ignore_limits(struct cnc *self);
 
 /**
  * Pulses stepper once.
@@ -197,12 +205,6 @@ const char *cnc_state_string(struct cnc *self);
 const char *cnc_string_for_state(enum cnc_state st);
 
 /**
- * Returns a bitmask indicating drivers that have faulted since the last time
- * the fault condition was cleared by userspace.
- */
-u32 cnc_triggered_faults(struct cnc *self);
-
-/**
  * Retrieves the current position of the stepper driver and stores it in the
  * provided pos struct.
  */
@@ -222,18 +224,6 @@ u32 cnc_get_step_frequency(struct cnc *self);
  *              -EBUSY if the value cannot be set (e.g. driver is running)
  */
 int cnc_set_step_frequency(struct cnc *self, u32 freq);
-
-/**
- * Sets the motor lock mask, allowing motion on specific axes to be suppressed.
- * motor_lock_bits should be the bitwise OR of motor_lock_options enums.
- * (see openglow.h). Set to 0 to unlock all motors. (default)
- */
-int cnc_set_motor_lock(struct cnc *self, u32 motor_lock_bits);
-
-/**
- * Returns the current motor lock mask.
- */
-u32 cnc_get_motor_lock(struct cnc *self);
 
 /**
  * Called when the stepper driver's running state changes.
@@ -317,106 +307,100 @@ uint32_t cnc_buffer_max_backtrack_length(struct cnc *self);
 int cnc_buffer_clear(struct cnc *self, unsigned int flags);
 /** Flags for cnc_buffer_clear(). */
 enum cnc_buffer_clear_flag {
-  CNC_BUFFER_CLEAR_DATA = 1,
-  CNC_BUFFER_CLEAR_POSITION = 2
+        CNC_BUFFER_CLEAR_DATA = 1,
+        CNC_BUFFER_CLEAR_POSITION = 2
 };
 
 struct cnc_status {
-  enum cnc_state state:8;
-  int triggered_faults:8;
-  int decelerating:1; /* 1 if currently decelerating */
-  int accelerating:1; /* 1 if currently accelerating */
-  int decel_on_interrupt:1; /* if 1, start decel on SDMA interrupt */
-  int enable_laser_on_interrupt:1; /* if 1, enable laser on SDMA interrupt */
-  int reserved:12;
+        enum cnc_state state:8;
+        int ignore_limits:1;
+        int triggered_limits:8;
+        int decelerating:1; /* 1 if currently decelerating */
+        int accelerating:1; /* 1 if currently accelerating */
+        int decel_on_interrupt:1; /* if 1, start decel on SDMA interrupt */
+        int enable_laser_on_interrupt:1; /* if 1, enable laser on SDMA interrupt */
+        int reserved:11;
 } __attribute__((packed));
-
 
 /**
  * Private data members.
  */
 struct cnc {
-  /** Device that owns this data */
-  struct device *dev;
-  /** /dev/openglow; device for receiving pulse data from userspace. */
-  struct miscdevice pulsedev;
-  /** Pointer to dirent of "state" sysfs attribute */
-  struct kernfs_node *state_attr_node;
-  /** Lock to ensure mutually exclusive access to /dev/openglow. */
-  struct mutex lock;
-  /** Hardware timer. */
-  struct epit *epit;
-  /** Pointer to the contiguous array of pulse data. */
-  uint8_t *pulsebuf_virt; /* hi Jake! */
-  /** Physical address of the contiguous array of pulse data. */
-  dma_addr_t pulsebuf_phys;
-  /** Size in bytes of the contiguous array of pulse data. */
-  uint32_t pulsebuf_size;
-  /** Total bytes of pulse data enqueued since last clear */
-  uint32_t pulsebuf_total_bytes;
-  /** FIFO data structure (uses contiguous array as backing buffer) */
-  struct kfifo pulsebuf_fifo;
-  /** Step frequency (in Hz) for the current job. */
-  u32 step_freq;
-  /**
-   * If true, halt the driver if /dev/openglow is closed while in the
-   * running state.
-   */
-  bool deadman_switch_active;
-  /** SDMA script load address. (offset in bytes) */
-  u32 sdma_script_origin;
-  /** SDMA channel number. */
-  u32 sdma_ch_num;
-  /** Pointer to the SDMA engine. */
-  struct sdma_engine *sdma;
-  /** Pointer to the SDMA channel used by the driver. */
-  struct sdma_channel *sdmac;
-  /** The current state of the driver. */
-  volatile struct cnc_status status;
-  /**
-   * Spinlock used to protect the state variable, which is shared between main
-   * code (in kernel context) and the sdma channel and hrtimer callbacks (in
-   * tasklet context). Must use spin_lock_bh()/spin_unlock_bh().
-   */
-  spinlock_t status_lock;
-  /** GPIO pins. */
-  int gpios[NUM_GPIO_PINS];
-  /** Laser power PWM channel. */
-  struct pwm_channel laser_pwm;
-  /** 12V power supply. */
-  struct regulator *supply_12v;
-  /** 40V power supply. */
-  struct regulator *supply_40v;
-  /**
-   * A 1 bit in this field indicates that the associated fault should be
-   * suppressed.
-   */
-  volatile u32 ignored_faults;
-  /** Tasklet scheduled by fault interrupt handlers. */
-  struct tasklet_struct fault_tasklet;
-  /**
-   * Atomic bitfield indicating faults that have not been handled.
-   * If a fault needs to be asserted (esp. in hardirq context), use set_bit()
-   * to set the appropriate bit in this field, and then schedule fault_tasklet.
-   */
-  volatile unsigned long pending_faults;
-  /** Step frequency (in Hz) used during controlled accel/deceleration. */
-  u32 ramp_step_freq;
-  /**
-   * Amount (in Hz) to reduce the step frequency at each step of controlled
-   * acceleration/deceleration.
-   */
-  u32 ramp_step_freq_delta;
-  /** Timer that drives acceleration/deceleration updates. */
-  struct tasklet_hrtimer ramp_timer;
-  /** Toggles the hv watchdog during a cut to keep the laser on. */
-  struct hrtimer hv_wdog_timer;
+        /** Device that owns this data */
+        struct device *dev;
+        /** /dev/openglow; device for receiving pulse data from userspace. */
+        struct miscdevice pulsedev;
+        /** Pointer to dirent of "state" sysfs attribute */
+        struct kernfs_node *state_attr_node;
+        /** Lock to ensure mutually exclusive access to /dev/openglow. */
+        struct mutex lock;
+        /** Hardware timer. */
+        struct epit *epit;
+        /** Pointer to the contiguous array of pulse data. */
+        uint8_t *pulsebuf_virt; /* hi Jake! */
+        /** Physical address of the contiguous array of pulse data. */
+        dma_addr_t pulsebuf_phys;
+        /** Size in bytes of the contiguous array of pulse data. */
+        uint32_t pulsebuf_size;
+        /** Total bytes of pulse data enqueued since last clear */
+        uint32_t pulsebuf_total_bytes;
+        /** FIFO data structure (uses contiguous array as backing buffer) */
+        struct kfifo pulsebuf_fifo;
+        /** Step frequency (in Hz) for the current job. */
+        u32 step_freq;
+        /**
+        * If true, halt the driver if /dev/openglow is closed while in the
+        * running state.
+        */
+        bool deadman_switch_active;
+        /** SDMA script load address. (offset in bytes) */
+        u32 sdma_script_origin;
+        /** SDMA channel number. */
+        u32 sdma_ch_num;
+        /** Pointer to the SDMA engine. */
+        struct sdma_engine *sdma;
+        /** Pointer to the SDMA channel used by the driver. */
+        struct sdma_channel *sdmac;
+        /** The current state of the driver. */
+        volatile struct cnc_status status;
+        /**
+        * Spinlock used to protect the state variable, which is shared between main
+        * code (in kernel context) and the sdma channel and hrtimer callbacks (in
+        * tasklet context). Must use spin_lock_bh()/spin_unlock_bh().
+        */
+        spinlock_t status_lock;
+        /** GPIO pins. */
+        int gpios[NUM_GPIO_PINS];
+        /** Laser power PWM channel. */
+        struct pwm_channel laser_pwm;
+        /** 12V power supply. */
+        struct regulator *supply_12v;
+        /** 40V power supply. */
+        struct regulator *supply_40v;
+        /**
+        * Atomic bitfield indicating limits that have not been handled.
+        * If a limit needs to be asserted (esp. in hardirq context), use set_bit()
+        * to set the appropriate bit in this field, and then schedule limit_tasklet.
+        */
+        volatile unsigned long pending_limits;
+        /** Tasklet scheduled by limit interrupt handlers. */
+        struct tasklet_struct limit_tasklet;
+        /** Step frequency (in Hz) used during controlled accel/deceleration. */
+        u32 ramp_step_freq;
+        /**
+        * Amount (in Hz) to reduce the step frequency at each step of controlled
+        * acceleration/deceleration.
+        */
+        u32 ramp_step_freq_delta;
+        /** Timer that drives acceleration/deceleration updates. */
+        struct tasklet_hrtimer ramp_timer;
+        /** Toggles the hv watchdog during a cut to keep the laser on. */
+        struct hrtimer hv_wdog_timer;
 #if INSTALL_PANIC_HANDLER
-  /** Allows us to shut everything down if there's a panic */
-  struct notifier_block panic_notifier;
+        /** Allows us to shut everything down if there's a panic */
+        struct notifier_block panic_notifier;
 #endif
 };
-
 
 /* defined in cnc_api.c */
 extern const struct attribute_group cnc_attr_group;

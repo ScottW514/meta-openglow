@@ -34,18 +34,23 @@ const struct pin_config pin_configs[NUM_GPIO_PINS] = {
         [PIN_X_DIR]               = {"x-dir-gpio",           GPIOF_OUT_INIT_LOW},
         [PIN_X_DIAG0]             = {"x-diag0-gpio",         GPIOF_IN},
         [PIN_X_DIAG1]             = {"x-diag1-gpio",         GPIOF_IN},
+        [PIN_X_LIMIT_P]           = {"x-limit-p-gpio",       GPIOF_IN},
+        [PIN_X_LIMIT_N]           = {"x-limit-n-gpio",       GPIOF_IN},
         [PIN_Y1_STEP]             = {"y1-step-gpio",         GPIOF_OUT_INIT_LOW},
         [PIN_Y1_DIR]              = {"y1-dir-gpio",          GPIOF_OUT_INIT_LOW},
         [PIN_Y1_DIAG0]            = {"y1-diag0-gpio",        GPIOF_IN},
         [PIN_Y1_DIAG1]            = {"y1-diag1-gpio",        GPIOF_IN},
+        [PIN_Y1_LIMIT_P]          = {"y1-limit-p-gpio",      GPIOF_IN},
+        [PIN_Y1_LIMIT_N]          = {"y1-limit-n-gpio",      GPIOF_IN},
         [PIN_Y2_STEP]             = {"y2-step-gpio",         GPIOF_OUT_INIT_LOW},
         [PIN_Y2_DIR]              = {"y2-dir-gpio",          GPIOF_OUT_INIT_LOW},
         [PIN_Y2_DIAG0]            = {"y2-diag0-gpio",        GPIOF_IN},
         [PIN_Y2_DIAG1]            = {"y2-diag1-gpio",        GPIOF_IN},
+        [PIN_Y2_LIMIT_P]          = {"y2-limit-p-gpio",      GPIOF_IN},
+        [PIN_Y2_LIMIT_N]          = {"y2-limit-n-gpio",      GPIOF_IN},
         [PIN_Z_STEP]              = {"z-step-gpio",          GPIOF_OUT_INIT_LOW},
         [PIN_Z_DIR]               = {"z-dir-gpio",           GPIOF_OUT_INIT_LOW},
 };
-
 
 const pin_set cnc_sdma_step_dir_pin_set =
         (1ULL << PIN_X_STEP)  |

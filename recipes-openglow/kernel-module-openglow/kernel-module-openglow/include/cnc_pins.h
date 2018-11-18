@@ -37,19 +37,24 @@ enum {
         PIN_X_DIR,
         PIN_X_DIAG0,
         PIN_X_DIAG1,
+        PIN_X_LIMIT_P,
+        PIN_X_LIMIT_N,
         PIN_Y1_STEP,
         PIN_Y1_DIR,
         PIN_Y1_DIAG0,
         PIN_Y1_DIAG1,
+        PIN_Y1_LIMIT_P,
+        PIN_Y1_LIMIT_N,
         PIN_Y2_STEP,
         PIN_Y2_DIR,
         PIN_Y2_DIAG0,
         PIN_Y2_DIAG1,
+        PIN_Y2_LIMIT_P,
+        PIN_Y2_LIMIT_N,
         PIN_Z_STEP,
         PIN_Z_DIR,
         NUM_GPIO_PINS
 };
-
 
 /**
  * Pin changes to apply at startup after successful initialization.

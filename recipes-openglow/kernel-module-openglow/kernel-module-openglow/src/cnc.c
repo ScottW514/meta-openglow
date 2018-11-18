@@ -95,32 +95,25 @@ struct gpio_desc {
 #define STEP_FREQUENCY_RAMP_FACTOR            3
 
 
+#define NUM_LIMIT_SWITCHES 6
+
+static const pin_id limit_gpios[NUM_LIMIT_SWITCHES] = {
+        [LIMIT_X_P]  = PIN_X_LIMIT_P,
+        [LIMIT_X_N]  = PIN_X_LIMIT_N,
+        [LIMIT_Y1_P]  = PIN_Y1_LIMIT_P,
+        [LIMIT_Y1_N]  = PIN_Y1_LIMIT_N,
+        [LIMIT_Y2_P]  = PIN_Y2_LIMIT_P,
+        [LIMIT_Y2_N]  = PIN_Y2_LIMIT_N,
+};
+
+#define LIMIT_DEV_ID_FROM_CNC_AND_SIGNAL(dr, s) (void *)(((u32)dr) | (s & 3U))
+#define CNC_FROM_LIMIT_DEV_ID(dev_id) (struct cnc *)((u32)(dev_id) & (~3U))
+#define SIGNAL_FROM_LIMIT_DEV_ID(dev_id) ((u32)(dev_id) & 3U)
+
 static const struct pwm_channel_config laser_pwm_config = {
         "laser-pwm", BITS_TO_PERIOD_NS(LASER_PWM_BITS)
 };
 
-#define NUM_STEPPER_FAULT_SIGNALS 3
-
-static const pin_id stepper_fault_gpios[NUM_STEPPER_FAULT_SIGNALS] = {
-        [FAULT_X]  = 0,
-        [FAULT_Y1] = 0,
-        [FAULT_Y2] = 0
-};
-
-/**
- * Fatal fault conditions require the driver to stop immediately and enter the
- * FAULT state. If a non-fatal fault occurs, the driver will attept a controlled
- * deceleration and enter the IDLE state.
- */
-static const u32 fatal_fault_conditions =
-        (1 << FAULT_X) |
-        (1 << FAULT_Y1) |
-        (1 << FAULT_Y2);
-#define FAULT_IS_FATAL(num) (fatal_fault_conditions & (1<<(num)))
-
-#define FAULT_DEV_ID_FROM_CNC_AND_SIGNAL(dr, s) (void *)(((u32)dr) | (s & 3U))
-#define CNC_FROM_FAULT_DEV_ID(dev_id) (struct cnc *)((u32)(dev_id) & (~3U))
-#define SIGNAL_FROM_FAULT_DEV_ID(dev_id) ((u32)(dev_id) & 3U)
 
 static const u32 sdma_script[] = {
         0x09010b00, 0x69c80400, 0x69c84e00, 0x7d7350e7, 0x00bc52ef, 0x02bc00ca, 0x7d6d009e, 0x68106209,
@@ -238,8 +231,8 @@ int cnc_set_step_frequency(struct cnc *self, u32 freq)
 }
 
 
-/* Powers on the steppers without checking fault states */
-static void stepper_power_on_unchecked(struct cnc *self)
+/* Powers on the steppers */
+static void stepper_power_on(struct cnc *self)
 {
         if (!regulator_is_enabled(self->supply_40v)) {
                 if (regulator_enable(self->supply_40v)) {
@@ -249,27 +242,6 @@ static void stepper_power_on_unchecked(struct cnc *self)
                 }
         }
         io_change_pins(self->gpios, NUM_GPIO_PINS, cnc_startup_pin_changes);
-}
-
-
-static int _stepper_power_on(struct cnc *self, int faults)
-{
-        /* Don't power on the steppers if the drivers are asserting a fault. */
-        /* (It's possible that *enabling* the steppers and the 40V supply could */
-        /* trigger a fault, but in that case, they'll be disabled immediately.) */
-        if (faults & fatal_fault_conditions) {
-                dev_err(self->dev, "driver(s) in fault state; not powering on");
-                return -1;
-        }
-        stepper_power_on_unchecked(self);
-        return 0;
-}
-
-
-/* acquires status_lock */
-__maybe_unused static int stepper_power_on(struct cnc *self)
-{
-        return _stepper_power_on(self, cnc_triggered_faults(self));
 }
 
 
@@ -469,12 +441,13 @@ struct cnc_run_options {
         unsigned int preserve_power:1;
 } __attribute__((packed));
 
+
 /**
  * Used for run, backtrack, and resume.
  * Idle: start cutting if there is data
  * Running: do nothing
  * Disabled: enable the steppers and start cutting
- * Fault: do nothing (error state must be explicitly cleared)
+ * Limit: error
  */
 static int cnc_run_with_options(struct cnc *self, struct cnc_run_options opts)
 {
@@ -486,9 +459,9 @@ static int cnc_run_with_options(struct cnc *self, struct cnc_run_options opts)
                         ret = -EPERM;
                         break;
 
-                case STATE_FAULT:
+                case STATE_LIMIT:
                         default:
-                        dev_err(self->dev, "cannot start in fault state");
+                        dev_err(self->dev, "cannot start in limit state");
                         ret = -EPERM;
                         break;
 
@@ -544,14 +517,14 @@ static int cnc_run_with_options(struct cnc *self, struct cnc_run_options opts)
                         return ret;
                 }
 
-                /* We could have transitioned to FAULT between the start of the function */
-                /* and now, so we have to lock and check the fault state. */
-                /* If a fault occurs during the execution of this block, we'll get a */
+                /* We could have transitioned to LIMIT between the start of the function */
+                /* and now, so we have to lock and check the limit state. */
+                /* If a limit occurs during the execution of this block, we'll get a */
                 /* callback immediately after we release the lock, which will transition */
-                /* the driver to the FAULT state. */
+                /* the driver to the LIMIT state. */
                 spin_lock_bh(&self->status_lock);
-                if (self->status.triggered_faults) {
-                        dev_err(self->dev, "attempt to start in fault state");
+                if (self->status.triggered_limits) {
+                        dev_err(self->dev, "attempt to start in limit state");
                         ret = -EPERM;
                 } else {
                         bool enable_laser_on_interrupt = (opts.accelerate && !opts.backward);
@@ -559,14 +532,11 @@ static int cnc_run_with_options(struct cnc *self, struct cnc_run_options opts)
                         self->status.decel_on_interrupt = opts.decelerate;
                         self->status.enable_laser_on_interrupt = enable_laser_on_interrupt;
 
-                        /* clear all fault conditions */
-                        self->status.triggered_faults &= fatal_fault_conditions;
-
                         cnc_notify_state_changed(self);
 
                         dev_dbg(self->dev, "starting cut...");
                         /* Ensure the steppers are powered up */
-                        stepper_power_on_unchecked(self);
+                        stepper_power_on(self);
                         if (!opts.preserve_power) {
                                 io_pwm_set_duty_cycle(&self->laser_pwm, LASER_PWM_IDLE_DUTY);
                         }
@@ -644,7 +614,7 @@ int cnc_resume(struct cnc *self, uint32_t laser_delay_steps)
  * Idle: do nothing
  * Running: stop cut
  * Disabled: do nothing (remain in disabled state)
- * Fault: do nothing (return error)
+ * Limit: error
  */
 int cnc_stop(struct cnc *self)
 {
@@ -655,7 +625,6 @@ int cnc_stop(struct cnc *self)
                 case STATE_IDLE:
                 case STATE_DISABLED:
                         break;
-                case STATE_FAULT:
                 case STATE_RUNNING:
                         /* Start a controlled deceleration. */
                         _cnc_decel_start(self);
@@ -671,10 +640,10 @@ int cnc_stop(struct cnc *self)
 
 
 /**
- * Idle: power off steppers
+ * Idle: stop everything and power off steppers
  * Running: stop everything and power off steppers
  * Disabled: do nothing
- * Fault: do nothing
+ * Limit: error
  */
 int cnc_disable(struct cnc *self)
 {
@@ -686,7 +655,6 @@ int cnc_disable(struct cnc *self)
                         _driver_stop(self, STATE_DISABLED);
                         break;
                 case STATE_DISABLED:
-                case STATE_FAULT:
                         break;
                 default:
                         ret = -EPERM;
@@ -701,7 +669,7 @@ int cnc_disable(struct cnc *self)
  * Idle: do nothing
  * Running: error
  * Disabled: enable steppers
- * Fault: error (TODO)
+ * Limit: error
  */
 int cnc_enable(struct cnc *self)
 {
@@ -709,14 +677,36 @@ int cnc_enable(struct cnc *self)
         spin_lock_bh(&self->status_lock);
         switch (self->status.state) {
                 case STATE_DISABLED:
-                        if (_stepper_power_on(self, self->status.triggered_faults) == 0) {
-                                self->status.state = STATE_IDLE;
-                                cnc_notify_state_changed(self);
-                        } else {
-                                ret = -EPERM;
-                        }
+                        stepper_power_on(self);
+                        self->status.state = STATE_IDLE;
+                        cnc_notify_state_changed(self);
                         break;
                 case STATE_IDLE:
+                        break;
+                default:
+                        ret = -EPERM;
+                        break;
+        }
+        spin_unlock_bh(&self->status_lock);
+        return ret;
+}
+
+
+/**
+ * Idle: error
+ * Running: error
+ * Disabled: error
+ * Limit: Sets state to IDLE
+ */
+int cnc_ignore_limits(struct cnc *self)
+{
+        int ret = 0;
+        spin_lock_bh(&self->status_lock);
+        switch (self->status.state) {
+                case STATE_LIMIT:
+                        stepper_power_on(self);
+                        self->status.state = STATE_IDLE;
+                        cnc_notify_state_changed(self);
                         break;
                 default:
                         ret = -EPERM;
@@ -731,7 +721,7 @@ int cnc_enable(struct cnc *self)
  * Idle: take step
  * Running: error
  * Disabled: take step
- * Fault: error (TODO)
+ * Limit: take step
  */
 int cnc_single_step(struct cnc *self, bool direction, int step_pin, int dir_pin)
 {
@@ -740,7 +730,6 @@ int cnc_single_step(struct cnc *self, bool direction, int step_pin, int dir_pin)
         spin_lock_bh(&self->status_lock);
         switch (self->status.state) {
                 case STATE_RUNNING:
-                case STATE_FAULT:
                         ret = -EPERM;
                         break;
                 default:
@@ -757,65 +746,70 @@ int cnc_single_step(struct cnc *self, bool direction, int step_pin, int dir_pin)
         dir_gpio = self->gpios[dir_pin];
 
         gpio_set_value(dir_gpio, direction);
+        udelay(2); /* DRV8824 wants a minimum 2us pulse duration */
         gpio_set_value(step_gpio, 1);
-        udelay(4); /* DRV8824 wants a minimum 2us pulse duration */
+        udelay(5); /* DRV8824 wants a minimum 2us pulse duration */
         gpio_set_value(step_gpio, 0);
-        gpio_set_value(dir_gpio, 0);
         return 0;
 }
+
 
 /**
  * Idle: take step on x axis
  * Running: error
  * Disabled: take step
- * Fault: error (TODO)
+ * Limit: take step
  */
 int cnc_single_x_step(struct cnc *self, bool direction)
 {
         return cnc_single_step(self, direction, PIN_X_STEP, PIN_X_DIR);
 }
 
+
 /**
  * Idle: take step on both y axis steppers
  * Running: error
  * Disabled: take step
- * Fault: error (TODO)
+ * Limit: take step
  */
 int cnc_single_y_step(struct cnc *self, bool direction)
 {
         int ret;
-        ret = cnc_single_y1_step(self, direction);
+        ret = cnc_single_y1_step(self, (direction) ? 0 : 1);
         if (ret < 0) return ret;
         return cnc_single_y2_step(self, direction);
 }
+
 
 /**
  * Idle: take step on y1 axis
  * Running: error
  * Disabled: take step
- * Fault: error (TODO)
+ * Limit: take step
  */
 int cnc_single_y1_step(struct cnc *self, bool direction)
 {
         return cnc_single_step(self, direction, PIN_Y1_STEP, PIN_Y1_DIR);
 }
 
+
 /**
  * Idle: take step on y2 axis
  * Running: error
  * Disabled: take step
- * Fault: error (TODO)
+ * Limit: take step
  */
 int cnc_single_y2_step(struct cnc *self, bool direction)
 {
         return cnc_single_step(self, direction, PIN_Y2_STEP, PIN_Y2_DIR);
 }
 
+
 /**
  * Idle: take step on z axis
  * Running: error
  * Disabled: take step
- * Fault: error (TODO)
+ * Limit: take step
  */
 int cnc_single_z_step(struct cnc *self, bool direction)
 {
@@ -908,7 +902,7 @@ const char *cnc_string_for_state(enum cnc_state st)
                 case STATE_IDLE: return "idle";
                 case STATE_RUNNING: return "running";
                 case STATE_DISABLED: return "disabled";
-                case STATE_FAULT: return "fault";
+                case STATE_LIMIT: return "limit";
                 default: return "unknown";
         }
 }
@@ -920,106 +914,132 @@ const char *cnc_state_string(struct cnc *self)
 }
 
 
-u32 cnc_triggered_faults(struct cnc *self)
-{
-        u32 ret;
-        spin_lock_bh(&self->status_lock);
-        ret = self->status.triggered_faults;
-        spin_unlock_bh(&self->status_lock);
-        return ret;
-}
-
-
 ssize_t cnc_print_sdma_context(struct cnc *self, char *buf)
 {
         return sdma_print_context(self->sdma, self->sdma_ch_num, buf);
 }
 
 
-int cnc_set_motor_lock(struct cnc *self, u32 motor_lock_bits)
+const char *cnc_string_for_limit(u32 limit)
 {
-        /* Convert argument to a GPIO port bitmask. */
-        u32 lock_val = 0;
-        if (motor_lock_bits & MOTOR_LOCK_X)  { lock_val |= (1 << PIN_FROM_GPIO(self->gpios[PIN_X_STEP])); }
-        if (motor_lock_bits & MOTOR_LOCK_Y1) { lock_val |= (1 << PIN_FROM_GPIO(self->gpios[PIN_Y1_STEP])); }
-        if (motor_lock_bits & MOTOR_LOCK_Y2) { lock_val |= (1 << PIN_FROM_GPIO(self->gpios[PIN_Y2_STEP])); }
-        if (motor_lock_bits & MOTOR_LOCK_Z)  { lock_val |= (1 << PIN_FROM_GPIO(self->gpios[PIN_Z_STEP])); }
-        return sdma_set_reg(self->sdmac, &lock_val, ca);
-}
-
-
-u32 cnc_get_motor_lock(struct cnc *self)
-{
-        u32 lock_val = 0, retval = 0;
-        if (sdma_get_reg(self->sdmac, &lock_val, ca)) {
-                return 0;
+        switch (limit) {
+                case LIMIT_X_P: return "x-axis positive";
+                case LIMIT_X_N: return "x-axis negative";
+                case LIMIT_Y1_P: return "y1-axis positive";
+                case LIMIT_Y1_N: return "y1-axis negative";
+                case LIMIT_Y2_P: return "y2-axis positive";
+                case LIMIT_Y2_N: return "y2-axis negative";
+                default: return "unknown";
         }
-        /* Extract bits from the GPIO port bitmask. */
-        if (lock_val & (1 << PIN_FROM_GPIO(self->gpios[PIN_X_STEP])))  { retval |= MOTOR_LOCK_X; }
-        if (lock_val & (1 << PIN_FROM_GPIO(self->gpios[PIN_Y1_STEP]))) { retval |= MOTOR_LOCK_Y1; }
-        if (lock_val & (1 << PIN_FROM_GPIO(self->gpios[PIN_Y2_STEP]))) { retval |= MOTOR_LOCK_Y2; }
-        if (lock_val & (1 << PIN_FROM_GPIO(self->gpios[PIN_Z_STEP])))  { retval |= MOTOR_LOCK_Z; }
-        return retval;
 }
 
 
-static void fault_tasklet_fn(unsigned long data)
+static void limit_tasklet_fn(unsigned long data)
 {
         /* We don't need to protect the status field in this function */
         /* (see note in ramp_update_tasklet_fn()) */
         struct cnc *self = (struct cnc *)data;
-        bool need_to_halt = false;
         int bit;
 
-        /* Process each pending fault condition. */
-        /* If a fatal fault has occurred, stop the driver immediately. */
-        /* If a non-fatal fault has occurred, and the driver is running, */
+        /* Process each pending limit condition. */
+        /* If a limit has occurred, and the driver is running, */
         /* attempt a controlled deceleration. */
-        for (bit = 0; bit < NUM_FAULT_CONDITIONS; bit++) {
+        for (bit = 0; bit < NUM_LIMIT_SWITCHES; bit++) {
                 /* test_and_clear_bit() is atomic */
-                if (test_and_clear_bit(bit, &self->pending_faults)) {
-                        dev_err(self->dev, "fault %d", (1 << bit));
-                        self->status.triggered_faults |= (1 << bit);
-                        if (FAULT_IS_FATAL(bit)) {
-                                need_to_halt = true;
-                        }
+                if (test_and_clear_bit(bit, &self->pending_limits)) {
+                        dev_err(self->dev, "limit %d", (1 << bit));
+                        self->status.triggered_limits |= (1 << bit);
                 }
         }
 
-        /* sanity check: don't stop if no faults have occurred */
-        if (self->status.triggered_faults) {
-                if (need_to_halt) {
-                        dev_err(self->dev, "critical fault occurred: emergency stop");
-                        _driver_stop(self, STATE_FAULT);
-                } else if (self->status.state == STATE_RUNNING) {
-                        _cnc_decel_start(self);
+        if (self->status.triggered_limits) {
+                if (self->status.state == STATE_RUNNING) {
+                        _driver_stop(self, STATE_LIMIT);
+                } else if (self->status.state != STATE_LIMIT) {
+                        self->status.state = STATE_LIMIT;
+                        cnc_notify_state_changed(self);
                 }
+        } else if (self->status.state == STATE_LIMIT) {
+                self->status.state = STATE_IDLE;
+                cnc_notify_state_changed(self);
         }
-}
-
-
-static inline void cnc_assert_fault(struct cnc *self, int fault_num)
-{
-        /* set_bit() is atomic */
-        set_bit(fault_num, &self->pending_faults);
-        tasklet_hi_schedule(&self->fault_tasklet);
 }
 
 
 /**
- * Handles FAULT falling edges.
- * Lower 2 bits of dev_id encode the fault signal that was asserted.
+ * Handles Limit switch falling edges.
+ * Lower 2 bits of dev_id encode the limit switch that was tripped.
  */
-static irqreturn_t cnc_fault_irq_handler(int irq, void *dev_id)
+static irqreturn_t cnc_limit_irq_handler(int irq, void *dev_id)
 {
-        // TODO Will be implemented as part of Trinamic driver development
+        struct cnc *self = CNC_FROM_LIMIT_DEV_ID(dev_id);
+        u32 limit_num = SIGNAL_FROM_LIMIT_DEV_ID(dev_id);
+        int pin, gpio;
+
+        if (limit_num >= NUM_LIMIT_SWITCHES) {
+                return IRQ_HANDLED;
+        }
+
+        /* De-glitch: only limit if the gpio is actually low */
+        pin = limit_gpios[limit_num];
+        gpio = self->gpios[pin];
+        if (gpio_get_value(gpio) != 0) {
+                dev_err(self->dev, "limit cleared on %s(%d)",
+                        cnc_string_for_limit(limit_num), limit_num);
+                        self->status.triggered_limits &= ~(1 << limit_num);;
+        } else {
+                dev_err(self->dev, "limit detected on %s(%d)!",
+                        cnc_string_for_limit(limit_num), limit_num);
+                        set_bit(limit_num, &self->pending_limits);
+        }
+        tasklet_hi_schedule(&self->limit_tasklet);
         return IRQ_HANDLED;
 }
 
 
-static int cnc_register_fault_irqs(struct cnc *self)
+static int cnc_register_limit_irqs(struct cnc *self)
 {
-        // TODO Will be implemented as part of Trinamic driver development
+        int i;
+        int limit_irqs[NUM_LIMIT_SWITCHES];
+        int initial_limit_state = 0;
+
+        /* Read the initial limit states and look up the irq numbers */
+        for (i = 0; i < NUM_LIMIT_SWITCHES; i++) {
+                int pin_id = limit_gpios[i];
+                int gpio = self->gpios[pin_id];
+                int irq = gpio_to_irq(gpio);
+                if (irq < 0) {
+                        dev_err(self->dev, "gpio %d has no irq", gpio);
+                        return irq;
+                }
+                limit_irqs[i] = irq;
+                /* Limit signals are active low */
+                initial_limit_state |= ((gpio_get_value(self->gpios[pin_id]) == 0) << i);
+        }
+
+        /* Are we initially in a limit state? */
+        spin_lock_bh(&self->status_lock);
+        if (initial_limit_state) {
+                self->status.state = STATE_LIMIT;
+        }
+        spin_unlock_bh(&self->status_lock);
+
+        /* Register interrupt handlers */
+        for (i = 0; i < NUM_LIMIT_SWITCHES; i++) {
+                int pin_id = limit_gpios[i];
+                int irq = limit_irqs[i];
+                /* Encode the limit switch number in the lower 2 bits of the dev_id. */
+                int ret = devm_request_irq(self->dev,
+                irq,
+                cnc_limit_irq_handler,
+                IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING,
+                pin_configs[pin_id].name,
+                LIMIT_DEV_ID_FROM_CNC_AND_SIGNAL(self, i));
+                if (ret) {
+                        dev_err(self->dev, "devm_request_irq(%d) failed: %d", irq, ret);
+                        return ret;
+                }
+        }
         return 0;
 }
 
@@ -1054,7 +1074,7 @@ int cnc_probe(struct platform_device *pdev)
 
         mutex_init(&self->lock);
         spin_lock_init(&self->status_lock);
-        tasklet_init(&self->fault_tasklet, fault_tasklet_fn, (unsigned long)self);
+        tasklet_init(&self->limit_tasklet, limit_tasklet_fn, (unsigned long)self);
         cnc_set_step_frequency(self, STEP_FREQUENCY_DEFAULT);
         tasklet_hrtimer_init(&self->ramp_timer, ramp_update_tasklet_fn, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
         hrtimer_init(&self->hv_wdog_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
@@ -1148,10 +1168,10 @@ int cnc_probe(struct platform_device *pdev)
                 goto failed_regulator_get;
         }
 
-        /* Register fault interrupt handlers */
-        ret = cnc_register_fault_irqs(self);
+        /* Register limit interrupt handlers */
+        ret = cnc_register_limit_irqs(self);
         if (ret) {
-                goto failed_register_fault_irqs;
+                goto failed_register_limit_irqs;
         }
 
         /* Create sysfs attributes */
@@ -1190,7 +1210,7 @@ int cnc_probe(struct platform_device *pdev)
 failed_create_link:
         sysfs_remove_group(&pdev->dev.kobj, &cnc_attr_group);
 failed_create_group:
-failed_register_fault_irqs:
+failed_register_limit_irqs:
 failed_regulator_get:
         misc_deregister(&self->pulsedev);
 failed_pulsedev_register:
@@ -1230,7 +1250,7 @@ int cnc_remove(struct platform_device *pdev)
         misc_deregister(&self->pulsedev);
         cnc_buffer_destroy(self);
         mutex_destroy(&self->lock);
-        tasklet_kill(&self->fault_tasklet);
+        tasklet_kill(&self->limit_tasklet);
         flush_scheduled_work();
         dev_info(&pdev->dev, "%s: done", __func__);
         return 0;
