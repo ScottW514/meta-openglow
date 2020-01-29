@@ -1,0 +1,65 @@
+linux-glowforge: Add Glowforge Prescaler Modifications to iMX PWM driver
+
+Modifications to read additional prescaler from device tree.
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Scott Wiederhold <s.e.wiederhold@gmail.com>
+
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -8,6 +8,9 @@
+  * published by the Free Software Foundation.
+  *
+  * Derived from pxa PWM driver by eric miao <eric.miao@marvell.com>
++ *
++ * Modifications to read additional prescaler from device tree are
++ * copyright (C) 2015-2018 Glowforge, Inc. <opensource@glowforge.com>
+  */
+
+ #include <linux/module.h>
+@@ -54,6 +57,8 @@
+ 	struct clk	*clk_per;
+ 	struct clk	*clk_ipg;
+ 	struct clk	*clk_32k;
++
++	u32 extra_prescale;
+
+ 	void __iomem	*mmio_base;
+
+@@ -252,7 +257,7 @@
+ 		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
+ 		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+
+-		cr = MX3_PWMCR_PRESCALER(prescale) |
++		cr = MX3_PWMCR_PRESCALER(prescale*imx->extra_prescale) |
+ 		     MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
+ 		     MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH |
+ 		     MX3_PWMCR_EN;
+@@ -338,6 +343,11 @@
+ 	imx->clk_32k = devm_clk_get(&pdev->dev, "32k");
+ 	if (IS_ERR(imx->clk_32k))
+ 		imx->clk_32k = NULL;
++
++	if (of_property_read_u32(pdev->dev.of_node, "fsl,extra-prescale",
++		&imx->extra_prescale)) {
++			imx->extra_prescale = 1;
++	}
+
+ 	imx->chip.ops = data->ops;
+ 	imx->chip.dev = &pdev->dev;
+--- a/Documentation/devicetree/bindings/pwm/imx-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
+@@ -14,6 +14,12 @@
+ 	Documentation/devicetree/bindings/clock/clock-bindings.txt
+ - interrupts: The interrupt for the pwm controller
+
++Optional properties:
++- fsl,extra-prescale: additional frequency divider. The effective output
++  period is equal to period_ns times this value. Defaults to 1. Can be used to
++  decrease the signal output frequency without affecting the range of valid
++  duty cycle values.
++
+ Example:
+
+ pwm1: pwm@53fb4000 {

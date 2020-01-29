@@ -1,0 +1,60 @@
+linux-openglow: Add Glowforge EPIT API
+
+Modifications to port Glowforge EPIT API to 4.9.xx kernel.
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Scott Wiederhold <s.e.wiederhold@gmail.com>
+
+diff -u a/drivers/clk/imx/clk-imx6q.c b/drivers/clk/imx/clk-imx6q.c
+--- a/drivers/clk/imx/clk-imx6q.c
++++ b/drivers/clk/imx/clk-imx6q.c
+@@ -839,6 +839,8 @@
+ 	else
+ 		clk[IMX6Q_CLK_ECSPI5] = imx_clk_gate2("ecspi5",        "ecspi_root",        base + 0x6c, 8);
+ 	clk[IMX6QDL_CLK_ENET]         = imx_clk_gate2("enet",          "ipg",               base + 0x6c, 10);
++	clk[IMX6QDL_CLK_EPIT1]        = imx_clk_gate2("epit1",         "ipg",               base + 0x6c, 12);
++	clk[IMX6QDL_CLK_EPIT2]        = imx_clk_gate2("epit2",         "ipg",               base + 0x6c, 14);
+ 	clk[IMX6QDL_CLK_ESAI_EXTAL]   = imx_clk_gate2_shared("esai_extal",   "esai_podf",   base + 0x6c, 16, &share_count_esai);
+ 	clk[IMX6QDL_CLK_ESAI_IPG]     = imx_clk_gate2_shared("esai_ipg",   "ahb",           base + 0x6c, 16, &share_count_esai);
+ 	clk[IMX6QDL_CLK_ESAI_MEM]     = imx_clk_gate2_shared("esai_mem", "ahb",             base + 0x6c, 16, &share_count_esai);
+diff -u a/include/dt-bindings/clock/imx6qdl-clock.h b/include/dt-bindings/clock/imx6qdl-clock.h
+--- a/include/dt-bindings/clock/imx6qdl-clock.h
++++ b/include/dt-bindings/clock/imx6qdl-clock.h
+@@ -278,6 +278,8 @@
+ #define IMX6QDL_CLK_LDB_DI1_DIV_SEL		265
+ #define IMX6QDL_CLK_DCIC1			266
+ #define IMX6QDL_CLK_DCIC2			267
+-#define IMX6QDL_CLK_END				268
++#define IMX6QDL_CLK_EPIT1			268
++#define IMX6QDL_CLK_EPIT2			269
++#define IMX6QDL_CLK_END				270
+
+ #endif /* __DT_BINDINGS_CLOCK_IMX6QDL_H */
+diff -u a/arch/arm/mach-imx/Kconfig b/arch/arm/mach-imx/Kconfig
+--- a/arch/arm/mach-imx/Kconfig
++++ b/arch/arm/mach-imx/Kconfig
+@@ -43,6 +43,12 @@
+ 	  don't have a reason to do so as the EPIT has the same features and
+ 	  uses the same clocks as the GPT. Anyway, on some systems the GPT
+ 	  may be in use for other purposes.
++
++config MXC_EPIT_API
++	bool "Allow EPIT1/EPIT2 to be used in kernel modules"
++	depends on !MXC_USE_EPIT
++	help
++		Exposes an API for EPIT1/EPIT2.
+
+ config HAVE_IMX_RNG
+        bool
+diff -u a/arch/arm/mach-imx/Makefile b/arch/arm/mach-imx/Makefile
+--- a/arch/arm/mach-imx/Makefile
++++ b/arch/arm/mach-imx/Makefile
+@@ -21,6 +21,7 @@
+ obj-$(CONFIG_MXC_AVIC) += avic.o
+
+ obj-$(CONFIG_MXC_USE_EPIT) += epit.o
++obj-$(CONFIG_MXC_EPIT_API) += epit_api.o
+ obj-$(CONFIG_MXC_DEBUG_BOARD) += 3ds_debugboard.o
+
+ ifeq ($(CONFIG_CPU_IDLE),y)

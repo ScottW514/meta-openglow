@@ -1,1 +1,2 @@
 PACKAGECONFIG = "jpeg"
+COMPATIBLE_MACHINE = "openglow_std"

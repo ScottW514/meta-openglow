@@ -1,1 +1,2 @@
 PACKAGECONFIG = ""
+COMPATIBLE_MACHINE = "openglow_std"

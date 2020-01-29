@@ -1,0 +1,224 @@
+/*
+* Copyright (C) 2020 Scott Wiederhold <s.e.wiederhold@gmail.com>
+* Copyright (C) 2015 Glowforge, Inc. <opensource@glowforge.com>
+ * Based on work by Rabeeh Khoury and Russell King.
+ */
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include "imx6dl.dtsi"
+#include "openglow_common.dtsi"
+
+/ {
+	model = "Glowforge Control Board Core";
+	compatible = "glowforge,imx6dl-glowforge", "fsl,imx6dl";
+
+	/* An i.MX6 Solo is a DualLite with only one core. */
+	cpus {
+		/delete-node/ cpu@1;
+	};
+
+	chosen {
+		bootargs = "quiet console=ttymxc0,115200 root=/dev/mmcblk1p1 rw";
+	};
+
+	aliases {
+	};
+
+	regulators {
+		compatible = "simple-bus";
+
+		reg_3p3v: 3p3v {
+			compatible = "regulator-fixed";
+			regulator-name = "3p3v";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-always-on;
+		};
+
+		reg_wlan: wlan-vbus {
+			compatible = "regulator-fixed";
+			regulator-name = "wlan-en-regulator";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			/* WLAN_EN GPIO */
+			gpio = <&gpio5 26 0>;
+			/* WLAN card specific delay */
+			startup-delay-us = <70000>;
+			enable-active-high;
+		};
+
+		reg_12v: 12v {
+			compatible = "regulator-fixed";
+			enable-active-high;
+			regulator-boot-on;
+			gpio = <&gpio5 8 0>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&pinctrl_12v>;
+			regulator-name = "12v";
+			regulator-min-microvolt = <12000000>;
+			regulator-max-microvolt = <12000000>;
+      regulator-always-on;
+		};
+
+		reg_40v: 40v {
+			compatible = "regulator-fixed";
+			enable-active-high;
+			gpio = <&gpio5 17 0>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&pinctrl_40v>;
+			regulator-name = "40v";
+			regulator-min-microvolt = <40000000>;
+			regulator-max-microvolt = <40000000>;
+		};
+
+		control_12v: control_12v {
+			compatible = "reg-userspace-consumer";
+			regulator-name = "control_12v";
+			regulator-boot-on;
+			regulator-supplies = "12v";
+			12v-supply = <&reg_12v>;
+		};
+	};
+};
+
+
+&iomuxc {
+	compatible: fsl,imx6sl-iomuxc;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_hog>;
+
+	glowforge {
+		pinctrl_hog: hog {
+			fsl,pins = <
+				MX6QDL_PAD_CSI0_DAT8__GPIO5_IO26  WEAK_PULLDOWN /* WL_EN */
+				MX6QDL_PAD_CSI0_DAT18__GPIO6_IO04 WEAK_PULLDOWN /* WL_IRQ */
+			>;
+		};
+
+		pinctrl_uart1: glowforge_uart1 {
+			fsl,pins = <
+				MX6QDL_PAD_CSI0_DAT10__UART1_TX_DATA UART_PAD_CTRL
+				MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA UART_PAD_CTRL
+			>;
+		};
+
+		pinctrl_12v: glowforge_12v {
+			fsl,pins = <MX6QDL_PAD_DISP0_DAT14__GPIO5_IO08 WEAK_PULLUP>;
+		};
+
+		pinctrl_40v: glowforge_40v {
+			fsl,pins = <MX6QDL_PAD_DISP0_DAT23__GPIO5_IO17 WEAK_PULLUP>;
+		};
+
+		pinctrl_usdhc2_aux: glowforge_usdhc2_aux {
+			fsl,pins = <
+				MX6QDL_PAD_GPIO_4__GPIO1_IO04    0x1f071
+			>;
+		};
+
+		pinctrl_usdhc1: glowforge_usdhc1 {
+			fsl,pins = <
+				MX6QDL_PAD_SD1_CMD__SD1_CMD    0x17069
+				MX6QDL_PAD_SD1_CLK__SD1_CLK    0x10069
+				MX6QDL_PAD_SD1_DAT0__SD1_DATA0 0x17069
+				MX6QDL_PAD_SD1_DAT1__SD1_DATA1 0x17069
+				MX6QDL_PAD_SD1_DAT2__SD1_DATA2 0x17069
+				MX6QDL_PAD_SD1_DAT3__SD1_DATA3 0x17069
+			>;
+		};
+
+		pinctrl_usdhc2: glowforge_usdhc2 {
+			fsl,pins = <
+				MX6QDL_PAD_SD2_CMD__SD2_CMD    USDHC_PAD_CTRL
+				MX6QDL_PAD_SD2_CLK__SD2_CLK    USDHC_PAD_CTRL
+				MX6QDL_PAD_SD2_DAT0__SD2_DATA0 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD2_DAT1__SD2_DATA1 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD2_DAT2__SD2_DATA2 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD2_DAT3__SD2_DATA3 USDHC_PAD_CTRL
+			>;
+		};
+
+		pinctrl_usdhc3: usdhc3grp {
+			fsl,pins = <
+				MX6QDL_PAD_SD3_CMD__SD3_CMD    USDHC_PAD_CTRL
+				MX6QDL_PAD_SD3_CLK__SD3_CLK    USDHC_PAD_CTRL
+				MX6QDL_PAD_SD3_DAT0__SD3_DATA0 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD3_DAT1__SD3_DATA1 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD3_DAT2__SD3_DATA2 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD3_DAT3__SD3_DATA3 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD3_DAT4__SD3_DATA4 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD3_DAT5__SD3_DATA5 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD3_DAT6__SD3_DATA6 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD3_DAT7__SD3_DATA7 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD3_RST__SD3_RESET  WEAK_PULLUP
+			>;
+		};
+	};
+};
+
+&uart1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart1>;
+	status = "okay";
+};
+
+/* WL1805 */
+&usdhc1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usdhc1>;
+	bus-width = <4>;
+	no-1-8-v;
+	keep-power-in-suspend;
+	enable-sdio-wakeup;
+	vmmc-supply = <&reg_wlan>;
+	non-removable;
+	cap-power-off-card;
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	wlcore: wlcore@0 {
+		compatible = "ti,wl1805";
+		reg = <2>;
+		interrupt-parent = <&gpio6>;
+		interrupts = <4 IRQ_TYPE_EDGE_RISING>;
+	};
+};
+
+/* SD card */
+&usdhc2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usdhc2>;
+  broken-cd;
+  no-1-8-v;
+  keep-power-in-suspend;
+  enable-sdio-wakeup;
+	status = "okay";
+};
+
+/* eMMC */
+&usdhc3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usdhc3>;
+	bus-width = <8>;
+	non-removable;
+	no-1-8-v;
+	keep-power-in-suspend;
+	cd-gpios = <>;
+	wp-gpios = <>;
+	status = "okay";
+};
+
+/* Possibly remove this */
+&gpc {
+	fsl,cpu_pupscr_sw2iso = <0xf>;
+	fsl,cpu_pupscr_sw = <0xf>;
+	fsl,cpu_pdnscr_iso2sw = <0x1>;
+	fsl,cpu_pdnscr_iso = <0x1>;
+};
+
+/* Possibly remove this */
+&wdog1 {
+	fsl,default-timeout = <65>;
+	fsl,default-pretimeout = <5>;
+};

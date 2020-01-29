@@ -1,0 +1,29 @@
+u-boot: Add Glowforge Board to Arch Kconfig
+
+This adds the Glowforge board to the proper
+arch Kconfig.
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Scott Wiederhold <s.e.wiederhold@gmail.com>
+
+--- a/arch/arm/mach-imx/mx6/Kconfig
++++ b/arch/arm/mach-imx/mx6/Kconfig
+@@ -201,6 +201,9 @@
+ 	select BOARD_LATE_INIT
+ 	select MX6Q
+
++config TARGET_GLOWFORGE
++	bool "openglow_std"
++
+ config TARGET_GW_VENTANA
+ 	bool "gw_ventana"
+ 	select MX6QDL
+@@ -586,6 +589,7 @@
+ source "board/freescale/mx6sxsabreauto/Kconfig"
+ source "board/freescale/mx6ul_14x14_evk/Kconfig"
+ source "board/freescale/mx6ullevk/Kconfig"
++source "board/openglow/openglow_std/Kconfig"
+ source "board/grinn/liteboard/Kconfig"
+ source "board/phytec/pcm058/Kconfig"
+ source "board/phytec/pfla02/Kconfig"

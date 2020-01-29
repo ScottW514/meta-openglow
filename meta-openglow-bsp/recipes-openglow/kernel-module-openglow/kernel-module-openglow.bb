@@ -18,3 +18,4 @@ do_install() {
 	install -d ${D}/lib/modules/${KERNEL_VERSION}/extras/
 	install -m 0644 *.ko ${D}/lib/modules/${KERNEL_VERSION}/extras/
 }
+COMPATIBLE_MACHINE = "openglow_std"
