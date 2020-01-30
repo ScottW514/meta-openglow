@@ -6,6 +6,7 @@ SRCREV = "0f549d8c4d5edd68a2a492afd48228458d3bca4a"
 LINUX_VERSION = "4.14.98"
 LINUX_VERSION_EXTENSION = "-glowforge"
 
+inherit kernel
 require recipes-kernel/linux/linux-yocto.inc
 
 DEPENDS += "lzop-native bc-native"
@@ -20,6 +21,7 @@ SRC_URI += "git://source.codeaurora.org/external/imx/linux-imx;protocol=https;br
             file://0002-include-linux-module.h-copy-init-exit-attrs-to-.patch \
             file://1001-Add-DT-Prescaler-to-PWM-Driver.patch \
             file://1002-Add-EPIT-API.patch \
+            file://1003-Expose-SDMA-API.patch \
            "
 
 DEFAULT_PREFERENCE = "1"

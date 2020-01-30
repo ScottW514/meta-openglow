@@ -80,8 +80,203 @@
 			12v-supply = <&reg_12v>;
 		};
 	};
+	/* outputs control */
+	outputs {
+		compatible = "gpio-leds";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_outputs>;
+
+		camera_mux_oe {
+			label = "camera_mux_oe";
+			gpios = <&gpio6 7 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+		};
+
+		interlock_reset {
+			label = "interlock_reset";
+			gpios = <&gpio4 5 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+	};
+
+	/* switches */
+	switches {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_switches>;
+
+		door1 {
+			label = "door1";
+			gpios = <&gpio4 14 GPIO_ACTIVE_LOW>;
+			debounce-interval = <5>;
+			linux,code = <0>;
+			linux,input-type = <5>; /* EV_SW */
+		};
+		door2 {
+			label = "door2";
+			gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
+			debounce-interval = <5>;
+			linux,code = <1>;
+			linux,input-type = <5>; /* EV_SW */
+		};
+		button {
+			label = "button";
+			gpios = <&gpio4 9 GPIO_ACTIVE_LOW>;
+			debounce-interval = <20>;
+			linux,code = <2>;
+			linux,input-type = <5>; /* EV_SW */
+		};
+		doors {
+			label = "doors";
+			gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
+			debounce-interval = <5>;
+			linux,code = <3>;
+			linux,input-type = <5>; /* EV_SW */
+		};
+		estop {
+			label = "estop";
+			gpios = <&gpio4 6 GPIO_ACTIVE_HIGH>;
+			debounce-interval = <5>;
+			linux,code = <4>;
+			linux,input-type = <5>; /* EV_SW */
+		};
+		interlock {
+			label = "interlock";
+			gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
+			debounce-interval = <5>;
+			linux,code = <5>;
+			linux,input-type = <5>; /* EV_SW */
+		};
+		interlock_latch {
+			label = "interlock_latch";
+			gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+			debounce-interval = <5>;
+			linux,code = <6>;
+			linux,input-type = <5>; /* EV_SW */
+		};
+		head {
+			label = "head";
+			gpios = <&gpio3 22 GPIO_ACTIVE_HIGH>;
+			debounce-interval = <60>; /* ignore pulses when head reboots */
+			linux,code = <7>;
+			linux,input-type = <5>; /* EV_SW */
+		};
+	};
+
+	/* stepper driver */
+	cnc {
+		compatible = "glowforge,cnc";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_cnc>;
+		latch-reset-gpio   = <&gpio1 7 0>; /* BUTTON_LATCH_RST */
+		z-dir-gpio         = <&gpio2 17 0>;
+		y1-dir-gpio        = <&gpio2 18 0>;
+		x-dir-gpio         = <&gpio2 19 0>;
+		y1-step-gpio       = <&gpio2 20 0>;
+		z-step-gpio        = <&gpio2 21 0>;
+		x-step-gpio        = <&gpio2 22 0>;
+		y2-dir-gpio        = <&gpio2 28 0>;
+		y2-step-gpio       = <&gpio2 29 0>;
+		laser-enable-gpio  = <&gpio2 30 0>;
+		laser-on-head-gpio = <&gpio2 31 0>;
+		x-mode1-gpio       = <&gpio3 1 0>;
+		y1-enable-gpio     = <&gpio3 2 0>;
+		x-mode2-gpio       = <&gpio3 3 0>;
+		y-mode0-gpio       = <&gpio3 4 0>;
+		x-mode0-gpio       = <&gpio3 5 0>;
+		x-home-gpio        = <&gpio3 6 0>;
+		y-decay-gpio       = <&gpio3 7 0>;
+		y1-fault-gpio      = <&gpio3 8 0>;
+		y2-home-gpio       = <&gpio3 9 0>;
+		y1-home-gpio       = <&gpio3 10 0>;
+		y2-enable-gpio     = <&gpio3 11 0>;
+		y-mode1-gpio       = <&gpio3 12 0>;
+		y-mode2-gpio       = <&gpio3 13 0>;
+		y2-fault-gpio      = <&gpio3 14 0>;
+		sleep-gpio         = <&gpio3 16 0>;
+		z-enable-gpio      = <&gpio3 17 0>; /* NC; unused */
+		reset-gpio         = <&gpio3 18 0>;
+		x-decay-gpio       = <&gpio3 23 0>;
+		charge-pump-gpio   = <&gpio3 24 0>;
+		x-fault-gpio       = <&gpio3 26 0>;
+		x-enable-gpio      = <&gpio3 27 0>;
+		beam-reset-gpio    = <&gpio7 13 0>; /* unused; only v13 and v14 */
+		laser-pwm          = <1>;
+		timer              = <&epit1>;
+		sdma-params        = <26 0xe00>;
+	};
+
+	/* thermal */
+	thermal {
+		compatible = "glowforge,thermal";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_thermal>;
+		intake1-tach-gpio = <&gpio4 20 0>;
+		intake2-tach-gpio = <&gpio4 23 0>;
+		exhaust-tach-gpio = <&gpio2 8 0>;
+		water-pump-gpio   = <&gpio6 8 0>;
+		water-heater-gpio = <&gpio7 9 0>;
+		tec-gpio          = <&gpio6 10 0>;
+		intake-pwm        = <0>;
+		exhaust-pwm       = <2>;
+	};
 };
 
+&epit1 {
+  compatible = "fsl,imx6qdl-epit";
+	id = <0>;
+	clocks = <&clks IMX6QDL_CLK_EPIT1>;
+	clock-names = "epit1";
+	sdma-event = <16>;
+};
+
+&epit2 {
+	compatible = "fsl,imx6qdl-epit";
+	id = <1>;
+	clocks = <&clks IMX6QDL_CLK_EPIT2>;
+	clock-names = "epit2";
+	sdma-event = <9>; /* note: requires bit 5 set in IOMUXC_GPR0 */
+	sdma-event-select = <&gpr 0 0x20 0x20>;
+};
+
+&ecspi2 {
+	fsl,spi-num-chipselects = <1>;
+	cs-gpios = <&gpio4 16 0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi2>;
+	status = "okay";
+
+	pic: spi@0 {
+		compatible = "glowforge,pic";
+		/* Datasheet indicates max SCLK frequency is about 3.44MHz */
+		spi-max-frequency = <3000000>;
+		reg = <0>;
+	};
+};
+
+/* lid camera I2C */
+&i2c1 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c1>;
+	status = "okay";
+};
+
+/* HDMI i2c */
+&i2c2 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c2>;
+	status = "okay";
+};
+
+/* Head I2C */
+&i2c4 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c4>;
+	status = "okay";
+};
 
 &iomuxc {
 	compatible: fsl,imx6sl-iomuxc;
@@ -103,12 +298,99 @@
 			>;
 		};
 
+		pinctrl_ecspi2: glowforge_ecspi2 {
+			fsl,pins = <
+				MX6QDL_PAD_EIM_OE__ECSPI2_MISO      SPI_PAD_CTRL
+				MX6QDL_PAD_EIM_CS1__ECSPI2_MOSI     SPI_PAD_CTRL
+				MX6QDL_PAD_EIM_CS0__ECSPI2_SCLK     SPI_PAD_CTRL
+				MX6QDL_PAD_DI0_DISP_CLK__GPIO4_IO16 WEAK_PULLUP
+			>;
+		};
+
+		pinctrl_cnc: glowforge_cnc {
+			fsl,pins = <
+				MX6QDL_PAD_GPIO_7__GPIO1_IO07	   WEAK_PULLUP	/* BUTTON_LATCH_RST */
+				/* GPIO2_IO16 NC */
+				MX6QDL_PAD_EIM_A21__GPIO2_IO17   WEAK_PULLUP	/* STEP_Z_DIR */
+				MX6QDL_PAD_EIM_A20__GPIO2_IO18   WEAK_PULLUP	/* Y1_DIR */
+				MX6QDL_PAD_EIM_A19__GPIO2_IO19   WEAK_PULLUP	/* X_DIR */
+				MX6QDL_PAD_EIM_A18__GPIO2_IO20   WEAK_PULLUP	/* Y1_STEP */
+				MX6QDL_PAD_EIM_A17__GPIO2_IO21   WEAK_PULLUP	/* STEP_Z_STEP */
+				MX6QDL_PAD_EIM_A16__GPIO2_IO22   WEAK_PULLUP	/* X_STEP */
+				MX6QDL_PAD_EIM_EB0__GPIO2_IO28   WEAK_PULLUP	/* Y2_DIR */
+				MX6QDL_PAD_EIM_EB1__GPIO2_IO29   WEAK_PULLUP	/* Y2_STEP */
+				MX6QDL_PAD_EIM_EB2__GPIO2_IO30   (WEAK_PULLUP | MUX_MODE_SION)	/* LASER_ENABLE, SION enabled */
+				MX6QDL_PAD_EIM_EB3__GPIO2_IO31   WEAK_PULLUP	/* LASER_ON_HEAD */
+				/* GPIO3_IO00 NC */
+				MX6QDL_PAD_EIM_DA1__GPIO3_IO01   (WEAK_PULLUP | MUX_MODE_SION)	/* X_MODE1, SION enabled */
+				MX6QDL_PAD_EIM_DA2__GPIO3_IO02   WEAK_PULLUP	/* Y1_ENBL */
+				MX6QDL_PAD_EIM_DA3__GPIO3_IO03   (WEAK_PULLUP | MUX_MODE_SION)	/* X_MODE2, SION enabled */
+				MX6QDL_PAD_EIM_DA4__GPIO3_IO04   (WEAK_PULLUP | MUX_MODE_SION)	/* Y_MODE0, SION enabled */
+				MX6QDL_PAD_EIM_DA5__GPIO3_IO05   (WEAK_PULLUP | MUX_MODE_SION)	/* X_MODE0, SION enabled */
+				MX6QDL_PAD_EIM_DA6__GPIO3_IO06   WEAK_PULLUP	/* X_HOME, no pulldown or pullup */
+				MX6QDL_PAD_EIM_DA7__GPIO3_IO07   (WEAK_PULLUP | MUX_MODE_SION)	/* Y_DECAY, SION enabled */
+				MX6QDL_PAD_EIM_DA8__GPIO3_IO08   WEAK_PULLUP	/* Y1_FAULT */
+				MX6QDL_PAD_EIM_DA9__GPIO3_IO09   WEAK_PULLUP	/* Y2_HOME */
+				MX6QDL_PAD_EIM_DA10__GPIO3_IO10  WEAK_PULLUP	/* Y1_HOME */
+				MX6QDL_PAD_EIM_DA11__GPIO3_IO11  WEAK_PULLUP	/* Y2_ENBL */
+				MX6QDL_PAD_EIM_DA12__GPIO3_IO12  (WEAK_PULLUP | MUX_MODE_SION)	/* Y_MODE1, SION enabled */
+				MX6QDL_PAD_EIM_DA13__GPIO3_IO13  (WEAK_PULLUP | MUX_MODE_SION)	/* Y_MODE2, SION enabled */
+				MX6QDL_PAD_EIM_DA14__GPIO3_IO14  WEAK_PULLUP	/* Y2_FAULT */
+				/* MX6QDL_PAD_EIM_DA15__GPIO3_IO15         NC */
+				MX6QDL_PAD_EIM_D16__GPIO3_IO16   WEAK_PULLUP	/* STEP_SLEEP */
+				/* MX6QDL_PAD_EIM_D17__GPIO3_IO17        NC */
+				MX6QDL_PAD_EIM_D18__GPIO3_IO18   WEAK_PULLUP	/* /STEP_RESET */
+				MX6QDL_PAD_EIM_D23__GPIO3_IO23   (WEAK_PULLUP | MUX_MODE_SION)	/* X_DECAY, SION enabled */
+				MX6QDL_PAD_EIM_D24__GPIO3_IO24   (WEAK_PULLUP | MUX_MODE_SION)	/* CHARGE_PUMP, SION enabled */
+				MX6QDL_PAD_EIM_D26__GPIO3_IO26   WEAK_PULLUP	/* /X_FAULT, no pulldown or pullup */
+				MX6QDL_PAD_EIM_D27__GPIO3_IO27   WEAK_PULLUP	/* X_ENBL */
+				MX6QDL_PAD_KEY_ROW0__GPIO4_IO07  WEAK_PULLUP	/* !BEAM_DET_TIMEOUT, no pulldown or pullup */
+				MX6QDL_PAD_KEY_COL1__GPIO4_IO08  WEAK_PULLUP	/* !BEAM_DET_XOR, no pulldown or pullup */
+				MX6QDL_PAD_KEY_COL2__GPIO4_IO10  WEAK_PULLUP	/* BEAM_DET_ERR, no pulldown or pullup */
+				MX6QDL_PAD_KEY_ROW4__GPIO4_IO15  WEAK_PULLUP	/* !BEAM_DET, no pulldown or pullup */
+				MX6QDL_PAD_GPIO_18__GPIO7_IO13   WEAK_PULLUP	/* BEAM_DET_LATCH_RST */
+			>;
+		};
+
+		pinctrl_thermal: glowforge_thermal {
+			fsl,pins = <
+				MX6QDL_PAD_DI0_PIN4__GPIO4_IO20    WEAK_PULLUP	/* FAN_TACH_INTAKE1 */
+				MX6QDL_PAD_DISP0_DAT2__GPIO4_IO23  WEAK_PULLUP	/* FAN_TACH_INTAKE2 */
+				MX6QDL_PAD_NANDF_ALE__GPIO6_IO08   (WEAK_PULLUP | MUX_MODE_SION)	/* WATER_ON, SION enabled */
+				MX6QDL_PAD_NANDF_RB0__GPIO6_IO10   (WEAK_PULLUP | MUX_MODE_SION)	/* TEC_ON, SION enabled */
+				MX6QDL_PAD_SD4_CMD__GPIO7_IO09     (WEAK_PULLUP | MUX_MODE_SION)	/* WATER_HEATER_ON, SION enabled */
+				MX6QDL_PAD_SD4_DAT0__GPIO2_IO08    WEAK_PULLUP	/* FAN_TACH_EXHAUST */
+			>;
+		};
+
 		pinctrl_12v: glowforge_12v {
 			fsl,pins = <MX6QDL_PAD_DISP0_DAT14__GPIO5_IO08 WEAK_PULLUP>;
 		};
 
 		pinctrl_40v: glowforge_40v {
 			fsl,pins = <MX6QDL_PAD_DISP0_DAT23__GPIO5_IO17 WEAK_PULLUP>;
+		};
+
+		pinctrl_i2c1: glowforge_i2c1 {
+			fsl,pins = <
+				MX6QDL_PAD_EIM_D21__I2C1_SCL   I2C_PAD_CTRL	/* SION enabled */
+				MX6QDL_PAD_EIM_D28__I2C1_SDA   I2C_PAD_CTRL	/* SION enabled */
+				MX6QDL_PAD_SD4_CLK__GPIO7_IO10 WEAK_PULLUP	/* CAM_SEL */
+			>;
+		};
+
+		pinctrl_i2c2: glowforge_i2c2 {
+			fsl,pins = <
+				MX6QDL_PAD_KEY_COL3__I2C2_SCL   I2C_PAD_CTRL	/* SION enabled */
+				MX6QDL_PAD_KEY_ROW3__I2C2_SDA   I2C_PAD_CTRL	/* SION enabled */
+			>;
+		};
+
+		pinctrl_i2c4: glowforge_i2c4 {
+			fsl,pins = <
+				MX6QDL_PAD_NANDF_WP_B__I2C4_SCL I2C_PAD_CTRL	/* OD, SION enabled */
+				MX6QDL_PAD_NANDF_CS3__I2C4_SDA  I2C_PAD_CTRL	/* OD, SION enabled */
+			>;
 		};
 
 		pinctrl_usdhc2_aux: glowforge_usdhc2_aux {
@@ -119,12 +401,12 @@
 
 		pinctrl_usdhc1: glowforge_usdhc1 {
 			fsl,pins = <
-				MX6QDL_PAD_SD1_CMD__SD1_CMD    0x17069
-				MX6QDL_PAD_SD1_CLK__SD1_CLK    0x10069
-				MX6QDL_PAD_SD1_DAT0__SD1_DATA0 0x17069
-				MX6QDL_PAD_SD1_DAT1__SD1_DATA1 0x17069
-				MX6QDL_PAD_SD1_DAT2__SD1_DATA2 0x17069
-				MX6QDL_PAD_SD1_DAT3__SD1_DATA3 0x17069
+				MX6QDL_PAD_SD1_CMD__SD1_CMD    USDHC_PAD_CTRL
+				MX6QDL_PAD_SD1_CLK__SD1_CLK    USDHC_PAD_CTRL
+				MX6QDL_PAD_SD1_DAT0__SD1_DATA0 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD1_DAT1__SD1_DATA1 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD1_DAT2__SD1_DATA2 USDHC_PAD_CTRL
+				MX6QDL_PAD_SD1_DAT3__SD1_DATA3 USDHC_PAD_CTRL
 			>;
 		};
 
@@ -154,7 +436,80 @@
 				MX6QDL_PAD_SD3_RST__SD3_RESET  WEAK_PULLUP
 			>;
 		};
+		pinctrl_pwm1: glowforge_pwm1 {
+			fsl,pins = <
+				MX6QDL_PAD_DISP0_DAT8__PWM1_OUT 0x1b0b8	/* FAN_PWM_INTAKE, strong drive */
+			>;
+		};
+
+		pinctrl_pwm2: glowforge_pwm2 {
+			fsl,pins = <
+				MX6QDL_PAD_DISP0_DAT9__PWM2_OUT 0x1b0b8	/* LASER_PWM, strong drive */
+			>;
+		};
+
+		pinctrl_pwm3: glowforge_pwm3 {
+			fsl,pins = <
+				MX6QDL_PAD_SD4_DAT1__PWM3_OUT  0x1b0b8 /* AUDIO_OUT, strong drive */
+				MX6QDL_PAD_EIM_A24__GPIO5_IO04 WEAK_PULLUP /* SPKR_EN */
+			>;
+		};
+
+		pinctrl_pwm4: glowforge_pwm4 {
+			fsl,pins = <
+				MX6QDL_PAD_SD4_DAT2__PWM4_OUT 0x1b0b8	/* FAN_PWM_EXHAUST, strong drive */
+			>;
+		};
+
+		pinctrl_switches: glowforge_switches {
+			fsl,pins = <
+				MX6QDL_PAD_KEY_COL4__GPIO4_IO14    0x100b0	/* !DOOR_SW1 */
+				MX6QDL_PAD_GPIO_6__GPIO1_IO06      0x100b0	/* !DOOR_SW2 */
+				MX6QDL_PAD_KEY_ROW1__GPIO4_IO09    0x100b0	/* !PAUSE (button pressed) */
+				MX6QDL_PAD_GPIO_0__GPIO1_IO00      0x100b0      /* !DOOR_SW */
+				MX6QDL_PAD_KEY_COL0__GPIO4_IO06    0x100b0	/* ESTOP */
+				MX6QDL_PAD_GPIO_9__GPIO1_IO09      0x100b0	/* INTERLOCK */
+				MX6QDL_PAD_GPIO_2__GPIO1_IO02      0x100b0	/* INTERLOCK_LATCH, no pulldown or pullup */
+				MX6QDL_PAD_EIM_D22__GPIO3_IO22     WEAK_PULLUP	/* HEAD_IRQ, pullup */
+			>;
+		};
+
+		pinctrl_outputs: glowforge_outputs {
+			fsl,pins = <
+				MX6QDL_PAD_NANDF_CLE__GPIO6_IO07  WEAK_PULLUP	/* CAM_!OE */
+				MX6QDL_PAD_GPIO_19__GPIO4_IO05    0x100b0	/* INTERLOCK_LATCH_RESET, no pulldown or pullup */
+			>;
+		};
 	};
+};
+
+&pwm1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm1>;
+	status = "okay";
+};
+
+&pwm2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm2>;
+	status = "okay";
+	fsl,extra-prescale = <13>;
+};
+
+&pwm3 {
+	compatible = "glowforge,imx-pwm-audio";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm3>;
+	status = "okay";
+	enable-gpio = <&gpio5 4 0>;
+	timer = <&epit2>;
+	sdma-params = <25 0xdc0>; /* channel and script load address */
+};
+
+&pwm4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm4>;
+	status = "okay";
 };
 
 &uart1 {
@@ -207,18 +562,4 @@
 	cd-gpios = <>;
 	wp-gpios = <>;
 	status = "okay";
-};
-
-/* Possibly remove this */
-&gpc {
-	fsl,cpu_pupscr_sw2iso = <0xf>;
-	fsl,cpu_pupscr_sw = <0xf>;
-	fsl,cpu_pdnscr_iso2sw = <0x1>;
-	fsl,cpu_pdnscr_iso = <0x1>;
-};
-
-/* Possibly remove this */
-&wdog1 {
-	fsl,default-timeout = <65>;
-	fsl,default-pretimeout = <5>;
 };
