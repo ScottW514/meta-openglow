@@ -1,0 +1,16 @@
+*.pyc
+*.pyo
+/*.patch
+/.repo/
+/build*/
+pyshtables.py
+pstage/
+meta-*/
+!meta-skeleton
+!meta-selftest
+*.swp
+*.orig
+*.rej
+*~
+!meta-openglow-*
+!meta-glowforge-*
