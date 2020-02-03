@@ -234,6 +234,13 @@ CONFIG_WLCORE=m
 CONFIG_WLCORE_SDIO=m
 
 #
+# Input device support
+#
+CONFIG_INPUT_EVDEV=y
+CONFIG_INPUT_KEYBOARD=y
+CONFIG_KEYBOARD_GPIO=y
+
+#
 # Character devices
 #
 CONFIG_TTY=y
