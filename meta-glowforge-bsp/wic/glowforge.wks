@@ -4,14 +4,14 @@
 # with i.MX SoC family
 #
 # The disk layout used is:
-#  - -------------- --------------
-# | |     boot     |    rootfs   |
-#  - -------------- --------------
-# ^ ^              ^
-# | |              |
-# 0 1KiB          4MiB + rootfs + IMAGE_EXTRA_SPACE (default 10MiB)
+#  - --------------
+# | |     rootfs   |
+#  - --------------
+# ^ ^
+# | |
+# 0 1KiB + rootfs + IMAGE_EXTRA_SPACE (default 10MiB)
 #
-part /boot --source bootimg-partition --ondisk mmcblk --fstype=ext4 --label boot --active --align 1 --size 16
-part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 4096
+#part /boot --source bootimg-partition --ondisk mmcblk --fstype=ext4 --label boot --active --align 1 --size 16
+part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --active --align 1
 
 bootloader --ptable msdos
