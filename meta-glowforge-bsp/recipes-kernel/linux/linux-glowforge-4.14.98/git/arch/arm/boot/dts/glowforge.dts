@@ -80,6 +80,20 @@
 			12v-supply = <&reg_12v>;
 		};
 	};
+	v4l2_cap_0 {
+		compatible = "fsl,imx6q-v4l2-capture";
+		ipu_id = <0>;
+		csi_id = <1>;
+		mclk_source = <0>;
+		mipi_camera = <1>;
+		default_input = <1>;
+		status = "okay";
+	};
+
+	v4l2_out {
+		compatible = "fsl,mxc_v4l2_output";
+		status = "okay";
+	};
 	/* outputs control */
 	outputs {
 		compatible = "gpio-leds";
@@ -260,6 +274,20 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
+	ov5648_mipi: ov5648_mipi@36 {
+		compatible = "ovti,ov5648_mipi";
+		reg = <0x36>;
+		clocks = <&clks 0>;
+		clock-names = "csi_mclk";
+		sel-gpios = <&gpio7 10 GPIO_ACTIVE_HIGH>;
+		default-state = "off"; /* off=camera A, on=camera B */
+		ipu_id = <0>;
+		csi_id = <1>;
+		mclk = <25000000>;
+		mclk_source = <0>;
+		pinctrl-names = "default";
+		extended-buffer;
+	};
 };
 
 /* HDMI i2c */
@@ -276,6 +304,19 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c4>;
 	status = "okay";
+	/* Slave camera description (only for development purposes) */
+	ov5648_mipi_slave: ov5648_mipi_slave@36 {
+		compatible = "ovti,ov5648_mipi_slave";
+		reg = <0x36>;
+		/* Pi camera has its own 25MHz clock. */
+		clocks = <&clks 0>;
+		clock-names = "csi_mclk";
+		ipu_id = <0>;
+		csi_id = <1>;
+		mclk = <25000000>;
+		mclk_source = <0>;
+		extended-buffer;
+	};
 };
 
 &iomuxc {
@@ -295,6 +336,13 @@
 			fsl,pins = <
 				MX6QDL_PAD_CSI0_DAT10__UART1_TX_DATA UART_PAD_CTRL
 				MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA UART_PAD_CTRL
+			>;
+		};
+
+		pinctrl_uart2: glowforge_uart2 {
+			fsl,pins = <
+				MX6QDL_PAD_SD4_DAT7__UART2_TX_DATA UART_PAD_CTRL
+				MX6QDL_PAD_SD4_DAT4__UART2_RX_DATA UART_PAD_CTRL
 			>;
 		};
 
@@ -483,6 +531,13 @@
 	};
 };
 
+&gpc {
+	fsl,cpu_pupscr_sw2iso = <0xf>;
+	fsl,cpu_pupscr_sw = <0xf>;
+	fsl,cpu_pdnscr_iso2sw = <0x1>;
+	fsl,cpu_pdnscr_iso = <0x1>;
+};
+
 &pwm1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm1>;
@@ -515,6 +570,13 @@
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
+	status = "okay";
+};
+
+&uart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	fsl,irda-mode;
 	status = "okay";
 };
 
@@ -561,5 +623,14 @@
 	keep-power-in-suspend;
 	cd-gpios = <>;
 	wp-gpios = <>;
+	status = "okay";
+};
+
+&mipi_csi {
+	ipu_id = <0>;
+	csi_id = <1>;
+	v_channel = <0>;
+	lanes = <2>;
+	mipi_dphy_clk = <0x28>;
 	status = "okay";
 };

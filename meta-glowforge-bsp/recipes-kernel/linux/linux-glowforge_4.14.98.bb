@@ -11,6 +11,7 @@ require recipes-kernel/linux/linux-yocto.inc
 
 DEPENDS += "lzop-native bc-native"
 
+KERNEL_MODULE_AUTOLOAD += "ov5648_camera_slave_mipi"
 
 KMETA = "kernel-meta"
 
@@ -22,6 +23,7 @@ SRC_URI += "git://source.codeaurora.org/external/imx/linux-imx;protocol=https;br
             file://1001-Add-DT-Prescaler-to-PWM-Driver.patch \
             file://1002-Add-EPIT-API.patch \
             file://1003-Expose-SDMA-API.patch \
+            file://1004-Add-OV5648-Driver.patch \
            "
 
 DEFAULT_PREFERENCE = "1"
