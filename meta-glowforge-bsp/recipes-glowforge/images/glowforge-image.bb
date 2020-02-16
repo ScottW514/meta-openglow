@@ -20,6 +20,8 @@ IMAGE_INSTALL = " \
 	procps \
 	python3 \
 	python3-spidev \
+	python3-gfhardware \
+	python3-pillow \
 	spitools \
 	u-boot-env \
 	u-boot-fw-utils \
