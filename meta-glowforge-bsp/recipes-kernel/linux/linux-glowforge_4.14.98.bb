@@ -24,6 +24,8 @@ SRC_URI += "git://source.codeaurora.org/external/imx/linux-imx;protocol=https;br
             file://1002-Add-EPIT-API.patch \
             file://1003-Expose-SDMA-API.patch \
             file://1004-Add-OV5648-Driver.patch \
+            file://1005-Add-delay-to-SPI.patch \
+            file://1006-Add-ST-LIS2HH12-driver.patch \
            "
 
 DEFAULT_PREFERENCE = "1"

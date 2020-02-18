@@ -9,6 +9,7 @@ IMAGE_INSTALL = " \
 	packagegroup-core-boot \
 	kernel-devicetree \
 	${CORE_IMAGE_EXTRA_INSTALL} \
+	curl \
 	glibc-utils \
 	glowforge-watchdog \
 	i2c-tools \
@@ -21,8 +22,10 @@ IMAGE_INSTALL = " \
 	python3 \
 	python3-spidev \
 	python3-gfhardware \
+	python3-gfutilities \
 	python3-pillow \
 	spitools \
+	tcpdump \
 	u-boot-env \
 	u-boot-fw-utils \
 	wpa-supplicant \

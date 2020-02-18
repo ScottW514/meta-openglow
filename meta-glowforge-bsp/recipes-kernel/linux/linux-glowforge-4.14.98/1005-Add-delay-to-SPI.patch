@@ -1,0 +1,67 @@
+linux-openglow: Add delay to SPI
+
+Modifications to add a delay to the SPI bus communications
+to address PIC SPI communication speed issue.
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Scott Wiederhold <s.e.wiederhold@gmail.com>
+
+diff -u a/drivers/spi/spi-imx.c b/drivers/spi/spi-imx.c
+--- a/drivers/spi/spi-imx.c
++++ b/drivers/spi/spi-imx.c
+@@ -105,6 +105,7 @@
+ 	unsigned int speed_hz;
+ 	unsigned int bits_per_word;
+ 	unsigned int spi_drctl;
++	u16 delay_usecs;
+ 
+ 	unsigned int count, remainder;
+ 	void (*tx)(struct spi_imx_data *);
+@@ -288,6 +289,9 @@
+ 
+ #define MX51_ECSPI_TESTREG	0x20
+ #define MX51_ECSPI_TESTREG_LBC	BIT(31)
++
++#define MX51_ECSPI_PERIODREG	0x1c
++#define MX51_ECSPI_PERIODREG_SAMPLE_PERIOD(p)	((p) & 0x7fff)
+ 
+ static void spi_imx_buf_rx_swap_u32(struct spi_imx_data *spi_imx)
+ {
+@@ -510,8 +514,8 @@
+ static int mx51_ecspi_config(struct spi_device *spi)
+ {
+ 	struct spi_imx_data *spi_imx = spi_master_get_devdata(spi->master);
+-	u32 ctrl = MX51_ECSPI_CTRL_ENABLE;
+-	u32 clk = spi_imx->speed_hz, delay, reg;
++	u32 ctrl = MX51_ECSPI_CTRL_ENABLE, period = 0;
++	u32 clk = spi_imx->speed_hz, delay, reg, num_wait_states;
+ 	u32 cfg = readl(spi_imx->base + MX51_ECSPI_CONFIG);
+ 
+ 	/* set Master or Slave mode */
+@@ -570,6 +574,9 @@
+ 	if (spi_imx->usedma)
+ 		ctrl |= MX51_ECSPI_CTRL_SMC;
+ 
++	num_wait_states = (spi_imx->delay_usecs * spi_imx->speed_hz) / 1000000;
++	period = MX51_ECSPI_PERIODREG_SAMPLE_PERIOD(num_wait_states);
++
+ 	/* CTRL register always go first to bring out controller from reset */
+ 	writel(ctrl, spi_imx->base + MX51_ECSPI_CTRL);
+ 
+@@ -581,6 +588,7 @@
+ 	writel(reg, spi_imx->base + MX51_ECSPI_TESTREG);
+ 
+ 	writel(cfg, spi_imx->base + MX51_ECSPI_CONFIG);
++	writel(period, spi_imx->base + MX51_ECSPI_PERIODREG);
+ 
+ 	/*
+ 	 * Wait until the changes in the configuration register CONFIGREG
+@@ -1148,6 +1156,7 @@
+ 
+ 	spi_imx->bits_per_word = t->bits_per_word;
+ 	spi_imx->speed_hz  = t->speed_hz;
++	spi_imx->delay_usecs = t ? t->delay_usecs : 0;
+ 
+ 	/* Initialize the functions for transfer */
+ 	if (spi_imx->devtype_data->dynamic_burst && !spi_imx->slave_mode) {

@@ -268,7 +268,7 @@
 	};
 };
 
-/* lid camera I2C */
+/* Lid I2C Bus */
 &i2c1 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
@@ -288,9 +288,14 @@
 		pinctrl-names = "default";
 		extended-buffer;
 	};
+	/* LID ACCELEROMETER */
+	lid-accel@1e {
+			reg = <0x1e>;
+			compatible = "st,lis2hh12";
+	};
 };
 
-/* HDMI i2c */
+/* Unused I2C Bus */
 &i2c2 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
@@ -316,6 +321,21 @@
 		mclk = <25000000>;
 		mclk_source = <0>;
 		extended-buffer;
+	};
+	/* INTERCONNECT TEMP SENSOR */
+	lm75b@48 {
+			reg = <0x48>;
+			compatible = "national,lm75b";
+	};
+	/* HEAD ACCELEROMETER */
+	head-accel@1e {
+			reg = <0x1e>;
+			compatible = "st,lis2hh12";
+	};
+	/* CONTROL BOARD ACCELEROMETER */
+	board-accel@1d {
+			reg = <0x1d>;
+			compatible = "st,lis2hh12";
 	};
 };
 
