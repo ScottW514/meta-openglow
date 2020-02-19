@@ -322,6 +322,11 @@
 		mclk_source = <0>;
 		extended-buffer;
 	};
+	/* HEAD */
+	head@47 {
+			reg = <0x47>;
+			compatible = "glowforge,head";
+	};
 	/* INTERCONNECT TEMP SENSOR */
 	lm75b@48 {
 			reg = <0x48>;
