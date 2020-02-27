@@ -20,10 +20,10 @@ IMAGE_INSTALL = " \
 	openssh-sftp-server \
 	procps \
 	python3 \
-	python3-spidev \
 	python3-gfhardware \
 	python3-gfutilities \
 	python3-pillow \
+	python3-spidev \
 	spitools \
 	tcpdump \
 	u-boot-env \
@@ -32,10 +32,11 @@ IMAGE_INSTALL = " \
 	wlconf \
 "
 
-create_data_dir() {
+create_dirs() {
 	mkdir -p ${IMAGE_ROOTFS}/data
+	mkdir -p ${IMAGE_ROOTFS}/factory
 }
-IMAGE_PREPROCESS_COMMAND += "create_data_dir; "
+IMAGE_PREPROCESS_COMMAND += "create_dirs; "
 
 link_device_tree() {
 	cd ${IMAGE_ROOTFS}/boot
