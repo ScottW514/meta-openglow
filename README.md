@@ -36,7 +36,7 @@ At the end of the commands you have all meta packages you need to build the basi
 First time environment setup:
 ```console
 (in openglow-bsp directory)
-~$: MACHINE=glowforge DISTRO=openglow . setup-environment build
+~$: MACHINE=glowforge DISTRO=glowforge . setup-environment build
 ~$: bitbake glowforge-image
 ```
 Subsequent builds:
