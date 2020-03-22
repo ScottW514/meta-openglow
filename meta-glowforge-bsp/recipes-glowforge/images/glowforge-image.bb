@@ -15,6 +15,7 @@ IMAGE_INSTALL = " \
 	i2c-tools \
 	localedef \
 	nano \
+  ntp \
 	openssh \
 	openssh-sftp \
 	openssh-sftp-server \
