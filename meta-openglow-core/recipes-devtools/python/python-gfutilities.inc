@@ -3,8 +3,8 @@ SUMMARY = "A small collection of utilties to aid in firmware development for the
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-SRC_URI[md5sum] = "ef3e3170015d3e036f6133f626c48f47"
-SRC_URI[sha256sum] = "3d4f326dd65969d5ea23183248a70a32c636dd208dc2819fc97e4c2bf2553715"
+SRC_URI[md5sum] = "84a33caa26a59d1c6fe3536ff4e7c3b3"
+SRC_URI[sha256sum] = "f77476429533cf1b23f3db3a4f511d8b7295573e77097960523d337166157b7a"
 
 BBCLASSEXTEND = "native nativesdk"
 
