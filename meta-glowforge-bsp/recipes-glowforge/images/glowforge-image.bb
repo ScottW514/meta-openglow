@@ -23,7 +23,6 @@ IMAGE_INSTALL = " \
 	python3 \
 	python3-gfhardware \
 	python3-gfutilities \
-	python3-pillow \
 	python3-spidev \
 	spitools \
 	tcpdump \
@@ -36,6 +35,8 @@ IMAGE_INSTALL = " \
 create_dirs() {
 	mkdir -p ${IMAGE_ROOTFS}/data
 	mkdir -p ${IMAGE_ROOTFS}/factory
+	mkdir -p ${IMAGE_ROOTFS}/factory/img1
+	mkdir -p ${IMAGE_ROOTFS}/factory/img2
 }
 IMAGE_PREPROCESS_COMMAND += "create_dirs; "
 
