@@ -232,6 +232,8 @@ CONFIG_DMA_CMA=y
 # Default contiguous memory area size:
 #
 CONFIG_CMA_SIZE_MBYTES=320
+CONFIG_CMA_DEBUG=y
+CONFIG_CMA_DEBUGFS=y
 
 #
 # Network Adapter support
