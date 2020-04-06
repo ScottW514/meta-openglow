@@ -13,7 +13,7 @@ usage: ogboot -s|e[<partition>] [-n]
   -e[<partition>]: eMMC
      1: Factory image 1
      2: Factory image 2
-     3: OpenGlow image
+     4: OpenGlow image
      Default:
          When run from OpenGlow: Factory image with most recent firmwmare
          When run from Factory : Factory image 1
@@ -61,9 +61,9 @@ case "$1" in
     MMCDEV=1
     MMCPART=2
     ;;
-  -e3)
+  -e4)
     MMCDEV=1
-    MMCPART=3
+    MMCPART=4
     ;;
   *)
     usage
