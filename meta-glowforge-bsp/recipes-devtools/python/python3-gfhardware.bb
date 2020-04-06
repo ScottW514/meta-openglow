@@ -6,8 +6,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 SRC_URI = "git://github.com/ScottW514/python3-gfhardware.git;branch=master"
-SRCREV = "6889a5a7d484a0e36e2fd620e73f9625f5969a30"
+SRCREV = "d0440266391222311e25dcc84ebef5f42ba55099"
 
 S = "${WORKDIR}/git"
 
-DEPENDS += "libv4l python3-pillow"
+DEPENDS += "libv4l libjpeg-turbo"

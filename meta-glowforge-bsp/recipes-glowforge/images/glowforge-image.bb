@@ -10,6 +10,8 @@ IMAGE_INSTALL = " \
 	kernel-devicetree \
 	${CORE_IMAGE_EXTRA_INSTALL} \
 	curl \
+	e2fsprogs \
+	e2fsprogs-resize2fs \
 	glibc-utils \
 	glowforge-watchdog \
 	i2c-tools \
