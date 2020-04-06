@@ -13,10 +13,10 @@ GREEN="\033[32m"
 YELLOW="\033[1;33m"
 BRIGHT="\033[1;39m"
 RESET="\033[0m"
-ASTERISK="${BRIGHT}*${RESET}"
+ASTERISK="${LIGHTRED}✺${RESET}"
 
 stop_gf_services () {
-  echo -n "${ASTERISK}Stopping Glowforge services"
+  echo -n -e "${ASTERISK}Stopping Glowforge services"
   sv stop /sv/glowforge 2>&1 >/dev/null; echo -n "."
   sv stop /sv/glowforge/log 2>&1 >/dev/null; echo -n "."
   sv stop /sv/glowforge-datalogger 2>&1 >/dev/null; echo -n "."
