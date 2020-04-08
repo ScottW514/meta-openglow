@@ -12,6 +12,7 @@ IMAGE_INSTALL = " \
 	curl \
 	e2fsprogs \
 	e2fsprogs-resize2fs \
+	gfui-client \
 	glibc-utils \
 	glowforge-watchdog \
 	i2c-tools \

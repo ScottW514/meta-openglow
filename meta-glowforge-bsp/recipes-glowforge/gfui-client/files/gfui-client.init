@@ -1,0 +1,91 @@
+#!/bin/sh
+#/etc/init.d/gfui-client: start gfui daemon.
+
+### BEGIN INIT INFO
+# Provides:          gfui-client
+# Short-Description: Start glowforge watchdog daemon
+# Required-Start:    $all
+# Required-Stop:     $all
+# Should-Start:
+# Should-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+### END INIT INFO
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+
+test -x /usr/sbin/gfui-client.py || exit 0
+
+NAME=gfui-client
+DAEMON=/usr/sbin/gfui-client.py
+
+STOP_RETRY_SCHEDULE='TERM/10/forever/KILL/1'
+
+. /etc/init.d/functions
+
+# Mock Debian stuff
+log_begin_msg() {
+    echo -n $*
+}
+
+log_end_msg() {
+    if [ "$1" = "0" ]; then
+        echo 'done'
+    else
+        echo 'error'
+    fi
+}
+
+log_daemon_msg() {
+    echo $*
+}
+
+log_progress_msg() {
+    echo $*
+}
+
+case "$1" in
+  start)
+	log_begin_msg "Starting $NAME..."
+	start-stop-daemon --start --quiet --pidfile /var/run/$NAME.pid \
+             --exec $DAEMON -- -d
+	log_end_msg $?
+    ;;
+
+  stop)
+	log_begin_msg "Stopping $NAME daemon..."
+  PID=`cat /var/run/$NAME.pid`
+  kill -SIGINT $PID
+  sleep 5
+	start-stop-daemon --stop --quiet --retry $STOP_RETRY_SCHEDULE \
+	    --pidfile /var/run/$NAME.pid
+  for i in 0 0 0 0 0 1 ; do
+    pgrep -ns $PID > /dev/null || break
+    kill -SIGINT $PID
+    sleep 2
+  done
+  log_end_msg $i
+    ;;
+
+  restart)
+    $0 force-reload
+    ;;
+
+  force-reload)
+    log_daemon_msg "Restarting $NAME"
+    echo
+    $0 stop
+    $0 start
+    ;;
+
+  status)
+    status "$DAEMON"
+    ;;
+
+  *)
+    echo "Usage: /etc/init.d/$NAME {start|stop|restart|force-reload|status}"
+    exit 1
+
+esac
+
+exit 0

@@ -1,0 +1,22 @@
+[SERVICE]
+server_url: https://app.glowforge.com
+status_service_url: wss://status.glowforge.com
+
+[FACTORY_FIRMWARE]
+check: True
+download_dir: /data/log/openglow/firmware
+
+[LOGGING]
+file: /data/log/openglow/openglow.log
+level: DEBUG
+save_sent_images: False
+
+[THERMAL]
+water_heater_percent: 10
+max_start_temp: 27
+max_run_temp: 30
+
+[MOTION]
+z_home_offset: 0
+warm_up_delay: 0
+cool_down_delay: 10
