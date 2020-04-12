@@ -4,7 +4,7 @@ This repository contains the board support packages needed to build opensource f
 * [Latest Release](https://github.com/ScottW514/meta-openglow/releases)
 * [Installation Instructions](https://community.openglow.org/t/dual-boot-install-of-openglow-on-factory-flash/697)
 * [Build Instructions](https://github.com/ScottW514/meta-openglow/blob/master/BUILD.md)
-* [Community Support](https://community.openglow.com)
+* [Community Support](https://community.openglow.org)
 
 # Roadmap
 * Base image that supports all Glowforge hardware (complete)
