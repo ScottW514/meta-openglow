@@ -1,9 +1,10 @@
 # OpenGlow Firmware for Glowforge
 This repository contains the board support packages needed to build opensource firmware for Glowforge brand CNC lasers.
 
+* [Latest Release](https://github.com/ScottW514/meta-openglow/releases)
+* [Installation Instructions](https://community.openglow.org/t/dual-boot-install-of-openglow-on-factory-flash/697)
 * [Build Instructions](https://github.com/ScottW514/meta-openglow/blob/master/BUILD.md)
 * [Community Support](https://community.openglow.com)
-* [Installation Instructions](https://community.openglow.org/t/dual-boot-install-of-openglow-on-factory-flash/697)
 
 # Roadmap
 * Base image that supports all Glowforge hardware (complete)
