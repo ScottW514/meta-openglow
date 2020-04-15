@@ -14,7 +14,6 @@ IMAGE_INSTALL = " \
 	e2fsprogs-resize2fs \
 	gfui-client \
 	glibc-utils \
-	glowforge-watchdog \
 	i2c-tools \
 	localedef \
 	nano \
@@ -26,11 +25,9 @@ IMAGE_INSTALL = " \
 	python3 \
 	python3-gfhardware \
 	python3-gfutilities \
-	python3-spidev \
-	spitools \
-	tcpdump \
 	u-boot-env \
 	u-boot-fw-utils \
+	watchdog \
 	wpa-supplicant \
 	wlconf \
 "

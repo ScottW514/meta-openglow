@@ -26,6 +26,7 @@ SRC_URI += "git://source.codeaurora.org/external/imx/linux-imx;protocol=https;br
             file://1004-Add-OV5648-Driver.patch \
             file://1005-Add-delay-to-SPI.patch \
             file://1006-Add-ST-LIS2HH12-driver.patch \
+            file://1007-Disable-Bus-Freq-Scaling.patch \
            "
 
 DEFAULT_PREFERENCE = "1"
