@@ -115,9 +115,6 @@
 #define CONFIG_ENV_IS_IN_MMC
 #define CONFIG_ENV_OFFSET    (1024 * 512) /* Located at 512 KB, block 1024 (0x400) */
 
-#define CONFIG_ENV_OFFSET_REDUND \
-    (CONFIG_ENV_OFFSET + CONFIG_ENV_SIZE)
-
 #define GF_RECOVERY_FDT_ADDR   "0x600"  /* Located at .75 MB, block 1536 */
 #define GF_RECOVERY_FDT_SIZE   "0x80"   /* 64 KB, 128 blocks */
 #define GF_RECOVERY_IMAGE_ADDR "0x800"  /* Located at 1 MB, block 2048 */

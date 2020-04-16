@@ -2,7 +2,7 @@ SUMMARY = "i.MX Linux Kernel"
 DESCRIPTION = "i.MX Linux Kernel"
 
 KBRANCH = "imx_4.14.98_2.3.0"
-SRCREV = "0f549d8c4d5edd68a2a492afd48228458d3bca4a"
+SRCREV = "860ec89b125a6d90729fec87262ebc6596428efe"
 LINUX_VERSION = "4.14.98"
 LINUX_VERSION_EXTENSION = "-glowforge"
 
