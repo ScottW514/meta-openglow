@@ -101,7 +101,7 @@ static s32 ov5648_slave_read_reg(u16 reg, u8 *val)
         return ret;
     }
     *val = buf[0];
-    pr_err("%s(mipi):reg=%x,val=%x\n", __func__, reg, buf[0]);
+    pr_debug("%s(mipi):reg=%x,val=%x\n", __func__, reg, buf[0]);
     return buf[0];
 }
 
