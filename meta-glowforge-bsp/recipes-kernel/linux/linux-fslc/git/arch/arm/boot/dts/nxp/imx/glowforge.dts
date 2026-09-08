@@ -13,7 +13,8 @@
  * the factory ov5648_mipi driver and mxc_v4l2 nodes. The factory
  * glowforge,imx-pwm-audio buzzer node is not part of ForgeFIRM.
  *
- * Copyright (C) 2020-2026 Scott Wiederhold <s.e.wiederhold@gmail.com>
+ * Copyright 2020-2026 514 LLC d/b/a OpenGlow
+ * Written by Scott Wiederhold
  * Copyright (C) 2015 Glowforge, Inc. <opensource@glowforge.com>
  */
 /dts-v1/;
