@@ -11,4 +11,15 @@ Both target the Yocto `scarthgap` release and are consumed by the [ForgeFIRM](ht
 * [Community Support](https://community.openglow.org)
 * [ForgeFIRM Installable Firmware](https://github.com/openglow-org/forgefirm)  
 
+Everything the project knows is on the documentation site,
+<https://docs.forgefirm.org/>; the kernel, the device tree, the configuration
+fragment and the reserved memory pool are on
+[Image and BSP](https://docs.forgefirm.org/technical/forgefirm/image-and-bsp/).
+
+## Contributing
+
+[AGENTS.md](AGENTS.md) carries the rules for this repository and for the
+project: safety ordering, proof before done, the push order, and the writing
+rules. They apply to human contributors too.
+
 This project is for experimental purposes only, and is not supported or endorsed by Glowforge.
