@@ -1,9 +1,15 @@
-/dev/root            /                    auto       defaults              1  1
+# /etc/fstab - the ForgeFIRM images.
+# The root filesystem (the booted slot: eMMC p1 or p2, or the SD card on
+# the bench) mounts read-only; the images set ROOTFS_READ_ONLY to match
+# (the read-only-rootfs image feature). /data (p3) is the one writable
+# partition: the machine state, the logs, the staged updates. The dev
+# image appends the two factory slots, read-only under /factory/img1 and
+# /factory/img2 (forgefirm-image-dev.bb); the release image mounts no
+# factory slot. Facts: docs.forgefirm.org, technical/forgefirm/image-and-bsp.
+/dev/root            /                    auto       ro                    1  0
 proc                 /proc                proc       defaults              0  0
 devpts               /dev/pts             devpts     mode=0620,ptmxmode=0666,gid=5 0  0
 tmpfs                /run                 tmpfs      mode=0755,nodev,nosuid,strictatime 0  0
 tmpfs                /var/volatile        tmpfs      defaults              0  0
 /dev/mmcblk2p3       /data                auto       defaults              0  0
-/dev/mmcblk2p1       /factory/img1        auto       ro,noatime,nofail     0  0
-/dev/mmcblk2p2       /factory/img2        auto       ro,noatime,nofail     0  0
 pstore               /sys/fs/pstore       pstore     defaults              0  0

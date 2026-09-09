@@ -36,13 +36,13 @@ IMAGE_INSTALL = " \
 # A userspace petter adds only one failure mode here: a crashed daemon
 # resets the machine mid-job.
 
+# /data is the writable partition (p3); the rootfs mounts read-only
+# (recipes-core/base-files/base-files/fstab). The factory-slot mount
+# points belong to the dev image alone (forgefirm-image-dev.bb).
 create_dirs() {
 	mkdir -p ${IMAGE_ROOTFS}/data
-	mkdir -p ${IMAGE_ROOTFS}/factory
-	mkdir -p ${IMAGE_ROOTFS}/factory/img1
-	mkdir -p ${IMAGE_ROOTFS}/factory/img2
 }
-IMAGE_PREPROCESS_COMMAND += "create_dirs; "
+IMAGE_PREPROCESS_COMMAND += "create_dirs "
 
 # The factory bootloader looks for imx6dl-glowforge-v<major><minor>.dtb and
 # then -v<major>.dtb from the board-revision fuse; both names resolve.
@@ -51,4 +51,6 @@ link_device_tree() {
 	ln -sf glowforge.dtb imx6dl-glowforge-v20.dtb
 	ln -sf glowforge.dtb imx6dl-glowforge-v2.dtb
 }
-ROOTFS_POSTPROCESS_COMMAND += "link_device_tree; "
+# No semicolon after a function name: the value is the vardeps of the
+# task, split on whitespace, so "name;" would leave the body untracked.
+ROOTFS_POSTPROCESS_COMMAND += "link_device_tree "
