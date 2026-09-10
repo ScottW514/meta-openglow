@@ -15,6 +15,11 @@ iface wlan0 inet dhcp
 	# wireless_mode/wireless_essid directives are dropped.
 	wpa-driver nl80211
 	wpa-conf /data/etc/wpa_supplicant.conf
+	# The DHCP request carries the machine's own name (option 12), so a
+	# server with dynamic DNS publishes it. forgefirm-hostname sets the
+	# name earlier in the boot; ifupdown runs each command through the
+	# shell, so the substitution reads the name of the moment.
+	udhcpc_opts -x hostname:$(hostname)
 
 # IPv6 on the same link: the kernel takes the router advertisement (prefix
 # routes, default route, SLAAC addresses) on its own; udhcpc6 adds the
